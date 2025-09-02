@@ -1,0 +1,40 @@
+# ------------------------------
+# Gitignore pour projet web statique (HTML / CSS / JS)
+# ------------------------------
+
+# Fichiers système (macOS, Windows)
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dossiers de build (si tu utilises un bundler plus tard)
+dist/
+build/
+
+# Dépendances (si tu ajoutes Node ou un outil de build)
+node_modules/
+
+# Cache navigateur ou outils
+.cache/
+.parcel-cache/
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Backups (par ex. générés par certains éditeurs)
+*~
