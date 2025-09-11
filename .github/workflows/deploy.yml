@@ -1,0 +1,33 @@
+name: Deploy to OVH (PM2)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+concurrency: deploy-prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd /var/www/ai-studio-app/lolirine-pool-store-8
+            git fetch origin
+            git reset --hard origin/main
+            if [ -f package-lock.json ]; then npm ci; else npm install; fi
+            npm run build
+            if pm2 describe lolirinepoolstore > /dev/null; then
+              pm2 restart lolirinepoolstore
+            else
+              pm2 serve dist 3000 --spa --name lolirinepoolstore
+            fi
+            pm2 save
