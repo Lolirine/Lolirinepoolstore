@@ -1,0 +1,29 @@
+name: SSH Smoke Test
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check secrets presence
+        run: |
+          [ -n "${{ secrets.DEPLOY_HOST }}" ] && echo DEPLOY_HOST=OK || (echo DEPLOY_HOST=EMPTY; exit 1)
+          [ -n "${{ secrets.DEPLOY_USER }}" ] && echo DEPLOY_USER=OK || (echo DEPLOY_USER=EMPTY; exit 1)
+          [ -n "${{ secrets.DEPLOY_KEY }}" ]  && echo DEPLOY_KEY=OK  || (echo DEPLOY_KEY=EMPTY;  exit 1)
+
+      - name: Start ssh-agent with private key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+          # si ta clé a une passphrase, décommente la ligne suivante
+          # ssh-passphrase: ${{ secrets.DEPLOY_PASSPHRASE }}
+
+      - name: Add host to known_hosts
+        run: ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Test SSH command
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+        run: ssh -o StrictHostKeyChecking=yes $USER@$HOST "hostname && uptime"
