@@ -1,21 +1,20 @@
 name: SSH Smoke Test
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check secrets presence
-        run: |
-          if [ -z "${{ secrets.SSH_HOST }}" ]; then echo "SSH_HOST empty"; exit 1; else echo "SSH_HOST OK"; fi
-          if [ -z "${{ secrets.SSH_USER }}" ]; then echo "SSH_USER empty"; exit 1; else echo "SSH_USER OK"; fi
-          if [ -z "${{ secrets.SSH_KEY }}" ]; then echo "SSH_KEY empty"; exit 1; else echo "SSH_KEY OK"; fi
-      - name: Try SSH
+      - name: Connect over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: 51.38.34.23
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_KEY }}
           port: 22
+          # décommente si ta clé a une passphrase
+          # passphrase: ${{ secrets.DEPLOY_PASSPHRASE }}
           script: |
             hostname
             uptime
