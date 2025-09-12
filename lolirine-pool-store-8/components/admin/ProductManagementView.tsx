@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Product, Supplier } from '../../types';
-import { Edit, PlusCircle, Trash2, Copy, ChevronDown, ChevronRight } from 'lucide-react';
+import { Edit, PlusCircle, Trash2, Copy, ChevronDown, ChevronRight, Upload, Download } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import ProductEditModal from './ProductEditModal';
 import ProductCreateModal from './ProductCreateModal';
 import CategoryActionModal from './CategoryActionModal';
+import * as XLSX from 'xlsx';
 
 interface ProductManagementViewProps {
   products: Product[];
@@ -37,6 +38,8 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
     const [duplicatingProduct, setDuplicatingProduct] = useState<Product | null>(null);
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['All']));
     const [categoryAction, setCategoryAction] = useState<{ action: 'add' | 'rename' | 'duplicate', path: string } | null>(null);
+    const categoryFileInputRef = useRef<HTMLInputElement>(null);
+    const productFileInputRef = useRef<HTMLInputElement>(null);
     
     const allCategories = useMemo(() => {
         return [...new Set(products.map(p => p.category))].sort();
@@ -93,6 +96,182 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
                 break;
         }
         setCategoryAction(null);
+    };
+
+    const handleExportCategories = () => {
+        const uniqueCategories = [...new Set(products.map(p => p.category))];
+    
+        let maxDepth = 0;
+        const categoryData = uniqueCategories.map(c => {
+            const parts = c.split(' - ');
+            if (parts.length > maxDepth) {
+                maxDepth = parts.length;
+            }
+            return parts;
+        });
+    
+        const headers = Array.from({ length: maxDepth }, (_, i) => `Level ${i + 1}`);
+    
+        const dataForSheet = categoryData.map(parts => {
+            const row: { [key: string]: string } = {};
+            headers.forEach((header, i) => {
+                row[header] = parts[i] || '';
+            });
+            return row;
+        });
+    
+        const worksheet = XLSX.utils.json_to_sheet(dataForSheet);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
+        XLSX.writeFile(workbook, 'product_categories_export.xlsx');
+    };
+
+    const handleCategoryFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+    
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = event.target?.result;
+                const workbook = XLSX.read(data, { type: 'binary' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    
+                const existingCategories = new Set(products.map(p => p.category));
+                let newCategoriesAdded = 0;
+    
+                // Start from row 1 to skip header
+                for (let i = 1; i < json.length; i++) {
+                    const row = json[i];
+                    if (row.length === 0) continue;
+
+                    const categoryPath = row.filter(cell => cell !== null && cell !== undefined && cell !== '').join(' - ');
+                    
+                    if (categoryPath && !existingCategories.has(categoryPath)) {
+                        onAddCategory(categoryPath);
+                        existingCategories.add(categoryPath); // Avoid duplicates within the same file
+                        newCategoriesAdded++;
+                    }
+                }
+    
+                alert(`${newCategoriesAdded} nouvelle(s) catégorie(s) ajoutée(s).`);
+    
+            } catch (error) {
+                console.error("Error importing categories:", error);
+                alert("Erreur lors de l'importation. Vérifiez le format du fichier.");
+            }
+        };
+        reader.readAsBinaryString(file);
+        if(e.target) e.target.value = ''; // Reset file input
+    };
+
+    const handleExportProducts = () => {
+        const dataToExport = products.map(p => {
+            const attributes = p.attributes ? Object.entries(p.attributes).map(([key, value]) => `${key}:${value}`).join(';') : '';
+            return {
+                'id': p.id,
+                'name': p.name,
+                'category': p.category,
+                'price': p.price,
+                'promoPrice': p.promoPrice,
+                'isOnSale': p.isOnSale,
+                'tvaRate': p.tvaRate,
+                'imageUrl': p.imageUrl,
+                'description': p.description,
+                'stock': p.stock,
+                'galleryImages': p.galleryImages?.join(','),
+                'features': p.features?.join(';'),
+                'isDropshipping': p.isDropshipping,
+                'supplierId': p.supplierId,
+                'supplierPrice': p.supplierPrice,
+                'weight': p.weight,
+                'dimensions': p.dimensions,
+                'ean': p.ean,
+                'isHidden': p.isHidden,
+                'attributes': attributes,
+            }
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
+        XLSX.writeFile(workbook, 'products_export.xlsx');
+    };
+
+    const handleProductFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const data = event.target?.result;
+                const workbook = XLSX.read(data, { type: 'binary' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json: any[] = XLSX.utils.sheet_to_json(worksheet);
+
+                const importedProducts: Product[] = json.map(row => {
+                    const attributes: { [key: string]: string | number } = {};
+                    if (row.attributes && typeof row.attributes === 'string') {
+                        row.attributes.split(';').forEach((pair: string) => {
+                            const [key, value] = pair.split(':');
+                            if (key && value) {
+                                attributes[key.trim()] = isNaN(Number(value)) ? value.trim() : Number(value);
+                            }
+                        });
+                    }
+                    
+                    const parseBoolean = (value: any) => {
+                        if (typeof value === 'boolean') return value;
+                        if (typeof value === 'string') return value.toLowerCase() === 'true';
+                        return !!value;
+                    }
+
+                    return {
+                        id: row.id,
+                        name: row.name,
+                        category: row.category,
+                        price: parseFloat(row.price),
+                        promoPrice: row.promoPrice ? parseFloat(row.promoPrice) : undefined,
+                        isOnSale: parseBoolean(row.isOnSale),
+                        tvaRate: parseFloat(row.tvaRate),
+                        imageUrl: row.imageUrl,
+                        description: row.description,
+                        stock: row.stock ? parseInt(String(row.stock), 10) : undefined,
+                        galleryImages: typeof row.galleryImages === 'string' ? row.galleryImages.split(',').map(s => s.trim()) : [],
+                        features: typeof row.features === 'string' ? row.features.split(';').map(s => s.trim()) : [],
+                        isDropshipping: parseBoolean(row.isDropshipping),
+                        supplierId: row.supplierId,
+                        supplierPrice: row.supplierPrice ? parseFloat(row.supplierPrice) : undefined,
+                        weight: row.weight ? parseFloat(row.weight) : undefined,
+                        dimensions: row.dimensions,
+                        ean: row.ean,
+                        isHidden: parseBoolean(row.isHidden),
+                        attributes: attributes,
+                        // Default undefined fields for new products
+                        rating: undefined,
+                        reviewCount: undefined,
+                        reviews: [],
+                    };
+                }).filter(p => p.name && p.category && !isNaN(p.price));
+
+                if (importedProducts.length > 0) {
+                    onBulkUpdateProducts(importedProducts);
+                    alert(`${importedProducts.length} produits ont été importés ou mis à jour. Les nouvelles catégories ont été créées si nécessaire.`);
+                } else {
+                    alert("Aucun produit valide trouvé dans le fichier. Assurez-vous que les colonnes 'name', 'category', et 'price' sont présentes et correctement remplies.");
+                }
+
+            } catch (error) {
+                console.error("Error importing products:", error);
+                alert("Erreur lors de l'importation. Vérifiez le format du fichier.");
+            }
+        };
+        reader.readAsBinaryString(file);
+        if (e.target) e.target.value = '';
     };
     
     const renderCategoryTree = (node: CategoryNode, level = 0) => {
@@ -156,12 +335,34 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
         {/* Sidebar */}
         <div className="lg:col-span-1 bg-white p-4 rounded-lg shadow-md flex flex-col">
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-2">
                 <h3 className="text-lg font-bold">Catégories</h3>
                 <button onClick={() => setCategoryAction({ action: 'add', path: ''})} title="Ajouter une catégorie racine" className="p-2 text-cyan-600 hover:bg-cyan-100 rounded-full">
                     <PlusCircle size={20} />
                 </button>
             </div>
+            
+            <div className="space-y-3 mb-4 border-b pb-4">
+                <div className="grid grid-cols-2 gap-2">
+                    <button onClick={handleExportCategories} className="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 font-semibold py-2 px-3 rounded-md hover:bg-gray-200 transition-colors text-xs">
+                        <Download size={14} /> Exporter Catégories
+                    </button>
+                    <input type="file" ref={categoryFileInputRef} onChange={handleCategoryFileImport} className="hidden" accept=".xlsx, .xls, .csv" />
+                    <button onClick={() => categoryFileInputRef.current?.click()} className="flex items-center justify-center gap-2 bg-gray-100 text-gray-700 font-semibold py-2 px-3 rounded-md hover:bg-gray-200 transition-colors text-xs">
+                        <Upload size={14} /> Importer Catégories
+                    </button>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                    <button onClick={handleExportProducts} className="flex items-center justify-center gap-2 bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-md hover:bg-blue-200 transition-colors text-xs">
+                        <Download size={14} /> Exporter Produits
+                    </button>
+                    <input type="file" ref={productFileInputRef} onChange={handleProductFileImport} className="hidden" accept=".xlsx, .xls, .csv" />
+                    <button onClick={() => productFileInputRef.current?.click()} className="flex items-center justify-center gap-2 bg-blue-100 text-blue-700 font-semibold py-2 px-3 rounded-md hover:bg-blue-200 transition-colors text-xs">
+                        <Upload size={14} /> Importer Produits
+                    </button>
+                </div>
+            </div>
+
             <div className="flex-1 overflow-y-auto pr-2">
                 {renderCategoryTree(categoryTree)}
             </div>
