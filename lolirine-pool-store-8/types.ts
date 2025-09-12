@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { EmailService } from './utils/emailService';
 
 export type Page = 'home' | 'services' | 'shop' | 'portfolio' | 'blog' | 'about' | 'contact' | 'admin' | 'client' | 'faq' | 'checkout' | 'orderConfirmation' | 'terms' | 'privacy' | 'cookies' | 'legal' | 'wellness' | 'productDetail' | 'wishlist' | 'repairs' | 'construction' | 'waterAnalysis' | 'winterization' | 'servicesOverview';
 
@@ -445,6 +445,12 @@ export interface FilterFacet {
 export interface ActiveFilters {
     [key: string]: (string | number)[];
 }
+export interface EmailManagementViewProps {
+  emailTemplates: EmailTemplate[];
+  onUpdateEmailTemplate: (template: EmailTemplate) => void;
+  users: UserAccount[];
+  emailService: EmailService;
+}
 export interface AdminPageProps {
     onLogout: () => void;
     products: Product[];
@@ -483,5 +489,15 @@ export interface AdminPageProps {
     onDeleteCategoryAndProducts: (categoryPath: string) => void;
     onRenameCategory: (oldCategoryPath: string, newCategoryName: string) => void;
     onDuplicateCategory: (sourceCategoryPath: string, newCategoryPath: string) => void;
-    emailService: any; // Add EmailService instance
+    emailService: EmailService;
+}
+
+export interface AiAssistantWidgetProps {
+    onClose: () => void;
+    products: Product[];
+    orders: Order[];
+    services: Service[];
+    portfolioItems: PortfolioItem[];
+    blogPosts: BlogPost[];
+    currentUser: UserAccount | null;
 }

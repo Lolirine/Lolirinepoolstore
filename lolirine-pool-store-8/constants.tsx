@@ -40,7 +40,7 @@ import MastercardIcon from './components/icons/MastercardIcon';
 import StripeIcon from './components/admin/StripeIcon';
 
 
-export const ADMIN_PASSWORD = 'admin';
+export const ADMIN_PASSWORD = 'adminLolirine03@15@';
 
 export const SERVICES: Service[] = [
   {
@@ -169,9 +169,9 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
   },
   {
     id: 2,
-    title: 'Changement de Liner',
-    category: 'Rénovation',
-    description: "Remplacement d'un ancien liner par un modèle plus contemporain pour un look rafraîchi.",
+    title: 'Construction Complète Piscine',
+    category: 'Construction',
+    description: "Construction d'une piscine de A à Z, de la conception du plan à la mise en eau, pour un résultat sur-mesure.",
     images: [
       'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/Piscine%20ServBalfr%20avant.jpg',
       'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/Piscine%20ServBalfr%20apre%CC%80s.jpg'
@@ -374,7 +374,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         category: 'Instruments de mesure - Analyseurs Connectés',
         price: 349.00,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/blue-connect.jpg',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/Blue%20Connect.jpeg',
         description: 'Analyseur d\'eau intelligent qui mesure le pH, le chlore, la salinité et la température. Notifications en temps réel sur votre smartphone.',
         rating: 4.7,
         reviewCount: 88,
@@ -386,7 +386,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         category: "Traitement de l'eau - Équilibre de l'eau",
         price: 45.50,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/ctx-ph-moins.jpg',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/TRAITEMENTS%20EAU/PH%20moins%20CTX1.jpeg',
         stock: 100
     },
     {
@@ -395,7 +395,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         category: "Traitement de l'eau - Floculants",
         price: 18.90,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/ctx-floculant.jpg',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/TRAITEMENTS%20EAU/Floculant%20pastille1.jpeg',
         stock: 75
     },
     {
@@ -404,7 +404,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         category: 'Instruments de mesure - Bandelettes',
         price: 12.99,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/bandelettes.jpg',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/TRAITEMENTS%20EAU/Bandelette%20d\'analyse%20astrapool%206%20en%2011.jpeg',
         stock: 200
     },
      {
@@ -892,7 +892,7 @@ export const ADMIN_SIDEBAR_LINKS: { view: AdminView; label: string; icon: React.
     { view: 'purchaseOrders', label: 'Bons de Commande', icon: <FileIcon size={20} /> },
     { view: 'dropshipping', label: 'Dropshipping', icon: <GitBranch size={20} /> },
     { view: 'paymentMethods', label: 'Paiements', icon: <DollarSign size={20} /> },
-    { view: 'emails', label: 'Emails', icon: <MailIcon size={20} /> },
+    { view: 'emails', label: 'Emails & Notifs', icon: <MailIcon size={20} /> },
     { view: 'infoBanner', label: 'Bannière Info', icon: <Bell size={20} /> },
     { view: 'popups', label: 'Pop-ups', icon: <MessageSquare size={20} /> },
     { view: 'menuManagement', label: 'Gestion du Menu', icon: <Menu size={20} /> },

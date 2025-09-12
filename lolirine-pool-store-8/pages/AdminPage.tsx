@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdminView, AdminPageProps, UserAccount } from '../../types';
+import { AdminView, AdminPageProps, UserAccount, EmailManagementViewProps } from '../../types';
 import AdminLayout from '../components/admin/AdminLayout';
 import Sidebar from '../components/admin/Sidebar';
 import DashboardView from '../components/admin/DashboardView';
@@ -106,7 +106,12 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
       case 'paymentMethods':
         return <PaymentMethodsView paymentMethods={paymentMethods} onUpdatePaymentMethod={onUpdatePaymentMethod} />;
       case 'emails':
-        return <EmailManagementView emailTemplates={emailTemplates} onUpdateEmailTemplate={onUpdateEmailTemplate} />;
+        return <EmailManagementView 
+                    emailTemplates={emailTemplates} 
+                    onUpdateEmailTemplate={onUpdateEmailTemplate} 
+                    users={users}
+                    emailService={emailService}
+                />;
       case 'infoBanner':
         return <InfoBannerView infoBanner={infoBanner} onUpdateInfoBanner={onUpdateInfoBanner} />;
       case 'popups':

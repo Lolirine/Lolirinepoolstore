@@ -253,7 +253,7 @@ const ServicesOverviewPage: React.FC<ServicesOverviewPageProps> = ({ navigateTo,
                 className="relative bg-cover bg-center bg-cyan-800"
                 style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/lefteris-kallergis-ewSBvLSp3Tc-unsplash.jpg')" }}
             >
-                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div className="absolute inset-0 bg-black bg-opacity-20"></div>
                 <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-48 text-center">
                     <h2 className="text-3xl font-bold text-white mb-4" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>Prêt à nous confier votre projet ?</h2>
                     <p className="text-white/90 mb-8 max-w-2xl mx-auto" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>Contactez-nous pour toute question ou pour obtenir un devis personnalisé. Notre équipe est à votre écoute pour vous conseiller.</p>

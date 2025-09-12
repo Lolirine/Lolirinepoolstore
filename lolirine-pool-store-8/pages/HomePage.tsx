@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { HomePageProps, Product, Order, CartItem } from '../types';
 import { ProductsCarousel } from '../components/ProductCard';
@@ -420,7 +419,7 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
             <ProductsCarousel
                 title="Nos Meilleures Ventes"
                 products={bestSellers}
-                bgColor="bg-white"
+                bgColor="bg-gradient-to-br from-sky-100 to-blue-200"
                 {...props}
             />
 
@@ -431,6 +430,10 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
                 products={promotions}
                 categoryFilter="Promotions"
                 viewAllLink
+                bgColor="bg-gradient-to-br from-red-600 to-red-800"
+                isPromoSection={true}
+                titleColor="text-white"
+                viewAllLinkColor="text-red-200"
                 {...props}
             />
 

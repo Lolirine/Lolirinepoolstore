@@ -196,9 +196,12 @@ interface ProductsCarouselProps {
     headless?: boolean;
     wishlist: Product[];
     addToWishlist: (product: Product) => void;
+    isPromoSection?: boolean;
+    titleColor?: string;
+    viewAllLinkColor?: string;
 }
 
-export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subtitle, products, addToCart, onSelectProduct, navigateTo, categoryFilter, viewAllLink, bgColor = 'bg-cyan-50/70', headless = false, wishlist, addToWishlist }) => {
+export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subtitle, products, addToCart, onSelectProduct, navigateTo, categoryFilter, viewAllLink, bgColor = 'bg-cyan-50/70', headless = false, wishlist, addToWishlist, isPromoSection = false, titleColor = 'text-gray-800', viewAllLinkColor = 'text-cyan-600' }) => {
     const scrollContainer = useRef<HTMLDivElement>(null);
     const [isHovering, setIsHovering] = useState(false);
     const intervalRef = useRef<number | null>(null);
@@ -270,24 +273,58 @@ export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subti
             </button>
         </div>
     );
+    
+    const renderAnimatedIcons = () => {
+        const icons = [
+            { symbol: '%', size: 'text-5xl', top: '15%', left: '10%', delay: '0s', duration: '15s' },
+            { symbol: '€', size: 'text-7xl', top: '30%', left: '85%', delay: '2s', duration: '20s' },
+            { symbol: '%', size: 'text-4xl', top: '75%', left: '5%', delay: '5s', duration: '18s' },
+            { symbol: '€', size: 'text-6xl', top: '5%', left: '60%', delay: '3s', duration: '22s' },
+            { symbol: '%', size: 'text-3xl', top: '85%', left: '45%', delay: '1s', duration: '16s' },
+            { symbol: '€', size: 'text-5xl', top: '40%', left: '50%', delay: '7s', duration: '19s' },
+            { symbol: '%', size: 'text-8xl', top: '55%', left: '20%', delay: '4s', duration: '25s' },
+            { symbol: '€', size: 'text-4xl', top: '60%', left: '90%', delay: '6s', duration: '17s' },
+        ];
+
+        return (
+            <>
+                {icons.map((icon, index) => (
+                    <div
+                        key={index}
+                        className={`absolute font-black text-white/20 animate-float-up ${icon.size}`}
+                        style={{ 
+                            top: icon.top, 
+                            left: icon.left, 
+                            animationDelay: icon.delay,
+                            animationDuration: icon.duration
+                        }}
+                        aria-hidden="true"
+                    >
+                        {icon.symbol}
+                    </div>
+                ))}
+            </>
+        );
+    };
 
     if (headless) {
         return carouselContent;
     }
 
     return (
-        <section className={`py-16 ${bgColor}`}>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className={`py-16 ${bgColor} ${isPromoSection ? 'relative overflow-hidden' : ''}`}>
+            {isPromoSection && renderAnimatedIcons()}
+            <div className={`container mx-auto px-4 sm:px-6 lg:px-8 ${isPromoSection ? 'relative z-10' : ''}`}>
                 {(title || viewAllLink) && (
                     <div className="flex justify-between items-center mb-8">
                         {title && (
                             <div>
-                                <h2 className="text-3xl font-bold text-gray-800">{title}</h2>
+                                <h2 className={`text-3xl font-bold ${titleColor}`}>{title}</h2>
                                 {subtitle && <p className="text-gray-600">{subtitle}</p>}
                             </div>
                         )}
                         {viewAllLink && (
-                            <button onClick={() => navigateTo('shop', { categoryFilter: categoryFilter })} className="font-semibold text-cyan-600 hover:underline">Voir tout →</button>
+                            <button onClick={() => navigateTo('shop', { categoryFilter: categoryFilter })} className={`font-semibold ${viewAllLinkColor} hover:underline`}>Voir tout →</button>
                         )}
                     </div>
                 )}

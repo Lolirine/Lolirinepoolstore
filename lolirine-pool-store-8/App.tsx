@@ -35,9 +35,13 @@ import EmailNotificationManager from './components/EmailNotificationManager';
 import { ProductsCarousel } from './components/ProductCard';
 import PromotionalPopup from './components/PromotionalPopup';
 import { Page, UserAccount, Product, CartItem, Order, Review, Supplier, Invoice, PaymentMethod, EmailTemplate, Notification, PurchaseOrder, InfoBannerConfig, PopupConfig, MenuConfig, NavLink } from './types';
-import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_SUPPLIERS, INITIAL_INVOICES, INITIAL_PAYMENT_METHODS, INITIAL_EMAIL_TEMPLATES, INITIAL_USERS, SERVICES, WELLNESS_SUB_CATEGORIES } from './constants';
+import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_SUPPLIERS, INITIAL_INVOICES, INITIAL_PAYMENT_METHODS, INITIAL_EMAIL_TEMPLATES, INITIAL_USERS, SERVICES, WELLNESS_SUB_CATEGORIES, PORTFOLIO_ITEMS, BLOG_POSTS } from './constants';
 import { EmailService } from './utils/emailService';
 import ServicesOverviewPage from './pages/ServicesOverviewPage';
+import WhatsAppButton from './components/WhatsAppButton';
+import AiAssistantButton from './components/AiAssistantButton';
+// FIX: Changed import to named import as AiAssistantWidget is not a default export.
+import { AiAssistantWidget } from './components/AiAssistantWidget';
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -93,6 +97,9 @@ const App: React.FC = () => {
   
   // Notifications State for email simulation
   const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    // AI Assistant state
+  const [isAiAssistantOpen, setIsAiAssistantOpen] = useState(false);
 
   // Info Banner State
   const [infoBanner, setInfoBanner] = useState<InfoBannerConfig>({
@@ -1209,6 +1216,19 @@ const App: React.FC = () => {
             popup={activePopup}
             onClose={() => handlePopupClose(activePopup.id)}
             navigateTo={navigateTo}
+        />
+      )}
+      <WhatsAppButton pageIdentifier={currentPage} />
+      <AiAssistantButton onClick={() => setIsAiAssistantOpen(prev => !prev)} />
+      {isAiAssistantOpen && (
+        <AiAssistantWidget 
+            onClose={() => setIsAiAssistantOpen(false)}
+            products={products}
+            orders={orders}
+            services={SERVICES}
+            portfolioItems={PORTFOLIO_ITEMS}
+            blogPosts={BLOG_POSTS}
+            currentUser={currentUser}
         />
       )}
     </div>

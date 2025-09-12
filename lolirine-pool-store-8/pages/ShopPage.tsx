@@ -199,13 +199,43 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onSelectProduc
 
   return (
     <div className="bg-gray-100">
-      <div className="bg-cyan-100 py-8 text-center border-b">
+      <div className="bg-gradient-to-br from-cyan-50 to-blue-100 py-16 sm:py-24 overflow-hidden">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-gray-800 capitalize">{initialCategoryFilter || (initialSearchTerm ? `Recherche pour "${initialSearchTerm}"` : 'Notre Boutique')}</h1>
-          <div className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto space-y-2">
-            <p>🏊‍♀️ Bienvenue dans la boutique la plus complète dédiée à l’univers de la piscine.</p>
-            <p>Trouvez tout ce dont vous avez besoin, du spa au robot, en passant par l’entretien, les accessoires et les équipements techniques.</p>
-            <p className="font-semibold text-gray-700">Un seul site, une infinité de solutions.</p>
+          <div className="relative lg:h-[400px] flex items-center justify-center">
+            {/* Decorative images for large screens */}
+            <div className="hidden lg:block">
+              <img 
+                src="https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique.jpeg" 
+                alt="Entretien de piscine" 
+                className="absolute top-0 -left-24 w-48 rounded-lg shadow-xl transform -rotate-12 hover:scale-105 hover:-rotate-6 transition-transform duration-300" 
+              />
+              <img 
+                src="https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique1.jpeg" 
+                alt="Équipement de piscine" 
+                className="absolute -top-12 right-0 w-64 rounded-lg shadow-xl transform rotate-6 hover:scale-105 hover:rotate-3 transition-transform duration-300" 
+              />
+              <img 
+                src="https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique2.jpeg" 
+                alt="Nettoyage de piscine" 
+                className="absolute bottom-0 -left-8 w-40 rounded-lg shadow-xl transform rotate-3 hover:scale-105 hover:rotate-1 transition-transform duration-300" 
+              />
+              <img 
+                src="https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique3.jpeg" 
+                alt="Robot de piscine" 
+                className="absolute -bottom-16 right-16 w-72 rounded-lg shadow-xl transform -rotate-3 hover:scale-105 hover:-rotate-1 transition-transform duration-300" 
+              />
+            </div>
+
+            <div className="text-center relative z-10 bg-white/70 backdrop-blur-md p-8 rounded-xl shadow-lg">
+              <h1 className="text-4xl lg:text-5xl font-bold text-gray-800 capitalize">
+                {initialCategoryFilter || (initialSearchTerm ? `Recherche pour "${initialSearchTerm}"` : 'Notre Boutique')}
+              </h1>
+              <div className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto space-y-2">
+                <p>🏊‍♀️ Bienvenue dans la boutique la plus complète dédiée à l’univers de la piscine.</p>
+                <p>Trouvez tout ce dont vous avez besoin, du spa au robot, en passant par l’entretien, les accessoires et les équipements techniques.</p>
+                <p className="font-semibold text-gray-700">Un seul site, une infinité de solutions.</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

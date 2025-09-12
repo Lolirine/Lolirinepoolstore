@@ -52,6 +52,22 @@ export class EmailService {
         });
     }
 
+    public sendCustomNotification(recipient: string, subject: string, body: string) {
+        const notificationBody = `<p>${body.replace(/\n/g, '<br>')}</p>`;
+        this.addNotification({
+            recipient,
+            subject,
+            body: notificationBody,
+        });
+        
+        console.log(`--- SIMULATING PUSH NOTIFICATION ---
+To: ${recipient}
+Subject: ${subject}
+--- BODY ---
+${body}
+--------------------`);
+    }
+
     public send(templateId: string, data: PlaceholderData) {
         const template = this.templates.find(t => t.id === templateId);
         

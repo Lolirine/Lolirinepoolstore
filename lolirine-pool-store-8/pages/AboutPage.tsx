@@ -8,7 +8,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ goBack, canGoBack }) => {
     {
       name: "Le Fondateur",
       role: "Vision & Expertise",
-      bio: "Passionné par l'univers de la piscine depuis plus de 15 ans, il a créé l'entreprise avec l'ambition d'offrir un service inégalé.",
+      bio: "Passionné par l'univers de la piscine depuis plus de 8 ans, il a créé l'entreprise avec l'ambition d'offrir un service inégalé.",
       icon: <Award className="h-8 w-8 text-cyan-600" />
     },
     {
@@ -36,7 +36,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ goBack, canGoBack }) => {
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-5xl md:text-6xl font-extrabold" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>Notre Passion, Votre Piscine</h1>
             <p className="mt-4 text-xl text-gray-200 max-w-3xl mx-auto" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}>
-                Bien plus qu'un métier, la conception et l'entretien de piscines est pour nous une véritable passion que nous partageons avec vous depuis plus de 10 ans.
+                Bien plus qu'un métier, la conception et l'entretien de piscines est pour nous une véritable passion que nous partageons avec vous depuis plus de 8 ans.
             </p>
         </div>
       </section>
@@ -90,7 +90,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ goBack, canGoBack }) => {
                         <div className="absolute -left-[11px] top-1 w-5 h-5 bg-cyan-500 rounded-full border-4 border-white"></div>
                         <div>
                             <h4 className="font-bold text-lg">La Fondation</h4>
-                            <p className="text-sm text-gray-500 mb-1">Il y a plus de 10 ans</p>
+                            <p className="text-sm text-gray-500 mb-1">Il y a plus de 8 ans</p>
                             <p className="text-gray-600">L'aventure commence avec une ambition simple : offrir un service complet et irréprochable aux propriétaires de piscines de la région.</p>
                         </div>
                          <div className="absolute -left-[11px] top-1/2 -translate-y-1/2 w-5 h-5 bg-cyan-500 rounded-full border-4 border-white"></div>
@@ -136,16 +136,16 @@ const AboutPage: React.FC<AboutPageProps> = ({ goBack, canGoBack }) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
             {/* Store Column */}
             <div className="bg-white p-8 rounded-lg border border-slate-200 shadow-sm h-full flex flex-col">
-              <img src="https://storage.googleapis.com/lolirinepoolstoreimage/magasin-piscine-aquilus-640x420.jpg" alt="Notre magasin" className="rounded-lg shadow-lg mb-6" />
-              <h3 className="text-2xl font-bold text-gray-800 mb-4">Venez nous rencontrer en magasin</h3>
+              <img src="https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_9491.jpeg" alt="Notre magasin" className="rounded-lg shadow-lg mb-6" />
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Venez nous faire une petite visite en ligne</h3>
               <p className="text-gray-600 mb-4 flex-grow">
-                Notre magasin est plus qu'une boutique, c'est un lieu de conseil et d'échange. Venez découvrir nos produits, discuter de votre projet ou simplement demander une analyse d'eau. Notre équipe sera ravie de vous accueillir.
+                Notre magasin en ligne est plus qu'une boutique, c'est un lieu de conseil et d'échange. Venez découvrir nos produits, discuter de votre projet ou simplement demander une analyse d'eau. Notre équipe sera ravie de vous écouter.
               </p>
               <div className="flex items-start gap-3 mt-6">
                 <Building className="h-6 w-6 text-cyan-600 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold text-gray-800">Lolirine Pool Store</p>
-                  <p className="text-gray-600">Rue Bois D'Esneux 110, 5021 Boninne (Namur), Belgique</p>
+                  <p className="text-gray-600">5021 Boninne (Namur), Belgique</p>
                 </div>
               </div>
             </div>

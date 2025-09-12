@@ -1,24 +1,51 @@
 import React, { useState, useMemo } from 'react';
-import { EmailTemplate } from '../../types';
-import { Mail, Edit, Eye, EyeOff } from 'lucide-react';
+import { EmailTemplate, EmailManagementViewProps } from '../../types';
+import { Mail, Edit, Eye, EyeOff, Send, CheckCircle, Loader } from 'lucide-react';
 import EmailEditorModal from './EmailEditorModal';
 
-interface EmailManagementViewProps {
-  emailTemplates: EmailTemplate[];
-  onUpdateEmailTemplate: (template: EmailTemplate) => void;
-}
-
-const EmailManagementView: React.FC<EmailManagementViewProps> = ({ emailTemplates, onUpdateEmailTemplate }) => {
+const EmailManagementView: React.FC<EmailManagementViewProps> = ({ emailTemplates, onUpdateEmailTemplate, users, emailService }) => {
   const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null);
+  const [notificationTitle, setNotificationTitle] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationRecipient, setNotificationRecipient] = useState('all');
+  const [isSending, setIsSending] = useState(false);
+  const [sendSuccess, setSendSuccess] = useState(false);
 
   const handleToggleEnabled = (template: EmailTemplate) => {
     onUpdateEmailTemplate({ ...template, enabled: !template.enabled });
   };
   
-  const handleSave = (updatedTemplate: EmailTemplate) => {
+  const handleSaveTemplate = (updatedTemplate: EmailTemplate) => {
     onUpdateEmailTemplate(updatedTemplate);
     setEditingTemplate(null);
   }
+
+  const handleSendNotification = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!notificationTitle || !notificationMessage) {
+        alert("Veuillez remplir le titre et le message.");
+        return;
+    }
+    setIsSending(true);
+    setSendSuccess(false);
+
+    const recipients = notificationRecipient === 'all' 
+        ? users 
+        : users.filter(u => u.email === notificationRecipient);
+
+    recipients.forEach(user => {
+        emailService.sendCustomNotification(user.email, notificationTitle, notificationMessage);
+    });
+    
+    setTimeout(() => {
+        setIsSending(false);
+        setSendSuccess(true);
+        setNotificationTitle('');
+        setNotificationMessage('');
+        setNotificationRecipient('all');
+        setTimeout(() => setSendSuccess(false), 3000);
+    }, 1000);
+  };
 
   const groupedTemplates = useMemo(() => {
     return emailTemplates.reduce((acc, template) => {
@@ -38,9 +65,37 @@ const EmailManagementView: React.FC<EmailManagementViewProps> = ({ emailTemplate
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center">
           <Mail size={24} className="mr-3" />
-          Gestion des Modèles d'Emails
+          Emails & Notifications
         </h2>
-        <p className="mt-2 text-gray-600">Activez, désactivez ou modifiez le contenu des emails automatiques envoyés aux clients.</p>
+        <p className="mt-2 text-gray-600">Gérez les modèles d'emails automatiques et envoyez des notifications push aux utilisateurs.</p>
+      </div>
+
+      <div className="bg-white p-6 rounded-lg shadow-md">
+          <h3 className="text-xl font-bold text-gray-800 mb-4">Envoyer une Notification Push</h3>
+          <form onSubmit={handleSendNotification} className="space-y-4">
+              <div>
+                  <label htmlFor="recipient" className="block text-sm font-medium text-gray-700">Destinataire</label>
+                  <select id="recipient" value={notificationRecipient} onChange={e => setNotificationRecipient(e.target.value)} className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm rounded-md">
+                      <option value="all">Tous les utilisateurs ({users.length})</option>
+                      {users.map(user => (
+                          <option key={user.id} value={user.email}>{user.name} ({user.email})</option>
+                      ))}
+                  </select>
+              </div>
+              <div>
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700">Titre de la notification</label>
+                  <input type="text" id="title" value={notificationTitle} onChange={e => setNotificationTitle(e.target.value)} required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500" />
+              </div>
+              <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700">Message</label>
+                  <textarea id="message" value={notificationMessage} onChange={e => setNotificationMessage(e.target.value)} required rows={4} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-cyan-500 focus:border-cyan-500" />
+              </div>
+              <div className="text-right">
+                  <button type="submit" disabled={isSending || sendSuccess} className={`inline-flex items-center gap-2 justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors ${sendSuccess ? 'bg-green-600' : 'bg-cyan-600 hover:bg-cyan-700'} disabled:bg-gray-400`}>
+                      {isSending ? <><Loader size={16} className="animate-spin"/> Envoi en cours...</> : (sendSuccess ? <><CheckCircle size={16}/> Envoyé !</> : <><Send size={16}/> Envoyer la notification</>)}
+                  </button>
+              </div>
+          </form>
       </div>
       
       {(Object.keys(groupedTemplates) as (keyof typeof groupedTemplates)[]).map(groupKey => (
@@ -82,7 +137,7 @@ const EmailManagementView: React.FC<EmailManagementViewProps> = ({ emailTemplate
       {editingTemplate && (
           <EmailEditorModal 
               template={editingTemplate}
-              onSave={handleSave}
+              onSave={handleSaveTemplate}
               onClose={() => setEditingTemplate(null)}
           />
       )}

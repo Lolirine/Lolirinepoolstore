@@ -28,12 +28,18 @@ const FAQ_DATA = [
 const FaqPage: React.FC<FaqPageProps> = ({ goBack, canGoBack }) => {
     return (
         <div className="bg-white">
-            <div className="bg-gray-800 text-white py-20 text-center">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-4xl font-bold">Foire Aux Questions</h1>
-                    <p className="mt-2 text-lg text-gray-300">Trouvez les réponses à vos questions les plus fréquentes.</p>
-                </div>
-            </div>
+            <section 
+              className="relative bg-cover bg-center h-[50vh] text-white flex items-center justify-center" 
+              style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_9039.heic')" }}
+            >
+              <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+              <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                  <h1 className="text-5xl md:text-6xl font-extrabold" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>Foire Aux Questions</h1>
+                  <p className="mt-4 text-xl text-gray-200 max-w-3xl mx-auto" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}>
+                      Trouvez les réponses à vos questions les plus fréquentes.
+                  </p>
+              </div>
+            </section>
             
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 max-w-4xl">
                 {canGoBack && <GoBackButton onClick={goBack} className="mb-8" />}

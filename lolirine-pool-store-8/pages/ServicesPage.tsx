@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Page, PageWithBackButtonProps } from '../types';
 import { INITIAL_PRODUCTS } from '../constants';
 import { ArrowRight, Calendar, Sun, Zap, TestTube, Sparkles, Wrench, Search, Clock, Droplet, ShieldAlert, BadgeCheck, Cog, ShieldCheck, CalendarDays, CheckCircle } from 'lucide-react';
@@ -10,21 +10,6 @@ interface ServicesPageProps extends PageWithBackButtonProps {
 
 const ServicesPage: React.FC<ServicesPageProps> = ({ navigateTo, goBack, canGoBack }) => {
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const heroImages = [
-      'https://storage.googleapis.com/lolirine_pool_store_photos/Entretien%20piscine1.jpg',
-      'https://storage.googleapis.com/lolirine_pool_store_photos/Entretien%20piscine2.jpg',
-      'https://storage.googleapis.com/lolirine_pool_store_photos/Entretien%20piscine3.jpg.webp',
-      'https://storage.googleapis.com/lolirine_pool_store_photos/Analyse%20de%20l\'eau3.jpg.webp'
-  ];
-
-  useEffect(() => {
-      const timer = setInterval(() => {
-          setCurrentIndex(prevIndex => (prevIndex + 1) % heroImages.length);
-      }, 5000); // Change image every 5 seconds
-      return () => clearInterval(timer);
-  }, [heroImages.length]);
-
   const maintenanceProducts = INITIAL_PRODUCTS.filter(p => 
     ['chlore-001', 'WR00030', 'prod-10195-2', 'prod-10255-22'].includes(String(p.id))
   ).slice(0, 4);
@@ -32,14 +17,10 @@ const ServicesPage: React.FC<ServicesPageProps> = ({ navigateTo, goBack, canGoBa
   return (
     <div className="bg-white text-gray-800">
       {/* Hero Section */}
-      <section className="relative h-[70vh] w-full overflow-hidden text-white">
-        {heroImages.map((src, index) => (
-            <div
-                key={src}
-                className={`absolute inset-0 bg-cover bg-center transition-opacity duration-1000 ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`}
-                style={{ backgroundImage: `url(${src})` }}
-            />
-        ))}
+      <section 
+        className="relative h-[70vh] w-full bg-cover bg-center text-white"
+        style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/51tqEx-jHFL._AC_.jpg')" }}
+      >
         <div className="absolute inset-0 bg-blue-900 bg-opacity-60"></div>
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center h-full flex flex-col justify-center items-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.6)' }}>
