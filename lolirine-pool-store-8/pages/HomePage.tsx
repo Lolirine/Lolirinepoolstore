@@ -1,3 +1,4 @@
+
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { HomePageProps, Product, Order, CartItem } from '../types';
 import { ProductsCarousel } from '../components/ProductCard';
@@ -169,16 +170,20 @@ const PortfolioSection: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = 
                          style={{ animationDelay: `${index * 150}ms` }}
                     >
                         <div className="relative">
-                            <div className="grid grid-cols-2">
-                                <div className="relative">
-                                    <img src={item.beforeImageUrl} alt={`Avant - ${item.title}`} className="object-cover h-[160px] w-full" />
-                                    <div className="absolute bottom-0 left-0 bg-red-500 text-white px-2 py-1 text-xs font-bold">AVANT</div>
+                            {item.images.length === 2 ? (
+                                <div className="grid grid-cols-2">
+                                    <div className="relative">
+                                        <img src={item.images[0]} alt={`Avant - ${item.title}`} className="object-cover h-[160px] w-full" />
+                                        <div className="absolute bottom-0 left-0 bg-red-500 text-white px-2 py-1 text-xs font-bold">AVANT</div>
+                                    </div>
+                                    <div className="relative">
+                                        <img src={item.images[1]} alt={`Après - ${item.title}`} className="object-cover h-[160px] w-full" />
+                                        <div className="absolute bottom-0 left-0 bg-green-500 text-white px-2 py-1 text-xs font-bold">APRÈS</div>
+                                    </div>
                                 </div>
-                                <div className="relative">
-                                    <img src={item.afterImageUrl} alt={`Après - ${item.title}`} className="object-cover h-[160px] w-full" />
-                                    <div className="absolute bottom-0 left-0 bg-green-500 text-white px-2 py-1 text-xs font-bold">APRÈS</div>
-                                </div>
-                            </div>
+                            ) : (
+                                <img src={item.images[0]} alt={item.title} className="object-cover h-[160px] w-full" />
+                            )}
                         </div>
                         <div className="p-4 bg-gray-50">
                             <h3 className="font-bold text-lg text-gray-800">{item.title}</h3>

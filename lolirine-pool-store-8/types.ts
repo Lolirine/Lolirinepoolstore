@@ -127,8 +127,8 @@ export interface PortfolioItem {
   id: number;
   title: string;
   category: string;
-  beforeImageUrl: string;
-  afterImageUrl: string;
+  description: string;
+  images: string[];
 }
 
 export interface BlogPost {

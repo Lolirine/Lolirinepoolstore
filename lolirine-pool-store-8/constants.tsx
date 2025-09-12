@@ -74,29 +74,64 @@ export const SERVICES: Service[] = [
 ];
 
 export const WELLNESS_SUB_CATEGORIES: NavLink[] = [
-    { id: 'wellness-all', label: 'Voir tout l\'espace Wellness', page: 'wellness', categoryFilter: 'Wellness' },
+    { 
+        id: 'wellness-all', 
+        label: 'Voir tout l\'espace Wellness', 
+        page: 'wellness'
+    },
     {
-      id: 'wellness-spas',
-      label: 'Spas',
+      id: 'wellness-spas-residentiels',
+      label: 'Spas Résidentiels',
       page: 'shop',
-      categoryFilter: 'Wellness - Spas',
+      categoryFilter: 'Wellness - Spas Résidentiels',
       children: [
-        { id: 'spas-2-3', label: 'Spas 2-3 places', page: 'shop', categoryFilter: 'Wellness - Spas - 2-3 places' },
-        { id: 'spas-4-5', label: 'Spas 4-5 places', page: 'shop', categoryFilter: 'Wellness - Spas - 4-5 places' },
-        { id: 'spas-6-plus', label: 'Spas 6 places et +', page: 'shop', categoryFilter: 'Wellness - Spas - 6 places et +' },
+        { id: 'wellness-spas-residentiels-all', label: 'Voir tous les spas résidentiels', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels' },
+        { id: 'wellness-spas-residentiels-collection', label: 'La collection', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - La collection' },
+        { id: 'wellness-spas-residentiels-equipements', label: 'Les équipements des spas privés', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Équipements des spas privés' },
+        { id: 'wellness-spas-residentiels-apercu', label: '1 spa en 1 coup d\'oeil !', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - 1 spa en 1 coup d\'oeil' },
+        {
+          id: 'wellness-spas-residentiels-meuble',
+          label: 'Spas privés avec meuble',
+          page: 'shop',
+          categoryFilter: 'Wellness - Spas Résidentiels - Spas privés avec meuble',
+          children: [
+            { id: 'wellness-spas-residentiels-meuble-all', label: 'Voir tous les spas avec meuble', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas privés avec meuble' },
+            { id: 'wellness-spas-residentiels-meuble-ocean', label: 'Ocean Dreams', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Ocean Dreams' },
+            { id: 'wellness-spas-residentiels-meuble-essentiels', label: 'Les ESSENTIELS', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Les ESSENTIELS' },
+            { id: 'wellness-spas-residentiels-meuble-origins', label: 'ORIGINS', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas privés avec meuble - ORIGINS' },
+            { id: 'wellness-spas-residentiels-meuble-classiques', label: 'Les CLASSIQUES', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Les CLASSIQUES' },
+          ]
+        },
+        { id: 'wellness-spas-residentiels-nage', label: 'Spas de nage', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas de nage' },
+        { id: 'wellness-spas-residentiels-encastrables', label: 'Spas encastrables', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Spas encastrables' },
+        { id: 'wellness-spas-residentiels-traitement', label: 'Traitement de l\'eau', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Traitement de l\'eau' },
+        { id: 'wellness-spas-residentiels-nettoyage', label: 'Nettoyage des spas', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Nettoyage des spas' },
+        { id: 'wellness-spas-residentiels-accessoires', label: 'Accessoires pour spas', page: 'shop', categoryFilter: 'Wellness - Spas Résidentiels - Accessoires pour spas' },
       ]
     },
     {
-      id: 'wellness-saunas',
-      label: 'Saunas',
+      id: 'wellness-spas-publics',
+      label: 'Spas Publics',
       page: 'shop',
-      categoryFilter: 'Wellness - Saunas',
+      categoryFilter: 'Wellness - Spas Publics',
+      children: [
+          { id: 'wellness-spas-publics-all', label: 'Voir tous les Spas Publics', page: 'shop', categoryFilter: 'Wellness - Spas Publics' },
+          { id: 'wellness-spas-publics-hotels', label: 'Spas pour Hôtels & Gîtes', page: 'shop', categoryFilter: 'Wellness - Spas Publics - Hôtels' },
+          { id: 'wellness-spas-publics-normes', label: 'Conformes aux normes ERP', page: 'shop', categoryFilter: 'Wellness - Spas Publics - ERP' },
+      ]
     },
     {
-      id: 'wellness-accessories',
-      label: 'Accessoires pour Spas',
+      id: 'wellness-equipements',
+      label: 'Équipements Wellness',
       page: 'shop',
-      categoryFilter: 'Wellness - Accessoires pour Spas',
+      categoryFilter: 'Wellness - Équipements Wellness',
+      children: [
+          { id: 'wellness-equipements-all', label: 'Voir tous les Équipements', page: 'shop', categoryFilter: 'Wellness - Équipements Wellness' },
+          { id: 'wellness-equipements-couvertures', label: 'Couvertures & Abris', page: 'shop', categoryFilter: 'Wellness - Équipements Wellness - Couvertures' },
+          { id: 'wellness-equipements-chauffage', label: 'Chauffage & Déshumidification', page: 'shop', categoryFilter: 'Wellness - Équipements Wellness - Chauffage' },
+          { id: 'wellness-equipements-saunas', label: 'Saunas & Hammams', page: 'shop', categoryFilter: 'Wellness - Équipements Wellness - Saunas' },
+          { id: 'wellness-equipements-douches', label: 'Douches sensorielles', page: 'shop', categoryFilter: 'Wellness - Équipements Wellness - Douches' },
+      ]
     },
 ];
 
@@ -122,34 +157,148 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const PORTFOLIO_ITEMS: PortfolioItem[] = [
-    {
-        id: 1,
-        title: 'Rénovation piscine béton',
-        category: 'Rénovation',
-        beforeImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-04-13-16-19-58.jpg',
-        afterImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-04-13-16-20-01.jpg',
-    },
-    {
-        id: 2,
-        title: 'Construction piscine miroir',
-        category: 'Construction',
-        beforeImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-08-09-10-51-45.jpg',
-        afterImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-08-09-10-51-45(1).jpg',
-    },
-    {
-        id: 3,
-        title: 'Installation volet roulant',
-        category: 'Équipement',
-        beforeImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-16-20-42-31.jpg',
-        afterImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-12-39-05.jpg',
-    },
-    {
-        id: 4,
-        title: 'Pose de liner gris anthracite',
-        category: 'Rénovation',
-        beforeImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-12-39-06.jpg',
-        afterImageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-20-46-29.jpg',
-    }
+  {
+    id: 1,
+    title: 'Rénovation Complète',
+    category: 'Rénovation',
+    description: "Transformation d'une piscine vieillissante avec un nouveau liner gris anthracite et des margelles modernes.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/Piscine%20avant.jpg',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/Piscine%20apre%CC%80s.jpg'
+    ],
+  },
+  {
+    id: 2,
+    title: 'Changement de Liner',
+    category: 'Rénovation',
+    description: "Remplacement d'un ancien liner par un modèle plus contemporain pour un look rafraîchi.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/Piscine%20ServBalfr%20avant.jpg',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/Piscine%20ServBalfr%20apre%CC%80s.jpg'
+    ]
+  },
+  {
+    id: 3,
+    title: 'Piscine Miroir Neuve',
+    category: 'Construction',
+    description: "Création d'une piscine miroir design, parfaitement intégrée dans son environnement.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-08-09-10-51-45.jpg']
+  },
+  {
+    id: 4,
+    title: 'Installation Volet Roulant',
+    category: 'Équipement',
+    description: "Pose d'un volet roulant immergé pour la sécurité et la propreté du bassin.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-12-39-05.jpg']
+  },
+  {
+    id: 5,
+    title: 'Intégration Paysagère',
+    category: 'Construction',
+    description: 'Une réalisation harmonieuse où la piscine devient le cœur du jardin.',
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-04-13-16-20-01.jpg']
+  },
+  {
+    id: 6,
+    title: 'Ambiance Nocturne',
+    category: 'Équipement',
+    description: "Installation d'un système d'éclairage LED pour sublimer la piscine à la nuit tombée.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-20-46-29.jpg']
+  },
+  {
+    id: 7,
+    title: 'Piscine avec Vue',
+    category: 'Construction',
+    description: "Une piscine parfaitement positionnée pour profiter d'une vue imprenable.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-12-39-06.jpg']
+  },
+  {
+    id: 8,
+    title: 'Détails de Finition',
+    category: 'Rénovation',
+    description: "Zoom sur la qualité des finitions et l'intégration des pièces à sceller.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-12-39-07.jpg']
+  },
+  {
+    id: 9,
+    title: 'Éclairage Subaquatique',
+    category: 'Équipement',
+    description: 'Mise en valeur du bassin par un éclairage puissant et économe en énergie.',
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-19-20-47-46.jpg']
+  },
+  {
+    id: 10,
+    title: 'Volet de Sécurité',
+    category: 'Équipement',
+    description: "Installation d'un volet de sécurité sur une piscine existante.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2023-05-16-20-42-31.jpg']
+  },
+  {
+    id: 11,
+    title: 'Piscine Élégante avec Volet Roulant',
+    category: 'Équipement',
+    description: "Installation d'un volet roulant immergé alliant sécurité, esthétique et propreté pour une piscine moderne.",
+    images: ['https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_0077.heic']
+  },
+  {
+    id: 12,
+    title: 'Piscine Moderne et Épurée',
+    category: 'Construction',
+    description: "Conception et construction d'une piscine au design contemporain, avec un aménagement paysager soigné pour une intégration parfaite.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/c9070a7c-9721-4668-9746-db57410969b5.jpeg',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/a612ffdb-0868-4bbc-b462-1dbf76641f60.jpeg'
+    ]
+  },
+  {
+    id: 13,
+    title: 'Local Technique Optimisé',
+    category: 'Équipement',
+    description: "Installation et optimisation d'un local technique avec un système de filtration performant pour une eau pure et une maintenance facilitée.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_9493.jpeg',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_9492.jpeg'
+    ]
+  },
+  {
+    id: 14,
+    title: 'Piscine avec Terrasse en Bois',
+    category: 'Construction',
+    description: "Réalisation d'une piscine entourée d'une terrasse en bois exotique, créant un espace de détente chaleureux et convivial.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/8863880c-9a53-4972-8ce1-23cca8249e0a.jpeg',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/6c812c42-af2e-46ec-ad09-66d66f8cf82e.jpeg'
+    ]
+  },
+  {
+    id: 15,
+    title: 'Finitions en Mosaïque',
+    category: 'Rénovation',
+    description: "Pose d'une mosaïque de haute qualité, apportant une touche d'élégance et de raffinement au bassin.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/04f7b074-8c49-4cf5-9fe2-c07eb4bc6262.jpeg',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/0201527c-8690-4aa6-a6f0-f02b406ddb8c.jpeg'
+    ]
+  },
+  {
+    id: 16,
+    title: 'Volet Roulant Intégré',
+    category: 'Équipement',
+    description: "Installation d'un volet roulant immergé, discret et esthétique, pour assurer la sécurité et maintenir la propreté de l'eau.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_0078.heic'
+    ]
+  },
+  {
+    id: 17,
+    title: 'Couverture de Sécurité sur Mesure',
+    category: 'Équipement',
+    description: "Mise en place d'une couverture de sécurité robuste et sur mesure pour protéger le bassin durant toutes les saisons.",
+    images: [
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_0129.heic',
+      'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_0133.heic'
+    ]
+  }
 ];
 
 export const BLOG_POSTS: BlogPost[] = [
@@ -372,6 +521,40 @@ export const INITIAL_PRODUCTS: Product[] = [
         imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/transfo.jpg',
         stock: 50,
         supplierId: 'sup-astral'
+    },
+    {
+        id: 'spa-classic-001',
+        name: 'Spa AstralPool "Classic Touch"',
+        category: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Les CLASSIQUES',
+        price: 6990.00,
+        tvaRate: 0.21,
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-touch-astralpool-768x576.jpg',
+        description: 'Un spa classique et élégant pour 4 personnes, offrant une expérience de relaxation complète avec ses jets hydromassants et son design ergonomique.',
+        stock: 5,
+        isDropshipping: true,
+        supplierId: 'sup-astral',
+        galleryImages: [
+            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-touch-astralpool-768x576.jpg',
+            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-sensations-astralpool-768x576.jpg',
+            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi.jpeg'
+        ]
+    },
+    {
+        id: 'spa-classic-002',
+        name: 'Spa AstralPool "Sensations"',
+        category: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Les CLASSIQUES',
+        price: 8450.00,
+        tvaRate: 0.21,
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-sensations-astralpool-768x576.jpg',
+        description: 'Le spa "Sensations" pour 5 personnes, un concentré de technologie pour un massage parfait et une détente absolue.',
+        stock: 3,
+        isDropshipping: true,
+        supplierId: 'sup-astral',
+        galleryImages: [
+            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-sensations-astralpool-768x576.jpg',
+            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi1.jpeg',
+            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi2.jpeg',
+        ]
     },
 ];
 

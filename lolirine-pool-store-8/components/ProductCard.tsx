@@ -25,6 +25,24 @@ const StarRating: React.FC<{ rating: number; reviewCount: number }> = ({ rating,
 const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onSelectProduct, wishlist, addToWishlist }) => {
     const [quantity, setQuantity] = useState(1);
     
+    // Carousel state
+    const images = [product.imageUrl, ...(product.galleryImages || [])].filter(img => img && typeof img === 'string');
+    const hasCarousel = images.length > 1;
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const prevImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setCurrentIndex(prevIndex => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+    };
+
+    const nextImage = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setCurrentIndex(prevIndex => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+    };
+
     const isOutOfStock = product.stock !== undefined && product.stock <= 0;
     const isInWishlist = wishlist.some(item => item.id === product.id);
 
@@ -40,25 +58,64 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onSelectP
     
     return (
         <div 
-          className="bg-white rounded-lg shadow-md overflow-hidden group transition-all duration-500 hover:shadow-xl flex flex-col h-full [transform-style:preserve-3d] hover:[transform:translateY(-4px)_rotateY(15deg)]"
+          className="bg-white rounded-lg shadow-md overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col h-full"
         >
-            <div className="relative">
+            <div 
+                className="relative"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            >
                 <div className="cursor-pointer" onClick={() => onSelectProduct(product)}>
-                    <img src={product.imageUrl} alt={product.name} className="w-full h-56 object-cover" />
+                     <div className="relative w-full h-56 overflow-hidden">
+                        {images.map((img, index) => (
+                            <img 
+                                key={index}
+                                src={img} 
+                                alt={`${product.name} image ${index + 1}`} 
+                                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${index === currentIndex ? 'opacity-100' : 'opacity-0'}`} 
+                            />
+                        ))}
+                    </div>
                     
                     {isOutOfStock ? (
-                        <div className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1.5 rounded-full bg-gray-700 shadow-lg">
+                        <div className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1.5 rounded-full bg-gray-700 shadow-lg z-10">
                             Rupture de stock
                         </div>
                     ) : product.ribbon && (
-                        <div className={`absolute top-3 left-3 text-white text-xs font-bold px-3 py-1.5 rounded-full ${getRibbonColor(product.ribbon)} shadow-lg`}>
+                        <div className={`absolute top-3 left-3 text-white text-xs font-bold px-3 py-1.5 rounded-full ${getRibbonColor(product.ribbon)} shadow-lg z-10`}>
                             {product.ribbon}
                         </div>
                     )}
                 </div>
+                 {hasCarousel && (
+                    <>
+                        <button 
+                            onClick={prevImage} 
+                            className={`absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-white/60 hover:bg-white backdrop-blur-sm rounded-full p-1.5 shadow-md transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                        >
+                            <ChevronLeft className="h-5 w-5 text-gray-800" />
+                        </button>
+                        <button 
+                            onClick={nextImage} 
+                            className={`absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-white/60 hover:bg-white backdrop-blur-sm rounded-full p-1.5 shadow-md transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                        >
+                            <ChevronRight className="h-5 w-5 text-gray-800" />
+                        </button>
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1.5 z-20">
+                            {images.map((_, index) => (
+                                <button 
+                                    key={index} 
+                                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); setCurrentIndex(index); }} 
+                                    className={`w-2 h-2 rounded-full transition-colors duration-200 ${currentIndex === index ? 'bg-white ring-1 ring-black/30' : 'bg-white/50 hover:bg-white'}`}
+                                    aria-label={`Go to image ${index + 1}`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
                 <button 
                     onClick={() => addToWishlist(product)} 
-                    className="absolute top-3 right-3 p-2 bg-white/70 backdrop-blur-sm rounded-full text-gray-600 hover:text-red-500 hover:bg-white transition-all"
+                    className="absolute top-3 right-3 p-2 bg-white/70 backdrop-blur-sm rounded-full text-gray-600 hover:text-red-500 hover:bg-white transition-all z-20"
                     aria-label="Ajouter à la liste de souhaits"
                 >
                     <Heart size={20} className={isInWishlist ? 'text-red-500 fill-current' : ''} />
@@ -203,7 +260,7 @@ export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subti
             </button>
             <div ref={scrollContainer} className="flex overflow-x-auto space-x-6 pb-4 -mx-4 px-4 items-stretch" style={scrollbarHideStyle}>
                 {products.map(product => (
-                    <div key={product.id} className="flex-shrink-0 w-80 [perspective:1000px]">
+                    <div key={product.id} className="flex-shrink-0 w-80">
                         <ProductCard product={product} addToCart={addToCart} onSelectProduct={onSelectProduct} wishlist={wishlist} addToWishlist={addToWishlist} />
                     </div>
                 ))}
