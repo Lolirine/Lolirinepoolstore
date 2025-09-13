@@ -28,20 +28,17 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}   # déjà présent chez toi
         run: |
       - name: Deploy over SSH
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           ssh -o StrictHostKeyChecking=yes \
-              ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} <<'EOF'
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "export GEMINI_API_KEY='${{ secrets.GEMINI_API_KEY }}'; bash -s" <<'EOF'
           set -euo pipefail
 
-          # --- PERSISTENCE UPLOADS (chemins en dur) ---
+          # --- PERSISTENCE UPLOADS ---
           sudo mkdir -p /srv/lolirinepoolstore/uploads /srv/lolirinepoolstore/backups
           sudo chown -R ubuntu:www-data /srv/lolirinepoolstore
           sudo find /srv/lolirinepoolstore/uploads -type d -exec chmod 755 {} \; || true
           sudo find /srv/lolirinepoolstore/uploads -type f -exec chmod 644 {} \; || true
-
-          # Sauvegarde + rétention 7 jours
           sudo tar -czf /srv/lolirinepoolstore/backups/uploads-$(date +%F-%H%M).tgz \
                -C /srv/lolirinepoolstore/uploads . || true
           sudo find /srv/lolirinepoolstore/backups -type f -mtime +7 -delete || true
@@ -53,6 +50,7 @@ jobs:
           git fetch origin
           git reset --hard origin/main
 
+          # ⬇️ Ici on veut EXPANSION côté serveur → heredoc SANS quotes
           cat > .env <<EOT
           NODE_ENV=production
           GEMINI_API_KEY=${GEMINI_API_KEY}
