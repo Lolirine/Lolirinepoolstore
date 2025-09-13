@@ -32,7 +32,7 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           ssh -o StrictHostKeyChecking=yes \
-          ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} <<'EOF'
+              ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} <<'EOF'
           set -euo pipefail
 
           # --- PERSISTENCE UPLOADS (chemins en dur) ---
@@ -43,7 +43,7 @@ jobs:
 
           # Sauvegarde + rétention 7 jours
           sudo tar -czf /srv/lolirinepoolstore/backups/uploads-$(date +%F-%H%M).tgz \
-          -C /srv/lolirinepoolstore/uploads . || true
+               -C /srv/lolirinepoolstore/uploads . || true
           sudo find /srv/lolirinepoolstore/backups -type f -mtime +7 -delete || true
           # --- FIN PERSISTENCE ---
 
@@ -62,10 +62,9 @@ jobs:
           npm run build
 
           if pm2 describe lolirinepoolstore >/dev/null; then
-          pm2 restart lolirinepoolstore
+            pm2 restart lolirinepoolstore
           else
-          pm2 serve dist 3000 --spa --name lolirinepoolstore
+            pm2 serve dist 3000 --spa --name lolirinepoolstore
           fi
           pm2 save
           EOF
-
