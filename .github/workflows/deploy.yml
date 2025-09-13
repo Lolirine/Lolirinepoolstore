@@ -31,6 +31,21 @@ jobs:
           ssh -o StrictHostKeyChecking=yes \
               ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} <<EOF
           set -e
+
+          APP_DIR=/var/www/ai-studio-app/lolirine-pool-store-8
+          PERSIST=/srv/lolirinepoolstore
+          UPLOADS_DIR=$PERSIST/uploads
+          BACKUPS_DIR=$PERSIST/backups
+
+          sudo mkdir -p "$UPLOADS_DIR" "$BACKUPS_DIR"
+          sudo chown -R ubuntu:www-data "$PERSIST"
+          sudo find "$UPLOADS_DIR" -type d -exec chmod 755 {} \; || true
+          sudo find "$UPLOADS_DIR" -type f -exec chmod 644 {} \; || true
+
+          # Backup simple + rétention 7 jours
+          sudo tar -czf "$BACKUPS_DIR/uploads-$(date +%F-%H%M).tgz" -C "$UPLOADS_DIR" . || true
+          sudo find "$BACKUPS_DIR" -type f -mtime +7 -delete || true
+
           cd /var/www/ai-studio-app/lolirine-pool-store-8
 
           # Récupérer la dernière version
