@@ -38,3 +38,13 @@ node_modules/
 
 # Backups (par ex. générés par certains éditeurs)
 *~
+# build & deps
+node_modules/
+dist/
+
+# env
+.env
+.env.local
+
+# fichiers persos (servis par Nginx, non versionnés)
+public/uploads/
