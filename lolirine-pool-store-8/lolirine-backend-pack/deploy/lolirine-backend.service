@@ -1,0 +1,17 @@
+[Unit]
+Description=Lolirine Ingest API
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/lolirine-backend
+ExecStart=/usr/bin/node dist/index.js
+Environment=NODE_ENV=production
+Environment=PORT=8080
+Environment=DATABASE_URL=REPLACE_WITH_YOUR_DATABASE_URL
+Restart=always
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target
