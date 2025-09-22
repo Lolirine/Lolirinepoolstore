@@ -6,7 +6,27 @@ import { query } from "./db.js";
 import { UPSERT_CUSTOMER, UPSERT_PRODUCT, UPSERT_ORDER, INSERT_ORDER_ITEM, INSERT_IMAGE } from "./upserts.js";
 
 const app = express();
-app.use(cors());
+
+/** CORS : n’autorise que ton front (prod + admin + dev) */
+const allowed = [
+  "https://lolirinepoolstore.be",
+  "https://admin.lolirinepoolstore.be",
+  "http://localhost:5173" // dev Vite
+];
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Autorise aussi les appels sans origin (curl, healthchecks, Nginx)
+    if (!origin || allowed.includes(origin)) return cb(null, true);
+    return cb(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: false
+}));
+
+app.use(express.json({ limit: "10mb" }));
+
 app.use(express.json({ limit: "10mb" }));
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
