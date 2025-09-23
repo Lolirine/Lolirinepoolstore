@@ -1,15 +1,24 @@
 name: OVH DB Migrations
-on: { push: { branches: [ "main" ] }, workflow_dispatch: {} }
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
 jobs:
   migrate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Install psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
       - name: Apply SQL
-        env: { DATABASE_URL: ${{ secrets.DATABASE_URL }} }
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          set -e
+          set -euo pipefail
           for f in db/migrations/*.sql; do
             echo "Applying $f"
             psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$f"
