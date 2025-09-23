@@ -29,6 +29,25 @@ app.use(express.json({ limit: "10mb" }));
 
 app.use(express.json({ limit: "10mb" }));
 
+import { upsertProductsFromXlsx } from "./bulk.js";
+
+app.post("/ingest/bulk-products", async (req, res) => {
+  try {
+    const { file_url } = req.body as { file_url: string };
+    if (!file_url) return res.status(400).json({ error: "file_url requis" });
+
+    // télécharge le fichier Excel (URL GCS publique ou signée)
+    const resp = await fetch(file_url);
+    if (!resp.ok) throw new Error(`download failed: ${resp.status}`);
+    const buf = Buffer.from(await resp.arrayBuffer());
+
+    await upsertProductsFromXlsx(buf);
+    res.json({ status: "ok" });
+  } catch (e:any) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 const CustomerSchema = z.object({
