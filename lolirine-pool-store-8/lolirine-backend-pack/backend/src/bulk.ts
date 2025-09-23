@@ -1,3 +1,16 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+const execFileP = promisify(execFile);
+
+// Télécharge un Buffer via curl (utilise le store CA système, évite l'erreur TLS de Node)
+async function downloadWithCurl(url: string): Promise<Buffer> {
+  const { stdout } = await execFileP("curl", ["-fsSL", url], {
+    encoding: "buffer",         // <- important: on veut un Buffer, pas une string
+    maxBuffer: 100 * 1024 * 1024 // 100 Mo par sécurité
+  });
+  return stdout as Buffer;
+}
+
 import * as XLSX from "xlsx";
 import { query } from "./db.js";
 
