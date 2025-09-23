@@ -37,9 +37,7 @@ app.post("/ingest/bulk-products", async (req, res) => {
     if (!file_url) return res.status(400).json({ error: "file_url requis" });
 
     // télécharge le fichier Excel (URL GCS publique ou signée)
-    const resp = await fetch(file_url);
-    if (!resp.ok) throw new Error(`download failed: ${resp.status}`);
-    const buf = Buffer.from(await resp.arrayBuffer());
+    const buf = await downloadWithCurl(file_url);
 
     await upsertProductsFromXlsx(buf);
     res.json({ status: "ok" });
