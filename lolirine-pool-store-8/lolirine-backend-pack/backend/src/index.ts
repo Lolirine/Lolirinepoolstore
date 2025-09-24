@@ -4,6 +4,8 @@ import cors from "cors";
 import { z } from "zod";
 import { query } from "./db.js";
 import { UPSERT_CUSTOMER, UPSERT_PRODUCT, UPSERT_ORDER, INSERT_ORDER_ITEM, INSERT_IMAGE } from "./upserts.js";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 
 const app = express();
 
@@ -28,6 +30,15 @@ app.use(cors({
 app.use(express.json({ limit: "10mb" }));
 
 app.use(express.json({ limit: "10mb" }));
+
+const execFileP = promisify(execFile);
+async function downloadWithCurl(url: string): Promise<Buffer> {
+  const { stdout } = await execFileP("curl", ["-fsSL", url], {
+    encoding: "buffer",
+    maxBuffer: 100 * 1024 * 1024,
+  });
+  return stdout as Buffer;
+}
 
 import { upsertProductsFromXlsx } from "./bulk.js";
 
