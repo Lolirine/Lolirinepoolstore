@@ -1,33 +1,33 @@
 name: Deploy to OVH (PM2)
+
 on:
   push:
-    branches: [ "main" ]      # déploie à chaque push sur main
-  workflow_dispatch: {}        # déclenchement manuel possible
+    branches: [ main ]
+    paths-ignore:
+      - 'db/migrations/**'
+      - '.github/workflows/migrate.yml'
+  workflow_dispatch: {}
 
-concurrency: deploy-prod
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      # 1) Charge ta clé privée depuis les Secrets (multiligne BEGIN/END)
       - name: Start ssh-agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.DEPLOY_KEY }}
-          # si ta clé a une passphrase, décommente:
           # ssh-passphrase: ${{ secrets.DEPLOY_PASSPHRASE }}
 
-      # 2) Ajoute l’hôte à known_hosts (évite le prompt d’empreinte)
       - name: Trust host
         run: ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      # 3) Déploiement sur le VPS
       - name: Deploy over SSH
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}   # déjà présent chez toi
-        run: |
-      - name: Deploy over SSH
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           ssh -o StrictHostKeyChecking=yes \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
@@ -44,13 +44,12 @@ jobs:
           sudo find /srv/lolirinepoolstore/backups -type f -mtime +7 -delete || true
           # --- FIN PERSISTENCE ---
 
-          # Déploiement code
+          # Déploiement code (front PM2)
           APP_DIR=/var/www/ai-studio-app/lolirine-pool-store-8
           cd "$APP_DIR"
           git fetch origin
           git reset --hard origin/main
 
-          # ⬇️ Ici on veut EXPANSION côté serveur → heredoc SANS quotes
           cat > .env <<EOT
           NODE_ENV=production
           GEMINI_API_KEY=${GEMINI_API_KEY}
