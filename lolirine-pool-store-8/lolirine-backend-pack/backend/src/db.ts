@@ -1,4 +1,10 @@
 import { Pool } from "pg";
+import pg from "pg";
+
+const url = process.env.DATABASE_URL;
+if (!url) throw new Error("DATABASE_URL manquante");
+export const pool = new pg.Pool({ connectionString: url, ssl: { rejectUnauthorized: false }});
+export const query = (t: string, p?: any[]) => pool.query(t, p);
 
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
