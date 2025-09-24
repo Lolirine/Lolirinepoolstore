@@ -2,8 +2,15 @@ name: OVH DB Migrations
 
 on:
   push:
-    branches: ["main"]
-  workflow_dispatch:
+    branches: [ main ]
+    paths:
+      - 'db/migrations/**'
+      - '.github/workflows/migrate.yml'
+  workflow_dispatch: {}
+
+concurrency:
+  group: migrate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   migrate:
