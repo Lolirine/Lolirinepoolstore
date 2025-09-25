@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Product,
@@ -133,6 +134,130 @@ export const WELLNESS_SUB_CATEGORIES: NavLink[] = [
           { id: 'wellness-equipements-douches', label: 'Douches sensorielles', page: 'shop', categoryFilter: 'Wellness - Équipements Wellness - Douches' },
       ]
     },
+];
+
+export const BOUTIQUE_SUB_CATEGORIES: NavLink[] = [
+  {
+    id: 'shop-all',
+    label: 'Voir toute la boutique',
+    page: 'shop',
+  },
+  {
+    id: 'shop-nettoyage',
+    label: 'Nettoyage',
+    page: 'shop',
+    categoryFilter: 'Nettoyage',
+    children: [
+      { id: 'shop-nettoyage-all', label: 'Voir tout Nettoyage', page: 'shop', categoryFilter: 'Nettoyage' },
+      { id: 'shop-nettoyage-robots', label: 'Robots Piscine Privée', page: 'shop', categoryFilter: 'Nettoyage - Robots Piscine Privée' },
+    ]
+  },
+  {
+    id: 'shop-filtration',
+    label: 'Filtration',
+    page: 'shop',
+    categoryFilter: 'Filtration',
+    children: [
+       { id: 'shop-filtration-all', label: 'Voir tout Filtration', page: 'shop', categoryFilter: 'Filtration' }
+    ]
+  },
+  {
+    id: 'shop-pompes',
+    label: 'Pompes',
+    page: 'shop',
+    categoryFilter: 'Pompes',
+     children: [
+       { id: 'shop-pompes-all', label: 'Voir toutes les Pompes', page: 'shop', categoryFilter: 'Pompes' }
+    ]
+  },
+  {
+    id: 'shop-traitement-eau',
+    label: "Traitement de l'eau",
+    page: 'shop',
+    categoryFilter: "Traitement de l'eau",
+    children: [
+      { id: 'shop-traitement-eau-all', label: 'Voir tout Traitement', page: 'shop', categoryFilter: "Traitement de l'eau" },
+      { id: 'shop-traitement-eau-desinfection', label: 'Désinfection', page: 'shop', categoryFilter: "Traitement de l'eau - Désinfection" },
+      { id: 'shop-traitement-eau-equilibre', label: "Équilibre de l'eau", page: 'shop', categoryFilter: "Traitement de l'eau - Équilibre de l'eau" },
+      { id: 'shop-traitement-eau-floculants', label: 'Floculants', page: 'shop', categoryFilter: "Traitement de l'eau - Floculants" },
+      { id: 'shop-traitement-eau-prevention', label: 'Prévention', page: 'shop', categoryFilter: "Traitement de l'eau - Prévention" },
+    ]
+  },
+  {
+    id: 'shop-instruments-mesure',
+    label: 'Instruments de mesure',
+    page: 'shop',
+    categoryFilter: 'Instruments de mesure',
+    children: [
+        { id: 'shop-instruments-mesure-all', label: 'Voir tout', page: 'shop', categoryFilter: 'Instruments de mesure' },
+        { id: 'shop-instruments-mesure-analyseurs', label: 'Analyseurs Connectés', page: 'shop', categoryFilter: 'Instruments de mesure - Analyseurs Connectés' },
+        { id: 'shop-instruments-mesure-bandelettes', label: 'Bandelettes', page: 'shop', categoryFilter: 'Instruments de mesure - Bandelettes' },
+    ]
+  },
+  {
+    id: 'shop-materiel-electrique',
+    label: 'Matériel Électrique',
+    page: 'shop',
+    categoryFilter: 'Matériel Électrique',
+    children: [
+        { id: 'shop-materiel-electrique-all', label: 'Voir tout', page: 'shop', categoryFilter: 'Matériel Électrique' },
+        { id: 'shop-materiel-electrique-lampes', label: 'Lampes', page: 'shop', categoryFilter: 'Matériel Électrique - Lampes' },
+        { id: 'shop-materiel-electrique-coffrets', label: 'Coffrets Électriques', page: 'shop', categoryFilter: 'Matériel Électrique - Coffrets Électriques' },
+        { id: 'shop-materiel-electrique-accessoires', label: 'Accessoires Électriques', page: 'shop', categoryFilter: 'Matériel Électrique - Accessoires Électriques' },
+    ]
+  },
+    {
+    id: 'shop-pieces-sceller',
+    label: 'Pièces à sceller',
+    page: 'shop',
+    categoryFilter: 'Pièces à sceller',
+    children: [
+        { id: 'shop-pieces-sceller-all', label: 'Voir tout', page: 'shop', categoryFilter: 'Pièces à sceller' },
+        { id: 'shop-pieces-sceller-accessoires', label: 'Accessoires', page: 'shop', categoryFilter: 'Pièces à sceller - Accessoires' },
+        { id: 'shop-pieces-sceller-prestige', label: 'PRESTIGE', page: 'shop', categoryFilter: 'Pièces à sceller - PRESTIGE' },
+    ]
+  },
+  {
+    id: 'shop-raccords-pvc',
+    label: 'Raccords & PVC',
+    page: 'shop',
+    categoryFilter: 'Raccords & PVC',
+    children: [
+        { id: 'shop-raccords-pvc-all', label: 'Voir tout', page: 'shop', categoryFilter: 'Raccords & PVC' },
+        { id: 'shop-raccords-pvc-accessoires', label: 'Accessoires', page: 'shop', categoryFilter: 'Raccords & PVC - Accessoires' },
+        { id: 'shop-raccords-pvc-colles', label: 'Colles', page: 'shop', categoryFilter: 'Raccords & PVC - Colles' },
+    ]
+  },
+  {
+    id: 'shop-chauffage',
+    label: 'Chauffage',
+    page: 'shop',
+    categoryFilter: 'Chauffage',
+    children: [
+        { id: 'shop-chauffage-all', label: 'Voir tout Chauffage', page: 'shop', categoryFilter: 'Chauffage' },
+        { id: 'shop-chauffage-pac', label: 'Pompes à Chaleur', page: 'shop', categoryFilter: 'Chauffage - Pompes à Chaleur' },
+    ]
+  },
+  {
+    id: 'shop-liners',
+    label: 'Liners',
+    page: 'shop',
+    categoryFilter: 'Liners',
+    children: [
+        { id: 'shop-liners-all', label: 'Voir tout Liners', page: 'shop', categoryFilter: 'Liners' },
+        { 
+            id: 'shop-liners-membrane', 
+            label: 'Membrane Armée', 
+            page: 'shop', 
+            categoryFilter: 'Liners - Membrane Armée',
+            children: [
+                { id: 'shop-liners-membrane-all', label: 'Voir tout Membrane Armée', page: 'shop', categoryFilter: 'Liners - Membrane Armée' },
+                { id: 'shop-liners-membrane-unis', label: 'Unis', page: 'shop', categoryFilter: 'Liners - Membrane Armée - Unis' },
+            ]
+        },
+        { id: 'shop-liners-accessoires', label: 'Accessoires', page: 'shop', categoryFilter: 'Liners - Accessoires' },
+    ]
+  }
 ];
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -330,231 +455,275 @@ export const BLOG_POSTS: BlogPost[] = [
 
 export const INITIAL_PRODUCTS: Product[] = [
     {
-        id: 'chlore-001',
-        name: 'Chlore multifonctions galets 250g - 5kg',
-        category: 'Traitement de l\'eau - Désinfection',
-        price: 39.95,
+        id: '32474',
+        name: 'Spa Evolution Wellness',
+        category: 'Wellness - Spa Evolution',
+        price: 9990,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/chlore-multi-5kg.jpg',
-        description: 'Galets de chlore multifonctions pour une désinfection complète de votre piscine. Action désinfectante, anti-algues, floculante et stabilisante.',
-        rating: 4.8,
-        reviewCount: 124,
-        stock: 50,
+        imageUrl: 'https://picsum.photos/seed/32474/400/400',
+        description: 'Dimensions: 233x233x91 cm (+ ou - 2 cm)',
+        stock: 5,
+        supplierId: 'sup-2'
     },
     {
-        id: 'WR00030',
-        name: 'Robot piscine électrique Zodiac VORTRAX OV 3505',
-        category: 'Nettoyage - Robots Piscine Privée',
-        price: 899.00,
-        promoPrice: 799.00,
+        id: 'spa-evo-70-e',
+        name: 'Spa Evolution 70',
+        category: 'Wellness - Spa Evolution',
+        price: 9990,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/spa-evo-70-e/400/400',
+        description: 'Dimensions: 233x233x91 cm (+ ou - 2 cm)',
+        stock: 3,
+        supplierId: 'sup-2'
+    },
+    {
+        id: '62399',
+        name: 'Spa Atlantida Wellness',
+        category: 'Wellness - Spa Atlantida',
+        price: 8990,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/62399/400/400',
+        description: 'Dimensions: 216x216x91 cm (+ ou - 2 cm)',
+        stock: 8,
+        supplierId: 'sup-2'
+    },
+    {
+        id: '69130',
+        name: 'Spa Pacific 7 Wellness',
+        category: 'Wellness - Spa Pacific 7',
+        price: 9250,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/69130/400/400',
+        description: 'Dimensions: 216x216x91 cm (+ ou - 2 cm)',
+        stock: 4,
+        supplierId: 'sup-2'
+    },
+    {
+        id: '69863',
+        name: 'Spa Océan 7 Wellness',
+        category: 'Wellness - Spa Océan 7',
+        price: 7500,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/69863/400/400',
+        description: 'Dimensions: 216x216x91 cm (+ ou - 2 cm)',
+        stock: 10,
+        supplierId: 'sup-2'
+    },
+    {
+        id: 'chlore-001-multi',
+        name: 'Chlore multi traitement',
+        category: 'Traitement de l\'eau - Désinfection',
+        price: 39.99,
+        promoPrice: 34.99,
         isOnSale: true,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/robot-zodiac.jpg',
-        description: 'Robot nettoyeur électrique pour piscines jusqu\'à 12x6m. Nettoie fond, parois et ligne d\'eau. Aspiration cyclonique puissante.',
-        rating: 4.9,
-        reviewCount: 45,
-        stock: 15,
-        ribbon: 'Promo',
+        imageUrl: 'https://picsum.photos/seed/chlore-001-multi/400/400',
+        description: 'Galets de chlore 5 actions pour une désinfection complète de votre piscine.',
+        stock: 50
     },
     {
-        id: 'prod-10195-2',
-        name: 'Pompe à chaleur Z400 iQ MD5 - ZODIAC',
-        category: 'Chauffage - Pompes à Chaleur',
-        price: 2490.00,
+        id: 'robot-001',
+        name: 'Robot nettoy.',
+        category: 'Nettoyage - Robots',
+        price: 799,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/pompe-a-chaleur-zodiac.png',
-        description: 'Pompe à chaleur réversible et connectée pour piscines jusqu\'à 75m³. Silencieuse et performante.',
-        stock: 5,
+        imageUrl: 'https://picsum.photos/seed/robot-001/400/400',
+        description: 'Robot autonome pour le nettoyage du fond de la piscine.',
+        stock: 15,
         isDropshipping: true,
         supplierId: 'sup-zodiac'
     },
     {
-        id: 'prod-10255-22',
-        name: 'Blue Connect Plus - Analyseur connecté',
-        category: 'Instruments de mesure - Analyseurs Connectés',
-        price: 349.00,
+        id: 'liner-001-75',
+        name: 'Liner 75/100',
+        category: 'Liners',
+        price: 899,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/Blue%20Connect.jpeg',
-        description: 'Analyseur d\'eau intelligent qui mesure le pH, le chlore, la salinité et la température. Notifications en temps réel sur votre smartphone.',
-        rating: 4.7,
-        reviewCount: 88,
-        stock: 30,
+        imageUrl: 'https://picsum.photos/seed/liner-001-75/400/400',
+        description: 'Couleur: Bleu Pâle, Épaisseur: 75/100e.',
+        stock: 10
     },
     {
-        id: 'prod-10255-23',
-        name: 'CTX Pro - pH Moins Liquide 20L',
-        category: "Traitement de l'eau - Équilibre de l'eau",
-        price: 45.50,
+        id: 'SCPAQG-100',
+        name: 'Pompe à Viti Filtration',
+        category: 'Filtration - Pompes',
+        price: 1010,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/TRAITEMENTS%20EAU/PH%20moins%20CTX1.jpeg',
+        imageUrl: 'https://picsum.photos/seed/SCPAQG-100/400/400',
+        description: 'Type: Pompe de filtration, Interface: Standard.',
+        stock: 8
+    },
+    {
+        id: 'WR00030',
+        name: 'Robot de pis',
+        category: 'Nettoyage - Robots',
+        price: 1350,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/WR00030/400/400',
+        description: 'Marque: Zodiac, Type de piscine: Toutes.',
+        stock: 4
+    },
+    {
+        id: 'elec-cof-001-elect',
+        name: 'Coffret Élect. Matériel Électrique',
+        category: 'Matériel Électrique - Coffrets',
+        price: 189.9,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/elec-cof-001-elect/400/400',
+        description: 'Type: Coffret de filtration, Intensité: 10A.',
+        stock: 15
+    },
+    {
+        id: 'elec-lamp-001-proj',
+        name: 'Projecteur LE Matériel Électrique',
+        category: 'Matériel Électrique - Lampes',
+        price: 149.5,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/elec-lamp-001-proj/400/400',
+        description: 'Type: Projecteur LED, Couleur: Multicolore.',
+        stock: 20
+    },
+    {
+        id: 'elec-acc-002-boite',
+        name: 'Boîte de Con Matériel Électrique',
+        category: 'Matériel Électrique - Accessoires',
+        price: 22.5,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/elec-acc-002-boite/400/400',
+        description: 'Type: Boîte de connexion.',
+        stock: 50
+    },
+    {
+        id: 'prod-10055-echelle',
+        name: 'Échelle Inox Pièces à sceller',
+        category: 'Pièces à sceller - Échelles',
+        price: 250,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/prod-10055-echelle/400/400',
+        description: 'Échelle en acier inoxydable pour un accès facile et sécurisé.',
+        stock: 15
+    },
+    {
+        id: 'prod-10055-main',
+        name: 'Main couran Pièces à sceller',
+        category: 'Pièces à sceller - Mains courantes',
+        price: 180,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/prod-10055-main/400/400',
+        description: 'Pour une sortie de bain sécurisée et élégante.',
+        stock: 30
+    },
+    {
+        id: 'prod-10060-skimmer',
+        name: 'Skimmer Pièces à sceller',
+        category: 'Pièces à sceller - Skimmers',
+        price: 90,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/prod-10060-skimmer/400/400',
+        description: 'Skimmer grande meurtrière de la gamme PRESTIGE.',
+        stock: 20
+    },
+    {
+        id: 'prod-10195-brosse',
+        name: 'Brosse court Nettoyage',
+        category: 'Nettoyage - Brosses',
+        price: 12.53,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/prod-10195-brosse/400/400',
+        description: 'Marque: SHARK.',
+        stock: 50
+    },
+    {
+        id: 'prod-10255-complement',
+        name: 'Complement Wellness',
+        category: 'Wellness - Compléments',
+        price: 15.9,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/prod-10255-complement/400/400',
+        description: 'Type: Bandelettes de test.',
         stock: 100
     },
     {
-        id: 'prod-10255-24',
-        name: 'CTX Pro - Floculant en cartouches 1kg',
-        category: "Traitement de l'eau - Floculants",
-        price: 18.90,
+        id: 'prod-10255-equilibre-d',
+        name: 'Équilibre d\'e Wellness',
+        category: 'Wellness - Équilibre de l\'eau',
+        price: 9.5,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/TRAITEMENTS%20EAU/Floculant%20pastille1.jpeg',
-        stock: 75
-    },
-    {
-        id: 'prod-10255-26',
-        name: 'Bandelettes d\'analyse 6 en 1 - AstralPool',
-        category: 'Instruments de mesure - Bandelettes',
-        price: 12.99,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/TRAITEMENTS%20EAU/Bandelette%20d\'analyse%20astrapool%206%20en%2011.jpeg',
-        stock: 200
-    },
-     {
-        id: 'hivernage-001',
-        name: 'Produit d\'hivernage 5L - CTX Pro',
-        category: "Traitement de l'eau - Prévention",
-        price: 29.90,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/hivernage.jpg',
-        stock: 60
-    },
-     {
-        id: 'hivernage-002',
-        name: 'Gizzmo anti-gel pour skimmer',
-        category: "Pièces à sceller - Accessoires",
-        price: 4.50,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/gizzmo.jpg',
-        stock: 300
-    },
-    {
-        id: 'hivernage-003',
-        name: 'Flotteur d\'hivernage lesté',
-        category: "Accessoires",
-        price: 6.90,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/flotteur.jpg',
-        stock: 400
-    },
-    {
-        id: 'hivernage-004',
-        name: 'Bouchon d\'hivernage N°10',
-        category: "Raccords & PVC - Accessoires",
-        price: 2.50,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/bouchon.jpg',
-        stock: 500
-    },
-    {
-        id: 'liner-001',
-        name: 'Membrane armée unie 150/100e Bleu clair',
-        category: 'Liners - Membrane Armée - Unis',
-        price: 35.00,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/liner-bleu-clair.jpg',
-        description: 'Membrane armée pour une étanchéité parfaite et durable. Prix au m².',
-        stock: 1000,
-        supplierId: 'sup-astral',
-        isDropshipping: true,
-    },
-    {
-        id: 'SCPAQG-100-0003',
-        name: 'Skimmer PRESTIGE 17,5L Béton - ASTRALPOOL',
-        category: 'Pièces à sceller - PRESTIGE',
-        price: 55.90,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/skimmer-prestige.jpg',
-        stock: 40,
-        supplierId: 'sup-astral'
-    },
-    {
-        id: 'elec-lamp-001',
-        name: 'Projecteur LED extra plat LumiPlus - ASTRALPOOL',
-        category: 'Matériel Électrique - Lampes',
-        price: 299.00,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/projecteur-led.jpg',
-        stock: 25,
-        supplierId: 'sup-astral'
-    },
-     {
-        id: 'prod-10060-14',
-        name: 'Colle PVC bleue GRIFFON WDF-05 250ml',
-        category: 'Raccords & PVC - Colles',
-        price: 14.95,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/colle-pvc.jpg',
-        stock: 150,
-    },
-     {
-        id: 'prod-10055',
-        name: 'Réparation fuite liner - Kit complet',
-        category: 'Liners - Accessoires',
-        price: 24.90,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/kit-reparation-liner.jpg',
+        imageUrl: 'https://picsum.photos/seed/prod-10255-equilibre-d/400/400',
+        description: 'Produit: pH +.',
         stock: 80
     },
     {
-        id: 'prod-10055-3',
-        name: 'Mastic colle étanchéité Pro-Flex - Transparent',
-        category: 'Raccords & PVC - Colles',
-        price: 19.99,
+        id: 'prod-10255-equilibre-d-2',
+        name: 'Équilibre d\'e Wellness',
+        category: 'Wellness - Équilibre de l\'eau',
+        price: 10.2,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/mastic-colle.jpg',
-        stock: 90
+        imageUrl: 'https://picsum.photos/seed/prod-10255-equilibre-d-2/400/400',
+        description: 'Produit: pH -.',
+        stock: 80
     },
     {
-        id: 'elec-cof-001',
-        name: 'Coffret électrique Panorama pour filtration',
-        category: 'Matériel Électrique - Coffrets Électriques',
-        price: 189.00,
+        id: 'prod-10255-desinfection',
+        name: 'Désinfection Wellness',
+        category: 'Wellness - Désinfection',
+        price: 15,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/coffret-elec.jpg',
-        stock: 35,
-        supplierId: 'sup-astral'
-    },
-     {
-        id: 'elec-acc-002',
-        name: 'Transformateur 300W pour projecteurs piscine',
-        category: 'Matériel Électrique - Accessoires Électriques',
-        price: 125.00,
-        tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PRODUITS/transfo.jpg',
-        stock: 50,
-        supplierId: 'sup-astral'
+        imageUrl: 'https://picsum.photos/seed/prod-10255-desinfection/400/400',
+        description: 'Produit: Chlore granulé.',
+        stock: 80
     },
     {
-        id: 'spa-classic-001',
-        name: 'Spa AstralPool "Classic Touch"',
-        category: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Les CLASSIQUES',
-        price: 6990.00,
+        id: 'prod-10330-vanne',
+        name: 'Vanne 6 voie Raccords & PVC',
+        category: 'Raccords & PVC - Vannes',
+        price: 75,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-touch-astralpool-768x576.jpg',
-        description: 'Un spa classique et élégant pour 4 personnes, offrant une expérience de relaxation complète avec ses jets hydromassants et son design ergonomique.',
-        stock: 5,
+        imageUrl: 'https://picsum.photos/seed/prod-10330-vanne/400/400',
+        description: 'Vanne multivoies pour filtre à sable, facile à installer.',
+        stock: 40
+    },
+    {
+        id: 'net-002',
+        name: 'Épuisette de Nettoyage',
+        category: 'Nettoyage - Épuisettes',
+        price: 22.5,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/net-002/400/400',
+        description: 'Épuisette de fond robuste pour un nettoyage efficace du fond de votre piscine.',
+        stock: 150
+    },
+    {
+        id: 'net-003',
+        name: 'Brosse de pa Nettoyage',
+        category: 'Nettoyage - Brosses',
+        price: 18.9,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/net-003/400/400',
+        description: 'Brosse large pour un nettoyage rapide et efficace des parois de votre piscine.',
+        stock: 200
+    },
+    {
+        id: 'robot-002',
+        name: 'Robot de pis Nettoyage',
+        category: 'Nettoyage - Robots',
+        price: 649,
+        tvaRate: 0.21,
+        imageUrl: 'https://picsum.photos/seed/robot-002/400/400',
+        description: 'Robot électrique performant pour le nettoyage.',
         isDropshipping: true,
-        supplierId: 'sup-astral',
-        galleryImages: [
-            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-touch-astralpool-768x576.jpg',
-            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-sensations-astralpool-768x576.jpg',
-            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi.jpeg'
-        ]
+        supplierId: 'sup-zodiac',
+        stock: 20
     },
     {
-        id: 'spa-classic-002',
-        name: 'Spa AstralPool "Sensations"',
-        category: 'Wellness - Spas Résidentiels - Spas privés avec meuble - Les CLASSIQUES',
-        price: 8450.00,
+        id: 'filt-001',
+        name: 'Cartouche de Filtration',
+        category: 'Filtration - Cartouches',
+        price: 35,
         tvaRate: 0.21,
-        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-sensations-astralpool-768x576.jpg',
-        description: 'Le spa "Sensations" pour 5 personnes, un concentré de technologie pour un massage parfait et une détente absolue.',
-        stock: 3,
-        isDropshipping: true,
-        supplierId: 'sup-astral',
-        galleryImages: [
-            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/spa-sensations-astralpool-768x576.jpg',
-            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi1.jpeg',
-            'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi2.jpeg',
-        ]
+        imageUrl: 'https://picsum.photos/seed/filt-001/400/400',
+        description: 'Cartouche de rechange pour filtre Weltico, Hauteur 495mm, diamètre 180mm.',
+        stock: 80
     },
 ];
 
@@ -591,10 +760,10 @@ export const INITIAL_ORDERS: Order[] = [
         customer: 'Alice Dubois',
         customerEmail: 'alice.dubois@example.com',
         date: '2023-10-20',
-        total: 159.80,
+        total: 48.39,
         status: 'Complété',
         items: [
-            {...INITIAL_PRODUCTS.find(p => p.id === 'chlore-001')!, quantity: 2},
+            {...INITIAL_PRODUCTS.find(p => p.id === 'chlore-001-multi')!, quantity: 1},
         ],
         shippingAddress: '12 Rue de la Paix',
         shippingCity: 'Paris',
@@ -605,10 +774,10 @@ export const INITIAL_ORDERS: Order[] = [
         customer: 'Bob Leclerc',
         customerEmail: 'bob.leclerc@example.com',
         date: '2023-10-22',
-        total: 899.00,
+        total: 966.79,
         status: 'En attente',
         items: [
-            {...INITIAL_PRODUCTS.find(p => p.id === 'WR00030')!, quantity: 1},
+            {...INITIAL_PRODUCTS.find(p => p.id === 'robot-001')!, quantity: 1},
         ],
         shippingAddress: 'Avenue Louise 255',
         shippingCity: 'Bruxelles',
@@ -622,6 +791,7 @@ export const INITIAL_SUPPLIERS: Supplier[] = [
     { id: 'sup-astral', name: 'AstralPool', email: 'info@astralpool.com', phone: '+34937135000' },
     { id: 'sup-ctx', name: 'CTX Pro', email: 'pro@ctx.es', phone: '+34902100123' },
     { id: 'sup-griffon', name: 'Griffon', email: 'contact@griffon.eu', phone: '+31883235700' },
+    { id: 'sup-2', name: 'Fournisseur Spa', email: 'contact@spa-supplier.com', phone: '+32499887766' },
 ];
 
 export const INITIAL_INVOICES: Invoice[] = [
@@ -634,7 +804,7 @@ export const INITIAL_INVOICES: Invoice[] = [
         dueDate: '2023-11-20',
         source: 'Commande #10521',
         items: [
-            { id: 'item-1', description: 'Chlore multifonctions galets 250g - 5kg', quantity: 2, unitPrice: 39.95, taxRate: 0.21 },
+            { id: 'item-1', description: 'Chlore multi traitement', quantity: 1, unitPrice: 39.99, taxRate: 0.21 },
         ],
     },
 ];
