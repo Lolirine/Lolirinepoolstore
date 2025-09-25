@@ -1,14 +1,30 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { AiAssistantWidgetProps, ChatMessage } from '../types';
-import { X, Bot, Send, Loader, User } from 'lucide-react';
+import { X, Bot, Send, Loader, User, Trash2 } from 'lucide-react';
+
+const AI_HISTORY_KEY = 'aiAssistantHistory';
 
 // FIX: Changed to a named export to be consistent with other components and fix import errors.
 export const AiAssistantWidget: React.FC<AiAssistantWidgetProps> = ({ onClose, products, orders, services, portfolioItems, blogPosts, currentUser }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: 'model', text: 'Bonjour ! Je suis l\'assistant IA de Lolirine. Comment puis-je vous aider à trouver des informations sur nos produits, services ou réalisations ?' }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    try {
+      const savedHistory = localStorage.getItem(AI_HISTORY_KEY);
+      if (savedHistory) {
+        const parsedHistory = JSON.parse(savedHistory);
+        if (Array.isArray(parsedHistory) && parsedHistory.length > 0) {
+          return parsedHistory;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load AI chat history from localStorage:", error);
+      localStorage.removeItem(AI_HISTORY_KEY); // Clear corrupted data
+    }
+    return [
+      { role: 'model', text: 'Bonjour ! Je suis l\'assistant IA de Lolirine. Comment puis-je vous aider à trouver des informations sur nos produits, services ou réalisations ?' }
+    ];
+  });
+
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -25,6 +41,29 @@ export const AiAssistantWidget: React.FC<AiAssistantWidgetProps> = ({ onClose, p
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  // Save conversation history to localStorage whenever messages change
+  useEffect(() => {
+    try {
+      // Don't save if it's just the initial default message
+      if (messages.length > 1) {
+        localStorage.setItem(AI_HISTORY_KEY, JSON.stringify(messages));
+      } else {
+        // If the conversation is reset to the initial state, clear storage
+        localStorage.removeItem(AI_HISTORY_KEY);
+      }
+    } catch (error) {
+      console.error("Failed to save AI chat history to localStorage:", error);
+    }
+  }, [messages]);
+
+  // Function to clear chat history
+  const handleClearHistory = () => {
+    localStorage.removeItem(AI_HISTORY_KEY);
+    setMessages([
+      { role: 'model', text: 'Bonjour ! Je suis l\'assistant IA de Lolirine. Comment puis-je vous aider à trouver des informations sur nos produits, services ou réalisations ?' }
+    ]);
+  };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,9 +134,14 @@ export const AiAssistantWidget: React.FC<AiAssistantWidgetProps> = ({ onClose, p
             <Bot size={24} />
             <h3 className="text-lg font-bold">Assistant IA Lolirine</h3>
         </div>
-        <button onClick={onClose} aria-label="Fermer le chat" className="p-1 rounded-full hover:bg-cyan-700">
-          <X size={20} />
-        </button>
+        <div className="flex items-center gap-2">
+            <button onClick={handleClearHistory} aria-label="Effacer l'historique" title="Effacer l'historique" className="p-1 rounded-full hover:bg-cyan-700">
+                <Trash2 size={18} />
+            </button>
+            <button onClick={onClose} aria-label="Fermer le chat" className="p-1 rounded-full hover:bg-cyan-700">
+              <X size={20} />
+            </button>
+        </div>
       </div>
 
       {/* Messages */}

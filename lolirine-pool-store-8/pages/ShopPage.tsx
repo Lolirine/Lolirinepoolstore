@@ -1,8 +1,7 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { ShopPageProps, Product, FilterFacet, ActiveFilters } from '../types';
 import { Search } from 'lucide-react';
-import ProductCard from '../components/ProductCard';
+import ProductCard, { ProductsCarousel } from '../components/ProductCard';
 import Pagination from '../components/Pagination';
 
 const PRICE_RANGES = [
@@ -32,7 +31,8 @@ const defaultCategoryColor = 'bg-gray-200 text-gray-800 hover:bg-gray-300';
 const selectedCategoryRing = 'ring-4 ring-offset-2 ring-cyan-500';
 
 
-const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onBuyNow, onSelectProduct, initialCategoryFilter, initialSearchTerm, wishlist, addToWishlist }) => {
+const ShopPage: React.FC<ShopPageProps> = (props) => {
+  const { products, addToCart, onBuyNow, onSelectProduct, initialCategoryFilter, initialSearchTerm, wishlist, addToWishlist, recentlyViewed, navigateTo } = props;
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'Tous');
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm || '');
   const [sortOrder, setSortOrder] = useState('name-asc');
@@ -58,52 +58,67 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onBuyNow, onSe
   }, [selectedCategory, searchTerm, activeFilters, selectedPriceRanges]);
 
   const filteredProducts = useMemo(() => {
-    let filtered = products;
+    // A robust, multi-stage filtering approach to ensure correctness.
+    let filtered = [...products];
 
-    // Category filter
+    // 1. Category Filter
     if (selectedCategory && selectedCategory !== 'Tous') {
       if (selectedCategory === 'Promotions') {
-        filtered = products.filter(p => p.isOnSale);
+        filtered = filtered.filter(p => p.isOnSale === true);
       } else {
-        filtered = filtered.filter(p => p.category === selectedCategory || p.category.startsWith(selectedCategory + ' - '));
+        filtered = filtered.filter(p => {
+          // Guard against products with no category
+          if (!p.category || typeof p.category !== 'string') {
+            return false;
+          }
+          // A product's category must either match the filter exactly
+          // or start with the filter followed by a separator, for hierarchy.
+          return p.category === selectedCategory || p.category.startsWith(selectedCategory + ' - ');
+        });
       }
     }
-
-    // Search term filter
+    
+    // 2. Search Term Filter
     if (searchTerm) {
       const lowercasedTerm = searchTerm.toLowerCase();
-      filtered = filtered.filter(p =>
-        p.name.toLowerCase().includes(lowercasedTerm) ||
-        (p.description && p.description.toLowerCase().includes(lowercasedTerm)) ||
-        p.category.toLowerCase().includes(lowercasedTerm)
-      );
+      filtered = filtered.filter(p => {
+        const nameMatch = p.name.toLowerCase().includes(lowercasedTerm);
+        const descriptionMatch = p.description ? p.description.toLowerCase().includes(lowercasedTerm) : false;
+        const categoryMatch = p.category.toLowerCase().includes(lowercasedTerm);
+        return nameMatch || descriptionMatch || categoryMatch;
+      });
     }
     
-    // Active filters (attributes)
+    // 3. Price Range Filter
+    if (selectedPriceRanges.length > 0) {
+      filtered = filtered.filter(p => {
+        const price = (p.promoPrice ?? p.price) * (1 + p.tvaRate);
+        return selectedPriceRanges.some(range => {
+          const [minStr, maxStr] = range.split('-');
+          const min = parseFloat(minStr);
+          const max = maxStr === 'Infinity' ? Infinity : parseFloat(maxStr);
+          return price >= min && (max === Infinity || price < max);
+        });
+      });
+    }
+    
+    // 4. Attribute Filters
     if (Object.keys(activeFilters).length > 0) {
         filtered = filtered.filter(p => {
             return Object.entries(activeFilters).every(([key, values]) => {
-                if (!p.attributes || !values.length) return true;
-                const productValue = p.attributes[key];
-                if (productValue === undefined) return false;
-                return values.includes(productValue);
-            });
-        });
-    }
-
-    // Price range filter
-    if (selectedPriceRanges.length > 0) {
-        filtered = filtered.filter(p => {
-            const price = (p.promoPrice ?? p.price) * (1 + p.tvaRate);
-            return selectedPriceRanges.some(range => {
-                const [minStr, maxStr] = range.split('-');
-                const min = parseFloat(minStr);
-                const max = maxStr === 'Infinity' ? Infinity : parseFloat(maxStr);
+                // If a filter has no selected values, it shouldn't filter anything out.
+                if (!values || values.length === 0) return true;
                 
-                if (max === Infinity) {
-                    return price >= min;
-                }
-                return price >= min && price < max;
+                // If product has no attributes, it can't match.
+                if (!p.attributes) return false;
+
+                const productValue = p.attributes[key];
+                
+                // If product doesn't have the attribute key, it can't match.
+                if (productValue === undefined) return false;
+                
+                // Check if the product's attribute value is in the list of selected values for that filter.
+                return values.includes(productValue);
             });
         });
     }
@@ -383,6 +398,19 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onBuyNow, onSe
           </main>
         </div>
       </div>
+       {recentlyViewed && recentlyViewed.length > 0 && (
+        <ProductsCarousel
+            products={recentlyViewed}
+            title="Consultés Récemment"
+            addToCart={addToCart}
+            onBuyNow={onBuyNow}
+            onSelectProduct={onSelectProduct}
+            navigateTo={navigateTo}
+            wishlist={wishlist}
+            addToWishlist={addToWishlist}
+            bgColor="bg-white"
+        />
+      )}
     </div>
   );
 };

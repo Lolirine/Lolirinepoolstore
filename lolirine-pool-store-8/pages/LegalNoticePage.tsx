@@ -15,7 +15,7 @@ const LegalNoticePage: React.FC<LegalNoticePageProps> = ({ goBack, canGoBack }) 
                         <strong>Responsable de publication :</strong> La direction<br/>
                         <strong>Siège social :</strong> Rue Bois D'Esneux 110, 5021 Boninne (Namur), Belgique<br/>
                         <strong>Numéro d'entreprise (TVA) :</strong> BE 0650891 279<br/>
-                        <strong>Email de contact :</strong> <a href="mailto:info@lolirine-pool.odoo.com" className="text-cyan-600 hover:underline">info@lolirine-pool.odoo.com</a><br/>
+                        <strong>Email de contact :</strong> <a href="mailto:info@lolirinepoolstore.be" className="text-cyan-600 hover:underline">info@lolirinepoolstore.be</a><br/>
                         <strong>Téléphone :</strong> <a href="tel:+32497444146" className="text-cyan-600 hover:underline">+32 497 44 41 46</a>
                     </p>
 

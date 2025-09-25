@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Product, Supplier } from '../../types';
-import { Edit, PlusCircle, Trash2, Copy, ChevronDown, ChevronRight, Upload, Download } from 'lucide-react';
+import { Edit, PlusCircle, Trash2, Copy, ChevronDown, ChevronRight, Upload, Download, Zap } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import ProductEditModal from './ProductEditModal';
 import ProductCreateModal from './ProductCreateModal';
@@ -18,6 +18,7 @@ interface ProductManagementViewProps {
   onDeleteCategoryAndProducts: (categoryPath: string) => void;
   onRenameCategory: (oldCategoryPath: string, newCategoryName: string) => void;
   onDuplicateCategory: (sourceCategoryPath: string, newCategoryPath: string) => void;
+  onUpdateStockRibbons: () => void;
 }
 
 interface CategoryNode {
@@ -30,7 +31,7 @@ interface CategoryNode {
 
 const ProductManagementView: React.FC<ProductManagementViewProps> = ({ 
     products, onUpdateProduct, onCreateProduct, onDeleteProduct, onBulkUpdateProducts, suppliers,
-    onAddCategory, onDeleteCategoryAndProducts, onRenameCategory, onDuplicateCategory 
+    onAddCategory, onDeleteCategoryAndProducts, onRenameCategory, onDuplicateCategory, onUpdateStockRibbons 
 }) => {
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -40,6 +41,7 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
     const [categoryAction, setCategoryAction] = useState<{ action: 'add' | 'rename' | 'duplicate', path: string } | null>(null);
     const categoryFileInputRef = useRef<HTMLInputElement>(null);
     const productFileInputRef = useRef<HTMLInputElement>(null);
+    const [stockFilter, setStockFilter] = useState<'all' | 'inStock' | 'lowStock' | 'outOfStock'>('all');
     
     const allCategories = useMemo(() => {
         return [...new Set(products.map(p => p.category))].sort();
@@ -123,7 +125,7 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
         const worksheet = XLSX.utils.json_to_sheet(dataForSheet);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Categories');
-        XLSX.writeFile(workbook, 'product_categories_export.xlsx');
+        XLSX.writeFile(workbook, 'product_categories_export.csv');
     };
 
     const handleCategoryFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -197,7 +199,7 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
         const worksheet = XLSX.utils.json_to_sheet(dataToExport);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Products');
-        XLSX.writeFile(workbook, 'products_export.xlsx');
+        XLSX.writeFile(workbook, 'products_export.csv');
     };
 
     const handleProductFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -326,10 +328,35 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
     };
 
     const displayedProducts = useMemo(() => {
-        const visibleProducts = products.filter(p => !p.isHidden);
-        if (selectedCategory === 'All') return visibleProducts;
-        return visibleProducts.filter(p => p.category.startsWith(selectedCategory));
-    }, [products, selectedCategory]);
+        let prods = products.filter(p => !p.isHidden);
+
+        if (selectedCategory !== 'All') {
+            prods = prods.filter(p => p.category.startsWith(selectedCategory));
+        }
+        
+        switch (stockFilter) {
+            case 'inStock':
+                prods = prods.filter(p => p.isDropshipping || (p.stock !== undefined && p.stock > 5));
+                break;
+            case 'lowStock':
+                prods = prods.filter(p => !p.isDropshipping && p.stock !== undefined && p.stock > 0 && p.stock <= 5);
+                break;
+            case 'outOfStock':
+                prods = prods.filter(p => !p.isDropshipping && p.stock !== undefined && p.stock <= 0);
+                break;
+            default:
+                break;
+        }
+        
+        return prods;
+    }, [products, selectedCategory, stockFilter]);
+
+    const stockFilterButtons = [
+        { label: 'Tous', value: 'all' },
+        { label: 'En stock', value: 'inStock' },
+        { label: 'Stock faible', value: 'lowStock' },
+        { label: 'Rupture', value: 'outOfStock' },
+    ];
 
     return (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
@@ -361,9 +388,24 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
                         <Upload size={14} /> Importer Produits
                     </button>
                 </div>
+                <button onClick={onUpdateStockRibbons} className="flex items-center justify-center gap-2 bg-purple-100 text-purple-700 font-semibold py-2 px-3 rounded-md hover:bg-purple-200 transition-colors text-sm w-full">
+                    <Zap size={16} /> M.à.J Rubans de Stock
+                </button>
+            </div>
+             <h4 className="text-sm font-semibold mb-2">Filtrer par stock</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+                {stockFilterButtons.map(btn => (
+                    <button
+                        key={btn.value}
+                        onClick={() => setStockFilter(btn.value as any)}
+                        className={`px-3 py-1 text-xs font-semibold rounded-full transition-colors ${stockFilter === btn.value ? 'bg-cyan-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                    >
+                        {btn.label}
+                    </button>
+                ))}
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-2">
+            <div className="flex-1 overflow-y-auto pr-2 border-t pt-4">
                 {renderCategoryTree(categoryTree)}
             </div>
         </div>

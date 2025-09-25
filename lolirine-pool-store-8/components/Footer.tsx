@@ -1,11 +1,12 @@
 import React from 'react';
 import { FooterProps } from '../types';
-import { MessageSquare, Mail, Phone, Facebook, Linkedin, Home, Instagram, ChevronUp } from 'lucide-react';
+import { ShieldCheck, Truck, UserCheck, FileText, Facebook, Linkedin, Instagram, Twitter, ChevronUp } from 'lucide-react';
 import MaestroIcon from './icons/MaestroIcon';
 import PaypalIcon from './icons/PaypalIcon';
 import MastercardIcon from './icons/MastercardIcon';
 
-const Footer: React.FC<FooterProps> = ({ navigateTo, onOpenRegisterModal }) => {
+
+const Footer: React.FC<FooterProps> = ({ navigateTo }) => {
   
   const scrollToTop = () => {
     window.scrollTo({
@@ -14,86 +15,141 @@ const Footer: React.FC<FooterProps> = ({ navigateTo, onOpenRegisterModal }) => {
     });
   };
 
+  const reassuranceItems = [
+    { icon: ShieldCheck, text: "Paiement Sécurisé" },
+    { icon: Truck, text: "Livraison Rapide" },
+    { icon: UserCheck, text: "Conseils d'Experts" },
+    { icon: FileText, text: "Devis Gratuit" },
+  ];
+
+  const socialLinks = [
+    { href: "#", icon: Facebook, label: "Facebook" },
+    { href: "#", icon: Twitter, label: "Twitter" },
+    { href: "#", icon: Instagram, label: "Instagram" },
+    { href: "#", icon: Linkedin, label: "LinkedIn" },
+  ];
+
   return (
-    <footer className="bg-cyan-50/70 text-gray-800">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Liens utiles */}
-          <div className="lg:col-span-1">
-            <h3 className="text-lg font-bold text-cyan-800 mb-4">Liens utiles</h3>
-            <ul className="space-y-2 text-sm">
-              <li><button onClick={() => navigateTo('home')} className="text-gray-600 hover:text-cyan-600 transition-colors">Page d'accueil</button></li>
-              <li><button onClick={() => navigateTo('about')} className="text-gray-600 hover:text-cyan-600 transition-colors">À propos de nous</button></li>
-              <li><button onClick={() => navigateTo('faq')} className="text-gray-600 hover:text-cyan-600 transition-colors">FAQ</button></li>
-              <li><button onClick={() => navigateTo('services')} className="text-gray-600 hover:text-cyan-600 transition-colors">Services</button></li>
-              <li><button onClick={() => navigateTo('terms')} className="text-gray-600 hover:text-cyan-600 transition-colors">Conditions générales de vente</button></li>
-              <li><button onClick={() => navigateTo('privacy')} className="text-gray-600 hover:text-cyan-600 transition-colors">Politique vie privée</button></li>
-              <li><button onClick={() => navigateTo('cookies')} className="text-gray-600 hover:text-cyan-600 transition-colors">Cookies</button></li>
-              <li><button onClick={() => navigateTo('legal')} className="text-gray-600 hover:text-cyan-600 transition-colors">Mentions légales</button></li>
-              <li><button onClick={() => navigateTo('contact')} className="text-gray-600 hover:text-cyan-600 transition-colors">Contactez-nous</button></li>
+    <footer className="bg-gray-800 text-white font-sans">
+      <button 
+        onClick={scrollToTop} 
+        title="Retourner en haut de la page"
+        className="w-full bg-gray-700 hover:bg-gray-600 py-4 text-sm transition-colors duration-300 flex items-center justify-center gap-2"
+      >
+        <ChevronUp size={16} />
+        Retour en haut
+      </button>
+
+      {/* Reassurance Banner */}
+      <div className="bg-white text-gray-800 border-b border-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {reassuranceItems.map((item, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <item.icon className="h-10 w-10 text-cyan-600 mb-2" strokeWidth={1.5} />
+              <p className="font-semibold text-sm">{item.text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Footer */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+          {/* Column 1: Apprendre à nous connaître */}
+          <div>
+            <h3 className="font-bold text-white mb-4">Apprendre à nous connaître</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li><button onClick={() => navigateTo('about')} className="hover:underline">À propos de nous</button></li>
+              <li><button onClick={() => navigateTo('portfolio')} className="hover:underline">Nos réalisations</button></li>
+              <li><button onClick={() => navigateTo('blog')} className="hover:underline">Blog</button></li>
+              <li><button onClick={() => navigateTo('about')} className="hover:underline">Carrières</button></li>
+              <li><button onClick={() => navigateTo('about')} className="hover:underline">Espace Presse</button></li>
             </ul>
           </div>
 
-          {/* À propos de nous */}
-          <div className="lg:col-span-2">
-            <h3 className="text-lg font-bold text-cyan-800 mb-4">À propos de nous</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Nous sommes une équipe de passionnés dédiée à rendre l'entretien et l'aménagement de votre piscine plus simple et agréable grâce à des produits innovants. Nous proposons en ligne une sélection de matériel de haute qualité pour répondre aux besoins spécifiques des propriétaires de piscines.
-            </p>
-             <p className="text-gray-600 text-sm mb-4">
-              Nos équipements sont conçus pour les particuliers et professionnels souhaitant optimiser leurs installations et profiter pleinement de leur espace aquatique.
-            </p>
-            <button onClick={onOpenRegisterModal} className="text-cyan-600 font-semibold hover:underline text-sm">S'inscrire</button>
+          {/* Column 2: Besoin d'aide ? */}
+          <div>
+            <h3 className="font-bold text-white mb-4">Besoin d'aide ?</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li><button onClick={() => navigateTo('contact')} className="hover:underline">Contactez-nous</button></li>
+              <li><button onClick={() => navigateTo('faq')} className="hover:underline">FAQ</button></li>
+              <li><button onClick={() => navigateTo('client')} className="hover:underline">Suivi de commande</button></li>
+              <li><button onClick={() => navigateTo('shippingPolicy')} className="hover:underline">Politique de livraison</button></li>
+              <li><button onClick={() => navigateTo('terms')} className="hover:underline">Retours et remplacements</button></li>
+              <li><button onClick={() => navigateTo('client')} className="hover:underline">Espace Client</button></li>
+            </ul>
+          </div>
+
+          {/* Column 3: Nos Services & Boutique */}
+          <div>
+            <h3 className="font-bold text-white mb-4">Nos Services & Boutique</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li className="font-semibold text-gray-100">Services</li>
+              <li><button onClick={() => navigateTo('repairs')} className="hover:underline pl-2">Entretien & Réparation</button></li>
+              <li><button onClick={() => navigateTo('construction')} className="hover:underline pl-2">Construction & Rénovation</button></li>
+              <li><button onClick={() => navigateTo('waterAnalysis')} className="hover:underline pl-2">Analyse de l'eau</button></li>
+              <li><button onClick={() => navigateTo('winterization')} className="hover:underline pl-2">Hivernage & Estivage</button></li>
+              <li className="font-semibold text-gray-100 mt-4">Boutique</li>
+              <li><button onClick={() => navigateTo('shop', {categoryFilter: "Traitement de l'eau"})} className="hover:underline pl-2">Traitement de l'eau</button></li>
+              <li><button onClick={() => navigateTo('shop', {categoryFilter: "Nettoyage"})} className="hover:underline pl-2">Nettoyage & Robots</button></li>
+              <li><button onClick={() => navigateTo('shop', {categoryFilter: "Filtration"})} className="hover:underline pl-2">Filtration & Pompes</button></li>
+              <li><button onClick={() => navigateTo('wellness')} className="hover:underline pl-2">Espace Wellness</button></li>
+            </ul>
           </div>
           
-          {/* Rejoignez-nous */}
+          {/* Column 4: Contact & Communauté */}
           <div>
-            <h3 className="text-lg font-bold text-cyan-800 mb-4">Rejoignez-nous</h3>
-            <ul className="space-y-3 text-sm mb-6">
-               <li className="flex items-center space-x-3">
-                <MessageSquare size={18} className="text-cyan-600" />
-                <button onClick={() => navigateTo('contact')} className="text-gray-600 hover:text-cyan-600 transition-colors">Contactez-nous</button>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Mail size={16} className="text-cyan-600" />
-                <a href="mailto:info@lolirine-pool.odoo.com" className="text-gray-600 hover:text-cyan-600 transition-colors">info@lolirine-pool.odoo.com</a>
-              </li>
-              <li className="flex items-center space-x-3">
-                <Phone size={16} className="text-cyan-600" />
-                <a href="tel:+32497444146" className="text-gray-600 hover:text-cyan-600 transition-colors">+32 497 44 41 46</a>
-              </li>
+            <h3 className="font-bold text-white mb-4">Contact & Communauté</h3>
+            <ul className="space-y-2 text-gray-300">
+              <li>Rue Bois D'Esneux 110</li>
+              <li>5021 Boninne (Namur), Belgique</li>
+              <li className="pt-2"><a href="tel:+32497444146" className="hover:underline">+32 497 44 41 46</a></li>
+              <li><a href="mailto:info@lolirinepoolstore.be" className="hover:underline">info@lolirinepoolstore.be</a></li>
             </ul>
-            <div className="flex items-center space-x-3 mb-6">
-                <a href="#" className="w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors"><Facebook size={20} className="text-blue-600" /></a>
-                <a href="#" className="w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors"><Linkedin size={20} className="text-blue-700" /></a>
-                <a href="#" className="w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors"><Home size={20} className="text-gray-800" /></a>
-                <a href="#" className="w-9 h-9 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-gray-100 transition-colors"><Instagram size={20} className="text-pink-500" /></a>
+            <div className="flex space-x-4 mt-4">
+              {socialLinks.map(link => (
+                <a key={link.label} href={link.href} title={`Suivez-nous sur ${link.label}`} aria-label={link.label} className="text-gray-300 hover:text-white transition-colors">
+                  <link.icon size={20} />
+                </a>
+              ))}
             </div>
-            <div className="flex items-center space-x-2">
-              <MaestroIcon className="h-8"/>
-              <PaypalIcon className="h-8"/>
-              <MastercardIcon className="h-8"/>
+            <div className="mt-6">
+              <label htmlFor="newsletter-email" className="text-sm font-semibold">Inscrivez-vous à notre newsletter</label>
+              <form className="flex mt-2" onSubmit={e => e.preventDefault()}>
+                <input type="email" id="newsletter-email" placeholder="Votre e-mail" className="bg-gray-700 border-gray-600 text-white text-sm rounded-l-md w-full py-2 px-3 focus:outline-none focus:ring-2 focus:ring-cyan-500"/>
+                <button type="submit" className="bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold py-2 px-4 rounded-r-md">S'inscrire</button>
+              </form>
             </div>
           </div>
         </div>
       </div>
-      <div className="bg-gray-200/70 py-4">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center text-sm text-gray-600 relative">
-              <div className="text-center sm:text-left">
-                  <p onClick={() => navigateTo('admin')} className="cursor-pointer hover:text-cyan-600 transition-colors" title="Accès administrateur">Copyright © Lolirine Pool Store</p>
-                  <p className="text-xs text-gray-500">Tous les prix sont affichés TVAC 21% incluse.</p>
-              </div>
-              <div className="flex items-center space-x-2 mt-2 sm:mt-0">
-                  <a href="#" className="hover:underline">Nederlands</a>
-                  <span>|</span>
-                  <a href="#" className="hover:underline">English (UK)</a>
-                   <span>|</span>
-                  <a href="#" className="font-bold hover:underline">Français (BE)</a>
-              </div>
-              <button onClick={scrollToTop} className="absolute -top-10 right-4 sm:right-0 bg-cyan-600 hover:bg-cyan-700 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:-translate-y-1">
-                <ChevronUp size={24} />
-              </button>
+
+      {/* Legal Banner */}
+      <div className="bg-gray-900 py-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+          <button onClick={() => navigateTo('home')}>
+            <img src="https://lolirine-pool.odoo.com/web/image/website/1/logo/Lolirine%20Pool%20Store?unique=b561c22" alt="Lolirine Pool Store" className="h-10 mx-auto mb-6 opacity-80 hover:opacity-100 transition-opacity"/>
+          </button>
+          <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 mb-6">
+            <button onClick={() => navigateTo('terms')} className="hover:underline">Conditions Générales de Vente</button>
+            <button onClick={() => navigateTo('privacy')} className="hover:underline">Politique de confidentialité</button>
+            <button onClick={() => navigateTo('cookies')} className="hover:underline">Cookies</button>
+            <button onClick={() => navigateTo('legal')} className="hover:underline">Mentions légales</button>
           </div>
+          <div className="flex items-center justify-center space-x-2 mb-6">
+              <MaestroIcon className="h-8"/>
+              <PaypalIcon className="h-8"/>
+              <MastercardIcon className="h-8"/>
+          </div>
+          <div className="flex items-center justify-center space-x-2 mb-6 text-xs">
+            <a href="#" className="hover:underline">Nederlands</a>
+            <span>|</span>
+            <a href="#" className="hover:underline">English (UK)</a>
+             <span>|</span>
+            <a href="#" className="font-bold text-white hover:underline">Français (BE)</a>
+          </div>
+          <p className="text-xs">&copy; {new Date().getFullYear()}, Lolirine Pool Store. Tous droits réservés. Tous les prix sont affichés TVAC 21% incluse.</p>
+        </div>
       </div>
     </footer>
   );

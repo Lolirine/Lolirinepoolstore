@@ -13,6 +13,7 @@ import {
   EmailTemplate,
   NavLink,
   AdminView,
+  HomeCategory,
 } from './types';
 import {
   Truck,
@@ -397,6 +398,32 @@ export const BLOG_POSTS: BlogPost[] = [
     imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Analyse%20de%20l\'eau%203.jpeg',
   },
 ];
+
+export const HOME_CATEGORIES: HomeCategory[] = [
+  {
+    label: "Traitement de l'eau",
+    imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Analyse%20de%20l\'eau%203.jpeg',
+    page: 'shop',
+    categoryFilter: "Traitement de l'eau",
+  },
+  {
+    label: 'Nettoyage & Robots',
+    imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique3.jpeg',
+    page: 'shop',
+    categoryFilter: 'Nettoyage',
+  },
+  {
+    label: 'Espace Wellness',
+    imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/cq5dam.web.1280.1280.jpeg',
+    page: 'wellness',
+  },
+  {
+    label: 'Construction & Rénovation',
+    imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Construction%20piscine.jpeg',
+    page: 'construction',
+  },
+];
+
 
 export const INITIAL_PRODUCTS: Product[] = [
   // This is a merged list based on the new screenshot and existing data.

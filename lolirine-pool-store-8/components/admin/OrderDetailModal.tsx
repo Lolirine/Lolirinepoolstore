@@ -1,23 +1,15 @@
 import React, { useState } from 'react';
-import { Order, Supplier, CartItem } from '../../types';
-import { X, User, MapPin, Package, DollarSign, Truck } from 'lucide-react';
+import { Order, Supplier, CartItem, OrderDetailModalProps, PurchaseOrder } from '../../types';
+import { X, User, MapPin, Package, DollarSign, Truck, CheckCircle } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import { EmailService } from '../../utils/emailService';
 import SupplierInvoiceModal from './SupplierInvoiceModal';
 
-interface OrderDetailModalProps {
-    order: Order;
-    suppliers: Supplier[];
-    onClose: () => void;
-    onUpdateOrder: (order: Order) => void;
-    emailService: EmailService;
-}
+const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, onClose, onUpdateOrder, emailService, purchaseOrders, onCreatePurchaseOrder, onUpdatePurchaseOrder }) => {
+    const [generatingInvoiceFor, setGeneratingInvoiceFor] = useState<PurchaseOrder | null>(null);
 
-const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, onClose, onUpdateOrder, emailService }) => {
-    const [generatingInvoiceFor, setGeneratingInvoiceFor] = useState<{ supplier: Supplier, items: CartItem[] } | null>(null);
-
-    const dropshippingItemsBySupplier = order.items
-        .filter(item => item.isDropshipping && item.supplierId)
+    const itemsBySupplier = order.items
+        .filter(item => item.supplierId)
         .reduce((acc, item) => {
             const supplierId = item.supplierId!;
             if (!acc[supplierId]) {
@@ -26,6 +18,31 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, o
             acc[supplierId].push(item);
             return acc;
         }, {} as Record<string, CartItem[]>);
+    
+    const handleGeneratePO = (supplierId: string, items: CartItem[]) => {
+        let po = purchaseOrders.find(p => p.orderId === order.id && p.supplierId === supplierId);
+    
+        if (!po) {
+            po = onCreatePurchaseOrder({
+                orderId: order.id,
+                supplierId: supplierId,
+                customerName: order.customer,
+                customerShippingAddress: {
+                    address: order.shippingAddress,
+                    city: order.shippingCity,
+                    zip: order.shippingZip,
+                },
+                items: items.map(item => ({
+                    productId: item.id,
+                    productName: item.name,
+                    quantity: item.quantity,
+                    supplierPrice: item.supplierPrice,
+                })),
+            });
+        }
+    
+        setGeneratingInvoiceFor(po);
+    };
 
     return (
         <>
@@ -105,15 +122,26 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, o
                         <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
                             Fermer
                         </button>
-                        {order.isDropshippingOrder && Object.keys(dropshippingItemsBySupplier).length > 0 && order.supplierStatus === 'En attente' && (
+                        {Object.keys(itemsBySupplier).length > 0 && (
                             <div className="flex items-center gap-2">
-                                {Object.entries(dropshippingItemsBySupplier).map(([supplierId, items]) => {
+                                {Object.entries(itemsBySupplier).map(([supplierId, items]) => {
                                     const supplier = suppliers.find(s => s.id === supplierId);
                                     if (!supplier) return null;
+
+                                    const existingPO = purchaseOrders.find(p => p.orderId === order.id && p.supplierId === supplierId);
+
+                                    if (existingPO && existingPO.status !== 'À envoyer') {
+                                        return (
+                                            <div key={supplierId} className="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md shadow-sm flex items-center gap-2">
+                                                <CheckCircle size={16}/> Commande {existingPO.status.toLowerCase()} à {supplier.name}
+                                            </div>
+                                        )
+                                    }
+                                    
                                     return (
                                         <button 
                                             key={supplierId}
-                                            onClick={() => setGeneratingInvoiceFor({ supplier, items })}
+                                            onClick={() => handleGeneratePO(supplierId, items)}
                                             className="px-3 py-2 text-sm font-medium text-white bg-cyan-600 rounded-md shadow-sm hover:bg-cyan-700 flex items-center gap-2"
                                         >
                                            <Truck size={16}/> Générer la commande pour {supplier.name}
@@ -128,15 +156,10 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, o
 
             {generatingInvoiceFor && (
                 <SupplierInvoiceModal
-                    order={order}
-                    supplier={generatingInvoiceFor.supplier}
-                    items={generatingInvoiceFor.items}
+                    purchaseOrder={generatingInvoiceFor}
+                    supplier={suppliers.find(s => s.id === generatingInvoiceFor.supplierId)!}
                     onClose={() => setGeneratingInvoiceFor(null)}
-                    onUpdateOrder={(updatedOrder) => {
-                        onUpdateOrder(updatedOrder);
-                        // Potentially close the main modal as well or update its state
-                        // For now, let's assume we keep it open to see status change
-                    }}
+                    onUpdatePurchaseOrder={onUpdatePurchaseOrder}
                     emailService={emailService}
                 />
             )}
