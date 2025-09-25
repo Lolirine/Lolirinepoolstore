@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { ShopPageProps, Product, FilterFacet, ActiveFilters } from '../types';
 import { Search } from 'lucide-react';
@@ -12,7 +13,26 @@ const PRICE_RANGES = [
     { label: '500 € et plus', value: '500-Infinity' },
 ];
 
-const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onSelectProduct, initialCategoryFilter, initialSearchTerm, wishlist, addToWishlist }) => {
+const categoryColors: { [key: string]: string } = {
+    'Wellness': 'bg-cyan-500 text-white hover:bg-cyan-600',
+    'Promotions': 'bg-red-500 text-white hover:bg-red-600',
+    'Nettoyage': 'bg-blue-500 text-white hover:bg-blue-600',
+    'Filtration': 'bg-indigo-500 text-white hover:bg-indigo-600',
+    'Pompes': 'bg-purple-600 text-white hover:bg-purple-700',
+    "Traitement de l'eau": 'bg-teal-500 text-white hover:bg-teal-600',
+    'Instruments de mesure': 'bg-fuchsia-500 text-white hover:bg-fuchsia-600',
+    'Matériel Électrique': 'bg-pink-600 text-white hover:bg-pink-700',
+    'Pièces à sceller': 'bg-orange-500 text-white hover:bg-orange-600',
+    'Raccords & PVC': 'bg-yellow-500 text-black hover:bg-yellow-600',
+    'Chauffage': 'bg-red-600 text-white hover:bg-red-700',
+    'Liners': 'bg-green-500 text-white hover:bg-green-600',
+    'Tout voir': 'bg-slate-600 text-white hover:bg-slate-700',
+};
+const defaultCategoryColor = 'bg-gray-200 text-gray-800 hover:bg-gray-300';
+const selectedCategoryRing = 'ring-4 ring-offset-2 ring-cyan-500';
+
+
+const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onBuyNow, onSelectProduct, initialCategoryFilter, initialSearchTerm, wishlist, addToWishlist }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategoryFilter || 'Tous');
   const [searchTerm, setSearchTerm] = useState(initialSearchTerm || '');
   const [sortOrder, setSortOrder] = useState('name-asc');
@@ -45,10 +65,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onSelectProduc
       if (selectedCategory === 'Promotions') {
         filtered = products.filter(p => p.isOnSale);
       } else {
-        const categoryParts = selectedCategory.split(' - ');
-        filtered = filtered.filter(p => {
-            return categoryParts.every(part => p.category.includes(part));
-        });
+        filtered = filtered.filter(p => p.category.startsWith(selectedCategory));
       }
     }
 
@@ -180,21 +197,14 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onSelectProduc
 
   const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE);
 
-  const categoryNavItems = [
-    { name: 'Tout voir', filter: 'Tous', color: 'bg-slate-600 text-white hover:bg-slate-700', ring: 'ring-cyan-400' },
-    { name: 'Espace Wellness', filter: 'Wellness', color: 'bg-cyan-500 text-white hover:bg-cyan-600' },
-    { name: 'Promotions', filter: 'Promotions', color: 'bg-yellow-400 text-black hover:bg-yellow-500' },
-    { name: 'Nettoyage', filter: 'Nettoyage', color: 'bg-blue-500 text-white hover:bg-blue-600' },
-    { name: 'Filtration', filter: 'Filtration', color: 'bg-indigo-500 text-white hover:bg-indigo-600' },
-    { name: 'Pompes', filter: 'Pompes', color: 'bg-indigo-600 text-white hover:bg-indigo-700' },
-    { name: "Traitement de l'eau", filter: "Traitement de l'eau", color: 'bg-purple-500 text-white hover:bg-purple-600' },
-    { name: 'Instruments de mesure', filter: 'Instruments de mesure', color: 'bg-fuchsia-500 text-white hover:bg-fuchsia-600' },
-    { name: 'Matériel Électrique', filter: 'Matériel Électrique', color: 'bg-pink-600 text-white hover:bg-pink-700' },
-    { name: 'Pièces à sceller', filter: 'Pièces à sceller', color: 'bg-red-500 text-white hover:bg-red-600' },
-    { name: 'Raccords & PVC', filter: 'Raccords & PVC', color: 'bg-red-600 text-white hover:bg-red-700' },
-    { name: 'Chauffage', filter: 'Chauffage', color: 'bg-orange-500 text-white hover:bg-orange-600' },
-    { name: 'Liners', filter: 'Liners', color: 'bg-teal-500 text-white hover:bg-teal-600' },
-  ];
+  const categoryNavItems = useMemo(() => {
+    const topLevelCategories = [...new Set(products.map(p => p.category.split(' - ')[0]))].sort();
+    return [
+      { name: 'Tout voir', filter: 'Tous' },
+      { name: 'Promotions', filter: 'Promotions' },
+      ...topLevelCategories.map(cat => ({ name: cat, filter: cat }))
+    ];
+  }, [products]);
 
 
   return (
@@ -245,11 +255,12 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onSelectProduc
             <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-3">
                 {categoryNavItems.map(cat => {
                     const isSelected = selectedCategory === cat.filter;
+                    const colorClass = categoryColors[cat.name] || defaultCategoryColor;
                     return (
                         <button
                             key={cat.name}
                             onClick={() => setSelectedCategory(cat.filter)}
-                            className={`px-5 py-2.5 text-sm font-semibold rounded-full shadow-md transition-all duration-200 transform hover:-translate-y-0.5 ${cat.color} ${isSelected ? `ring-4 ${cat.ring || 'ring-offset-2 ring-cyan-500'}` : ''}`}
+                            className={`px-5 py-2.5 text-sm font-semibold rounded-full shadow-md transition-all duration-200 transform hover:-translate-y-0.5 ${colorClass} ${isSelected ? selectedCategoryRing : ''}`}
                         >
                             {cat.name}
                         </button>
@@ -342,12 +353,13 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onSelectProduc
             </div>
 
             {paginatedProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {paginatedProducts.map(product => (
                   <ProductCard
                     key={product.id}
                     product={product}
                     addToCart={addToCart}
+                    onBuyNow={onBuyNow}
                     onSelectProduct={onSelectProduct}
                     wishlist={wishlist}
                     addToWishlist={addToWishlist}
