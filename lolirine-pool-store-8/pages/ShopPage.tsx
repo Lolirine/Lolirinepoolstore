@@ -65,7 +65,7 @@ const ShopPage: React.FC<ShopPageProps> = ({ products, addToCart, onBuyNow, onSe
       if (selectedCategory === 'Promotions') {
         filtered = products.filter(p => p.isOnSale);
       } else {
-        filtered = filtered.filter(p => p.category.startsWith(selectedCategory));
+        filtered = filtered.filter(p => p.category === selectedCategory || p.category.startsWith(selectedCategory + ' - '));
       }
     }
 
