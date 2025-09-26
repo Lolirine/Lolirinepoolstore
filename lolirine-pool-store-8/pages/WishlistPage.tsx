@@ -4,7 +4,7 @@ import ProductCard from '../components/ProductCard';
 import { Heart } from 'lucide-react';
 import GoBackButton from '../components/GoBackButton';
 
-const WishlistPage: React.FC<WishlistPageProps> = ({ wishlist, navigateTo, onSelectProduct, addToCart, addToWishlist, goBack, canGoBack }) => {
+const WishlistPage: React.FC<WishlistPageProps> = ({ wishlist, navigateTo, onSelectProduct, addToCart, onBuyNow, addToWishlist, goBack, canGoBack }) => {
   return (
     <div className="bg-gray-100 min-h-full">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -30,6 +30,7 @@ const WishlistPage: React.FC<WishlistPageProps> = ({ wishlist, navigateTo, onSel
                 key={product.id}
                 product={product}
                 addToCart={addToCart}
+                onBuyNow={onBuyNow}
                 onSelectProduct={onSelectProduct}
                 wishlist={wishlist}
                 addToWishlist={addToWishlist}

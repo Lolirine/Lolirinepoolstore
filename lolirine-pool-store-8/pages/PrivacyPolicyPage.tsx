@@ -44,7 +44,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ goBack, canGoBack
                         <li><strong>Portabilité :</strong> Recevoir vos données dans un format structuré.</li>
                         <li><strong>Réclamation :</strong> Contacter la CNIL ou une autorité compétente.</li>
                     </ul>
-                    <p>Pour exercer vos droits, contactez-nous à <a href="mailto:info@lolirine-pool.odoo.com" className="text-cyan-600 hover:underline">info@lolirine-pool.odoo.com</a>.</p>
+                    <p>Pour exercer vos droits, contactez-nous à <a href="mailto:info@lolirinepoolstore.be" className="text-cyan-600 hover:underline">info@lolirinepoolstore.be</a>.</p>
                 
                     <h2 className="text-xl font-bold mt-8">5. Politique de Sécurité des Paiements</h2>
                     <p>Nous utilisons des protocoles de sécurité avancés (SSL, 3D Secure) pour protéger vos paiements en ligne. Toutes les transactions sont traitées via des prestataires certifiés garantissant une protection optimale de vos données bancaires.</p>
@@ -55,7 +55,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ goBack, canGoBack
                         <li>Vous pouvez vous désinscrire à tout moment via le lien présent dans nos emails.</li>
                         <li>Nous ne partageons pas vos données avec des tiers à des fins publicitaires sans votre consentement.</li>
                     </ul>
-                    <p>Pour toute question, contactez-nous à <a href="mailto:info@lolirine-pool.odoo.com" className="text-cyan-600 hover:underline">info@lolirine-pool.odoo.com</a> ou au <a href="tel:+32497444146" className="text-cyan-600 hover:underline">+32 497 44 41 46</a>.</p>
+                    <p>Pour toute question, contactez-nous à <a href="mailto:info@lolirinepoolstore.be" className="text-cyan-600 hover:underline">info@lolirinepoolstore.be</a> ou au <a href="tel:+32497444146" className="text-cyan-600 hover:underline">+32 497 44 41 46</a>.</p>
 
                     <div className="mt-10 p-6 bg-gray-50 rounded-lg border">
                         <h3 className="text-xl font-bold">Protection des Données Personnelles et Vente en Ligne</h3>

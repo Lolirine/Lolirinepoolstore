@@ -252,7 +252,7 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
 
                 {/* Footer */}
                  <div className="text-center text-xs text-gray-500 mt-12 pt-4 border-t print:mt-8">
-                    <p>Email: info@lolirine-pool.odoo.com | Site: lolirine-pool.odoo.com | TVA: BE 0650891 279</p>
+                    <p>Email: info@lolirinepoolstore.be | Site: www.lolirinepoolstore.be | TVA: BE 0650891 279</p>
                 </div>
             </div>
 

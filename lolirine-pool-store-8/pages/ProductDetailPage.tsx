@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { ProductDetailPageProps, Product } from '../types';
 import { formatCurrency } from '../utils/formatting';
-import { ShoppingCart, Heart, Star, Plus, Minus, Check, AlertTriangle, ChevronRight, RefreshCw, Truck, Award, Home as HomeIcon } from 'lucide-react';
+import { ShoppingCart, Heart, Star, Plus, Minus, Check, AlertTriangle, ChevronRight, RefreshCw, Truck, Award, Home as HomeIcon, Zap } from 'lucide-react';
 import { ProductsCarousel } from '../components/ProductCard';
 import GoBackButton from '../components/GoBackButton';
 
@@ -57,14 +57,14 @@ const ReassuranceIcons = () => {
     );
 };
 
-const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, addToCart, addToWishlist, wishlist, navigateTo, products, onSelectProduct, goBack, canGoBack }) => {
+const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, addToCart, onBuyNow, addToWishlist, wishlist, navigateTo, products, onSelectProduct, goBack, canGoBack, recentlyViewed }) => {
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'reviews'>('description');
     const [addedToCart, setAddedToCart] = useState(false);
     const [mainImage, setMainImage] = useState(product.galleryImages ? product.galleryImages[0] : product.imageUrl);
 
     const isInWishlist = useMemo(() => wishlist.some(item => item.id === product.id), [wishlist, product.id]);
-    const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+    const isOutOfStock = product.stock !== undefined && product.stock <= 0 && !product.isDropshipping;
     
     const alternativeProducts = useMemo(() => {
         if (!products || products.length === 0) return [];
@@ -78,6 +78,11 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, addToCar
         setTimeout(() => setAddedToCart(false), 2000); // Reset after 2s
     };
     
+    const handleBuyNow = () => {
+        if (isOutOfStock) return;
+        onBuyNow(product, quantity);
+    };
+
     const priceHT = product.isOnSale && product.promoPrice ? product.promoPrice : product.price;
     const priceTTC = priceHT * (1 + product.tvaRate);
     const oldPriceTTC = product.isOnSale && product.promoPrice ? product.price * (1 + product.tvaRate) : null;
@@ -139,8 +144,13 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, addToCar
                         ) : (
                             <div className="p-4 bg-gray-50 rounded-lg border">
                                 <p className="text-green-600 font-bold flex items-center mb-2"><Check size={20} className="mr-2"/> En stock</p>
+                                {product.stock !== undefined && product.stock > 0 && product.stock <= 10 && !product.isDropshipping && (
+                                    <p className="text-orange-600 font-semibold text-sm flex items-center mb-2">
+                                        <AlertTriangle size={16} className="mr-2"/> Plus que {product.stock} exemplaires disponibles !
+                                    </p>
+                                )}
                                 <p className="text-sm text-gray-600 mb-4">Commandé aujourd'hui, livré le {deliveryDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}.</p>
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-4 mb-3">
                                     <div className="flex items-center border bg-white rounded-md">
                                         <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-3 py-3 text-gray-600 hover:bg-gray-100 rounded-l-md"><Minus size={16}/></button>
                                         <input type="number" value={quantity} onChange={e => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))} className="w-16 text-center h-full border-l border-r focus:outline-none font-semibold"/>
@@ -150,6 +160,9 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, addToCar
                                         {addedToCart ? <><Check size={20}/> Ajouté !</> : <><ShoppingCart size={20}/> Ajouter</>}
                                     </button>
                                 </div>
+                                <button onClick={handleBuyNow} className="w-full flex items-center justify-center gap-2 py-3 px-6 text-cyan-700 font-bold bg-cyan-200 hover:bg-cyan-300 rounded-md transition-colors">
+                                    <Zap size={20} /> Achat Rapide
+                                </button>
                             </div>
                         )}
                          <ReassuranceIcons />
@@ -234,11 +247,25 @@ const ProductDetailPage: React.FC<ProductDetailPageProps> = ({ product, addToCar
                     title="Produits Alternatifs"
                     products={alternativeProducts}
                     addToCart={addToCart}
+                    onBuyNow={onBuyNow}
                     onSelectProduct={onSelectProduct}
                     navigateTo={navigateTo}
                     wishlist={wishlist}
                     addToWishlist={addToWishlist}
                     bgColor="bg-gray-50"
+                />
+            )}
+            {recentlyViewed && recentlyViewed.length > 0 && (
+                <ProductsCarousel
+                    title="Consultés Récemment"
+                    products={recentlyViewed}
+                    addToCart={addToCart}
+                    onBuyNow={onBuyNow}
+                    onSelectProduct={onSelectProduct}
+                    navigateTo={navigateTo}
+                    wishlist={wishlist}
+                    addToWishlist={addToWishlist}
+                    bgColor="bg-gray-100"
                 />
             )}
         </div>

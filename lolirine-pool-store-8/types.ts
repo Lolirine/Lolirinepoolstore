@@ -1,7 +1,7 @@
 import React from 'react';
 import { EmailService } from './utils/emailService';
 
-export type Page = 'home' | 'services' | 'shop' | 'portfolio' | 'blog' | 'about' | 'contact' | 'admin' | 'client' | 'faq' | 'checkout' | 'orderConfirmation' | 'terms' | 'privacy' | 'cookies' | 'legal' | 'wellness' | 'productDetail' | 'wishlist' | 'repairs' | 'construction' | 'waterAnalysis' | 'winterization' | 'servicesOverview';
+export type Page = 'home' | 'services' | 'shop' | 'promotions' | 'portfolio' | 'blog' | 'about' | 'contact' | 'admin' | 'client' | 'faq' | 'checkout' | 'orderConfirmation' | 'terms' | 'privacy' | 'cookies' | 'legal' | 'wellness' | 'productDetail' | 'wishlist' | 'repairs' | 'construction' | 'waterAnalysis' | 'winterization' | 'servicesOverview' | 'shippingPolicy';
 
 export type PurchaseOrderStatus = 'À envoyer' | 'Envoyé' | 'Expédié';
 
@@ -9,12 +9,14 @@ export interface PurchaseOrderItem {
   productId: string | number;
   productName: string;
   quantity: number;
+  supplierPrice?: number;
 }
 
 export interface PurchaseOrder {
   id: string; // e.g., PO-10524-SUP1
   orderId: string; // The original customer order ID
   supplierId: string;
+  customerName: string;
   customerShippingAddress: {
     address: string;
     city: string;
@@ -282,6 +284,14 @@ export interface InfoBannerConfig {
     backgroundColor?: string;
 }
 
+// NEW: Definition for a toast notification
+export interface Toast {
+  id: string;
+  message: string;
+  type: 'success' | 'info' | 'error';
+  icon?: React.ReactElement;
+}
+
 export interface HeaderProps {
   currentPage: Page;
   navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
@@ -293,10 +303,13 @@ export interface HeaderProps {
   onLogoutClick: () => void;
   bannerConfig: InfoBannerConfig;
   menuConfig: MenuConfig;
+  services: Service[];
+  shopCategories: NavLink[];
+  wellnessCategories: NavLink[];
 }
 
 export interface FooterProps {
-  navigateTo: (page: Page) => void;
+  navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
   onOpenRegisterModal: () => void;
 }
 
@@ -304,6 +317,7 @@ export interface HomePageProps {
   navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
   products: Product[];
   addToCart: (product: Product, quantity: number) => void;
+  onBuyNow: (product: Product, quantity: number) => void;
   recentlyViewed: Product[];
   onSelectProduct: (product: Product) => void;
   orders: Order[];
@@ -341,7 +355,10 @@ export interface PrivacyPolicyPageProps extends PageWithBackButtonProps {}
 export interface CookiesPageProps extends PageWithBackButtonProps {}
 export interface LegalNoticePageProps extends PageWithBackButtonProps {}
 
-// FIX: Added missing type definition for CheckoutPage.
+export interface ShippingPolicyPageProps extends PageWithBackButtonProps {
+  navigateTo: (page: Page) => void;
+}
+
 export interface CheckoutPageProps extends PageWithBackButtonProps {
     cart: CartItem[];
     onPlaceOrder: (shippingAddressData: { shippingAddress: string; shippingCity: string; shippingZip: string }) => void;
@@ -349,12 +366,12 @@ export interface CheckoutPageProps extends PageWithBackButtonProps {
     paymentMethods: PaymentMethod[];
 }
 
-// FIX: Added missing type definition for WishlistPage.
 export interface WishlistPageProps extends PageWithBackButtonProps {
     wishlist: Product[];
     navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
     onSelectProduct: (product: Product) => void;
     addToCart: (product: Product, quantity: number) => void;
+    onBuyNow: (product: Product, quantity: number) => void;
     addToWishlist: (product: Product) => void;
 }
 
@@ -363,24 +380,41 @@ export interface WellnessPageProps extends PageWithBackButtonProps {
   navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
   products: Product[];
   addToCart: (product: Product, quantity: number) => void;
+  onBuyNow: (product: Product, quantity: number) => void;
   onSelectProduct: (product: Product) => void;
   wishlist: Product[];
   addToWishlist: (product: Product) => void;
+  recentlyViewed: Product[];
 }
 
 export interface ShopPageProps {
   products: Product[];
   addToCart: (product: Product, quantity: number) => void;
+  onBuyNow: (product: Product, quantity: number) => void;
   onSelectProduct: (product: Product) => void;
   initialCategoryFilter?: string;
   initialSearchTerm?: string;
   wishlist: Product[];
   addToWishlist: (product: Product) => void;
+  recentlyViewed: Product[];
+  navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
+}
+
+export interface PromotionsPageProps extends PageWithBackButtonProps {
+  products: Product[];
+  addToCart: (product: Product, quantity: number) => void;
+  onBuyNow: (product: Product, quantity: number) => void;
+  onSelectProduct: (product: Product) => void;
+  wishlist: Product[];
+  addToWishlist: (product: Product) => void;
+  recentlyViewed: Product[];
+  navigateTo: (page: Page) => void;
 }
 
 export interface ProductCardProps {
   product: Product;
   addToCart: (product: Product, quantity: number) => void;
+  onBuyNow: (product: Product, quantity: number) => void;
   onSelectProduct: (product: Product) => void;
   wishlist: Product[];
   addToWishlist: (product: Product) => void;
@@ -390,10 +424,12 @@ export interface ProductDetailPageProps extends PageWithBackButtonProps {
     product: Product;
     navigateTo: (page: Page, options?: { categoryFilter?: string; searchQuery?: string }) => void;
     addToCart: (product: Product, quantity: number) => void;
+    onBuyNow: (product: Product, quantity: number) => void;
     addToWishlist: (product: Product) => void;
     wishlist: Product[];
     products: Product[];
     onSelectProduct: (product: Product) => void;
+    recentlyViewed: Product[];
 }
 
 export interface CartModalProps {
@@ -451,6 +487,50 @@ export interface EmailManagementViewProps {
   users: UserAccount[];
   emailService: EmailService;
 }
+
+export interface OrderManagementViewProps {
+  orders: Order[];
+  suppliers: Supplier[];
+  onUpdateOrder: (order: Order) => void;
+  emailService: EmailService;
+  purchaseOrders: PurchaseOrder[];
+  onCreatePurchaseOrder: (po: Omit<PurchaseOrder, 'id' | 'createdAt' | 'status'>) => PurchaseOrder;
+  onUpdatePurchaseOrder: (po: PurchaseOrder) => void;
+}
+
+export interface OrderDetailModalProps {
+    order: Order;
+    suppliers: Supplier[];
+    onClose: () => void;
+    onUpdateOrder: (order: Order) => void;
+    emailService: EmailService;
+    purchaseOrders: PurchaseOrder[];
+    onCreatePurchaseOrder: (po: Omit<PurchaseOrder, 'id' | 'createdAt' | 'status'>) => PurchaseOrder;
+    onUpdatePurchaseOrder: (po: PurchaseOrder) => void;
+}
+
+export interface SupplierInvoiceModalProps {
+    purchaseOrder: PurchaseOrder;
+    supplier: Supplier;
+    onClose: () => void;
+    onUpdatePurchaseOrder: (po: PurchaseOrder) => void;
+    emailService: EmailService;
+}
+
+export interface ProductManagementViewProps {
+  products: Product[];
+  onUpdateProduct: (product: Product) => void;
+  onCreateProduct: (newProduct: Omit<Product, 'id'>) => void;
+  onDeleteProduct: (productId: string | number) => void;
+  onBulkUpdateProducts: (products: Product[]) => void;
+  suppliers: Supplier[];
+  onAddCategory: (categoryPath: string) => void;
+  onDeleteCategoryAndProducts: (categoryPath: string) => void;
+  onRenameCategory: (oldCategoryPath: string, newCategoryName: string) => void;
+  onDuplicateCategory: (sourceCategoryPath: string, newCategoryPath: string) => void;
+  onUpdateStockRibbons: () => void;
+}
+
 export interface AdminPageProps {
     onLogout: () => void;
     products: Product[];
@@ -477,6 +557,7 @@ export interface AdminPageProps {
     cart: CartItem[];
     purchaseOrders: PurchaseOrder[];
     onUpdatePurchaseOrder: (po: PurchaseOrder) => void;
+    onCreatePurchaseOrder: (po: Omit<PurchaseOrder, 'id' | 'createdAt' | 'status'>) => PurchaseOrder;
     infoBanner: InfoBannerConfig;
     onUpdateInfoBanner: (config: InfoBannerConfig) => void;
     popups: PopupConfig[];
@@ -490,6 +571,7 @@ export interface AdminPageProps {
     onRenameCategory: (oldCategoryPath: string, newCategoryName: string) => void;
     onDuplicateCategory: (sourceCategoryPath: string, newCategoryPath: string) => void;
     emailService: EmailService;
+    onUpdateStockRibbons: () => void;
 }
 
 export interface AiAssistantWidgetProps {

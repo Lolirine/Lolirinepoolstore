@@ -1,19 +1,10 @@
 import React, { useRef } from 'react';
-import { Order, Supplier, CartItem } from '../../types';
+import { PurchaseOrder, Supplier, SupplierInvoiceModalProps } from '../../types';
 import { X, Truck, Send, Printer } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import { EmailService } from '../../utils/emailService';
 
-interface SupplierInvoiceModalProps {
-    order: Order;
-    supplier: Supplier;
-    items: CartItem[];
-    onClose: () => void;
-    onUpdateOrder: (order: Order) => void;
-    emailService: EmailService;
-}
-
-const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ order, supplier, items, onClose, onUpdateOrder, emailService }) => {
+const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ purchaseOrder, supplier, onClose, onUpdatePurchaseOrder, emailService }) => {
     const invoiceRef = useRef<HTMLDivElement>(null);
 
     const handleSendEmail = () => {
@@ -23,12 +14,12 @@ const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ order, supp
 
         emailService.send('supplier_invoice_order', {
             supplierName: supplier.name,
-            orderId: order.id,
+            orderId: purchaseOrder.orderId,
             invoiceBody,
             email: supplier.email // Recipient
         });
 
-        onUpdateOrder({ ...order, supplierStatus: 'Envoyé au fournisseur' });
+        onUpdatePurchaseOrder({ ...purchaseOrder, status: 'Envoyé' });
         alert(`Email de commande envoyé à ${supplier.name}.`);
         onClose();
     };
@@ -51,7 +42,7 @@ const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ order, supp
         }
     };
     
-    const totalHT = items.reduce((sum, item) => sum + (item.supplierPrice || 0) * item.quantity, 0);
+    const totalHT = purchaseOrder.items.reduce((sum, item) => sum + (item.supplierPrice || 0) * item.quantity, 0);
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-[51] flex items-center justify-center p-4">
@@ -78,8 +69,8 @@ const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ order, supp
                             </div>
                             <div className="text-right">
                                 <h3 className="text-2xl font-bold text-gray-800">COMMANDE FOURNISSEUR</h3>
-                                <p className="text-sm text-gray-500">Date: {new Date().toLocaleDateString('fr-FR')}</p>
-                                <p className="text-sm text-gray-500">Réf. Commande Client: {order.id}</p>
+                                <p className="text-sm text-gray-500">Date: {new Date(purchaseOrder.createdAt).toLocaleDateString('fr-FR')}</p>
+                                <p className="text-sm text-gray-500">Réf. Commande Client: {purchaseOrder.orderId}</p>
                             </div>
                         </div>
 
@@ -93,9 +84,9 @@ const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ order, supp
                             </div>
                             <div className="p-4 rounded-lg border bg-cyan-50">
                                 <h4 className="font-semibold text-gray-700 mb-2 flex items-center"><Truck size={16} className="mr-2"/> Livrer à (Client Final)</h4>
-                                <p className="font-bold">{order.customer}</p>
-                                <p className="text-sm font-bold">{order.shippingAddress}</p>
-                                <p className="text-sm text-gray-600">{order.shippingZip} {order.shippingCity}</p>
+                                <p className="font-bold">{purchaseOrder.customerName}</p>
+                                <p className="text-sm font-bold">{purchaseOrder.customerShippingAddress.address}</p>
+                                <p className="text-sm text-gray-600">{purchaseOrder.customerShippingAddress.zip} {purchaseOrder.customerShippingAddress.city}</p>
                             </div>
                         </div>
                         
@@ -111,10 +102,10 @@ const SupplierInvoiceModal: React.FC<SupplierInvoiceModalProps> = ({ order, supp
                                 </tr>
                             </thead>
                             <tbody>
-                                {items.map(item => (
-                                    <tr key={item.id} className="border-b">
-                                        <td className="p-2 text-xs text-gray-600">{item.id}</td>
-                                        <td className="p-2 font-medium">{item.name}</td>
+                                {purchaseOrder.items.map(item => (
+                                    <tr key={item.productId} className="border-b">
+                                        <td className="p-2 text-xs text-gray-600">{item.productId}</td>
+                                        <td className="p-2 font-medium">{item.productName}</td>
                                         <td className="p-2 text-center font-bold">{item.quantity}</td>
                                         <td className="p-2 text-right">{formatCurrency(item.supplierPrice || 0)}</td>
                                         <td className="p-2 text-right font-medium">{formatCurrency((item.supplierPrice || 0) * item.quantity)}</td>

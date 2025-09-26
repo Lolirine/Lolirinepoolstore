@@ -27,12 +27,13 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
       paymentMethods, onUpdatePaymentMethod,
       emailTemplates, onUpdateEmailTemplate,
       users, onUpdateUser, cart,
-      purchaseOrders, onUpdatePurchaseOrder,
+      purchaseOrders, onUpdatePurchaseOrder, onCreatePurchaseOrder,
       infoBanner, onUpdateInfoBanner,
       popups, onCreatePopup, onUpdatePopup, onDeletePopup,
       menuConfig, onUpdateMenuConfig,
       onAddCategory, onDeleteCategoryAndProducts, onRenameCategory, onDuplicateCategory,
-      emailService
+      emailService,
+      onUpdateStockRibbons
   } = props;
   const [view, setView] = useState<AdminView>('dashboard');
   const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
@@ -64,6 +65,7 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
                     onDeleteCategoryAndProducts={onDeleteCategoryAndProducts}
                     onRenameCategory={onRenameCategory}
                     onDuplicateCategory={onDuplicateCategory}
+                    onUpdateStockRibbons={onUpdateStockRibbons}
                 />;
       case 'orders':
         return <OrderManagementView 
@@ -71,6 +73,9 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
                   suppliers={suppliers}
                   onUpdateOrder={onUpdateOrder}
                   emailService={emailService}
+                  purchaseOrders={purchaseOrders}
+                  onCreatePurchaseOrder={onCreatePurchaseOrder}
+                  onUpdatePurchaseOrder={onUpdatePurchaseOrder}
                />;
       case 'inventory':
         return <InventoryManagementView products={products} onUpdateProduct={onUpdateProduct} />;

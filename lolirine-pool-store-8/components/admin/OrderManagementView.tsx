@@ -1,16 +1,9 @@
 import React, { useState } from 'react';
-import { Order, Supplier, SupplierStatus } from '../../types';
+import { Order, Supplier, SupplierStatus, OrderManagementViewProps } from '../../types';
 import { Briefcase, Eye } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import OrderDetailModal from './OrderDetailModal';
 import { EmailService } from '../../utils/emailService';
-
-interface OrderManagementViewProps {
-  orders: Order[];
-  suppliers: Supplier[];
-  onUpdateOrder: (order: Order) => void;
-  emailService: EmailService;
-}
 
 const getStatusClass = (status: Order['status']) => {
     switch(status) {
@@ -30,7 +23,7 @@ const getSupplierStatusClass = (status?: SupplierStatus) => {
     }
 };
 
-const OrderManagementView: React.FC<OrderManagementViewProps> = ({ orders, suppliers, onUpdateOrder, emailService }) => {
+const OrderManagementView: React.FC<OrderManagementViewProps> = ({ orders, suppliers, onUpdateOrder, emailService, purchaseOrders, onCreatePurchaseOrder, onUpdatePurchaseOrder }) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   return (
@@ -89,6 +82,9 @@ const OrderManagementView: React.FC<OrderManagementViewProps> = ({ orders, suppl
           onClose={() => setSelectedOrder(null)}
           onUpdateOrder={onUpdateOrder}
           emailService={emailService}
+          purchaseOrders={purchaseOrders}
+          onCreatePurchaseOrder={onCreatePurchaseOrder}
+          onUpdatePurchaseOrder={onUpdatePurchaseOrder}
         />
       )}
     </div>

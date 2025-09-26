@@ -4,7 +4,7 @@ import { ProductsCarousel } from '../components/ProductCard';
 import { InfoCard } from '../components/InfoCardsSection';
 import { formatCurrency } from '../utils/formatting';
 import { List, Percent, Package, Star, ArrowRight, ArrowDown, MousePointerClick, CreditCard, Headset, Truck } from 'lucide-react';
-import { SERVICES, TESTIMONIALS, PORTFOLIO_ITEMS } from '../constants';
+import { SERVICES, TESTIMONIALS, PORTFOLIO_ITEMS, HOME_CATEGORIES } from '../constants';
 
 const useAnimateOnScroll = (options?: IntersectionObserverInit) => {
     const ref = useRef<HTMLElement>(null);
@@ -12,8 +12,9 @@ const useAnimateOnScroll = (options?: IntersectionObserverInit) => {
 
     useEffect(() => {
         const observer = new IntersectionObserver(([entry]) => {
-            // Set visibility based on whether the element is intersecting
-            setIsVisible(entry.isIntersecting);
+            if (entry.isIntersecting) {
+                setIsVisible(true);
+            }
         }, options);
 
         const currentRef = ref.current;
@@ -34,7 +35,7 @@ const useAnimateOnScroll = (options?: IntersectionObserverInit) => {
 const HeroSection: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = ({ navigateTo }) => (
     <section className="relative h-[60vh] md:h-[80vh] bg-cover bg-center text-white" style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/IMAGES%20ARRIERES%20PLAN/Piscine%20arrie%CC%80re%20plan3.jpg')" }}>
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
+        <div className="relative z-10 flex flex-col items-center justify-end md:justify-center h-full text-center px-4 pb-16 md:pb-0">
             <img src="https://lolirine-pool.odoo.com/web/image/website/1/logo/Lolirine%20Pool%20Store?unique=b561c22" alt="Lolirine Pool Store" className="h-24 md:h-32 mb-6 bg-white/20 backdrop-blur-sm rounded-full p-4"/>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-4" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
                 Des piscines comme on les aime !
@@ -69,11 +70,11 @@ const ServicesSection: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = (
         <div className="absolute inset-0 bg-black bg-opacity-60"></div>
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Nos Services</h2>
+                <h2 className="text-3xl font-bold text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Nos Solutions Piscine</h2>
                 <div className="mt-4 inline-block bg-white/20 backdrop-blur-sm border border-white/30 text-white p-4 rounded-xl shadow-sm">
                     <p className="font-semibold text-lg flex items-center justify-center gap-3">
                         <MousePointerClick className="h-6 w-6" />
-                        <span>Cliquez sur un service pour découvrir tous les détails de nos prestations.</span>
+                        <span>Cliquez sur une solution pour découvrir tous les détails de nos prestations.</span>
                     </p>
                 </div>
             </div>
@@ -205,7 +206,7 @@ const FeatureBannerSection = () => {
     {
       icon: Package,
       title: "LIVRAISON OFFERTE",
-      subtitle: "à partir de 150€ d'achat",
+      subtitle: "à partir de 59€ d'achat",
     },
     {
       icon: CreditCard,
@@ -246,56 +247,121 @@ const FeatureBannerSection = () => {
   );
 };
 
+const CategoryShowcase: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = ({ navigateTo }) => {
+  const [sectionRef, isVisible] = useAnimateOnScroll({ threshold: 0.1 });
+
+  return (
+    <section 
+      ref={sectionRef as React.RefObject<HTMLDivElement>}
+      className="py-16 bg-white"
+    >
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-800">Explorez nos univers</h2>
+          <p className="mt-2 text-lg text-gray-600">Trouvez tout ce dont vous avez besoin, classé par catégorie.</p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {HOME_CATEGORIES.map((category, index) => (
+            <div
+              key={category.label}
+              onClick={() => navigateTo(category.page || 'home', { categoryFilter: category.categoryFilter })}
+              className={`will-animate ${isVisible ? 'animate-slide-in-top' : ''} group relative rounded-lg overflow-hidden shadow-lg cursor-pointer h-80`}
+              style={{ animationDelay: `${index * 100}ms` }}
+            >
+              <img src={category.imageUrl} alt={category.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+              <div className="relative h-full flex flex-col justify-end p-6 text-white">
+                <h3 className="text-2xl font-bold" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.8)'}}>{category.label}</h3>
+                <span className="mt-2 font-semibold text-cyan-300 flex items-center group-hover:underline">
+                  Découvrir <ArrowRight className="inline h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const TabbedProductsSection: React.FC<HomePageProps & { newProducts: Product[]; bestSellers: Product[]; promotions: Product[] }> = (props) => {
+    const { newProducts, bestSellers, promotions } = props;
+    const [activeTab, setActiveTab] = useState<'new' | 'bestsellers' | 'promotions'>('new');
+    
+    const tabs = [
+        { id: 'new', label: 'Nouveautés', products: newProducts, bgColor: 'bg-cyan-100' },
+        { id: 'bestsellers', label: 'Meilleures Ventes', products: bestSellers, bgColor: 'bg-gradient-to-br from-sky-100 to-blue-200' },
+        { id: 'promotions', label: 'Promotions', products: promotions, bgColor: 'bg-gradient-to-br from-red-100 to-orange-100' }
+    ];
+
+    const activeTabData = tabs.find(tab => tab.id === activeTab)!;
+
+    return (
+        <section className="py-16 bg-gray-50">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-center mb-8 border-b">
+                    {tabs.map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`px-6 py-3 text-lg font-semibold transition-colors duration-300 -mb-px border-b-4 ${
+                                activeTab === tab.id
+                                ? 'border-cyan-500 text-cyan-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-800'
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+                <div>
+                    <ProductsCarousel
+                        {...props}
+                        key={activeTab} // Use key to force re-render/remount on tab change
+                        products={activeTabData.products}
+                        bgColor="bg-transparent"
+                        headless={true}
+                    />
+                </div>
+            </div>
+        </section>
+    );
+}
 
 const HomeContent: React.FC<HomePageProps> = (props) => {
     const { products, recentlyViewed, orders, currentUser, onSelectProduct, navigateTo } = props;
 
     const infoCards = useMemo(() => {
         const cards: React.ReactNode[] = [];
+        if (!currentUser) return []; // Only show cards for logged-in users for now
 
         const userOrders = currentUser ? orders.filter(o => o.customer === currentUser.name && o.status === 'Complété') : [];
         const allUserItems = userOrders.flatMap(o => o.items);
         
-        // --- Card 1: "Frequently Reordered" or "Top Rated" ---
         let frequentItems: Product[] = [];
-        if (currentUser && allUserItems.length > 0) {
+        if (allUserItems.length > 0) {
             const itemFrequencies = allUserItems.reduce((acc, item) => {
-                acc[item.id] = (acc[item.id] || 0) + 1;
+                acc[item.id as string] = (acc[item.id as string] || 0) + 1;
                 return acc;
             }, {} as {[key: string]: number});
             
-            const sortedFrequentItems = Object.entries(itemFrequencies)
+            // FIX: The original logic incorrectly passed an array of objects `CartItem[]` to the `new Map()` constructor,
+            // which expects an array of key-value pairs. The `new Map()` call was also redundant as the preceding
+            // logic already ensures unique products. This simplified version achieves the intended result correctly.
+            frequentItems = Object.entries(itemFrequencies)
                 .sort(([, a], [, b]) => b - a)
                 .map(([id]) => allUserItems.find(item => item.id === id))
                 .filter((p): p is CartItem => p !== undefined);
-            
-            frequentItems = Array.from(new Map(sortedFrequentItems.map(item => [item.id, item])).values());
         }
 
         if (frequentItems.length > 0) {
             cards.push(
-                <InfoCard key="frequently-ordered" title="Articles fréquemment commandés à nouveau pour vous">
+                <InfoCard key="frequently-ordered" title="Acheter à nouveau">
                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                         {frequentItems.slice(0, 4).map(p => (
                             <div key={`freq-${p.id}`} className="text-left cursor-pointer group" onClick={() => onSelectProduct(p)}>
                                 <img src={p.imageUrl} alt={p.name} className="w-full h-24 object-contain mb-1 rounded-md bg-gray-100 p-1 group-hover:shadow-md transition-shadow"/>
                                 <p className="text-xs text-cyan-700 group-hover:underline line-clamp-2 h-8">{p.name}</p>
-                                <p className="text-sm font-bold text-cyan-600">{formatCurrency(p.promoPrice ?? p.price)}</p>
-                            </div>
-                        ))}
-                    </div>
-                </InfoCard>
-            );
-        } else {
-            const topRatedProducts = products.filter(p => p.rating && p.reviewCount && p.reviewCount > 5).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
-            cards.push(
-                <InfoCard key="top-rated" title="Articles fréquemment commandés à nouveau pour vous">
-                     <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        {topRatedProducts.map(p => (
-                            <div key={`top-${p.id}`} className="text-left cursor-pointer group" onClick={() => onSelectProduct(p)}>
-                                <img src={p.imageUrl} alt={p.name} className="w-full h-24 object-contain mb-1 rounded-md bg-gray-100 p-1 group-hover:shadow-md transition-shadow"/>
-                                <p className="text-xs text-cyan-700 group-hover:underline line-clamp-2 h-8">{p.name}</p>
-                                <p className="text-sm font-bold text-cyan-600">{formatCurrency(p.promoPrice ?? p.price)}</p>
                             </div>
                         ))}
                     </div>
@@ -303,57 +369,38 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
             );
         }
 
-        // --- Card 2: "Buy Again" or "New Products" ---
-        const lastCompletedOrder = userOrders.length > 0 ? userOrders.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0] : null;
-
-        if (lastCompletedOrder && lastCompletedOrder.items.length > 0) {
-            cards.push(
-                <InfoCard key="buy-again" title="Acheter à nouveau" footerLink={{ text: 'En savoir plus et gérer', onClick: () => navigateTo('client')}}>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        {Array.from(new Map(lastCompletedOrder.items.map(item => [item.id, item])).values()).slice(0, 4).map(p => (
-                            <div key={`buy-again-${p.id}`} className="text-left cursor-pointer group" onClick={() => onSelectProduct(p)}>
-                                <img src={p.imageUrl} alt={p.name} className="w-full h-24 object-contain mb-1 rounded-md bg-gray-100 p-1 group-hover:shadow-md transition-shadow"/>
-                                <p className="text-xs text-cyan-700 group-hover:underline line-clamp-2 h-8">{p.name}</p>
-                                <p className="text-sm font-bold text-cyan-600">{formatCurrency(p.promoPrice ?? p.price)}</p>
-                            </div>
-                        ))}
-                    </div>
-                </InfoCard>
-            );
-        } else {
-             const newProducts = [...products].sort((a,b) => String(b.id).localeCompare(String(a.id))).slice(0,4);
-             cards.push(
-                <InfoCard key="new-products" title="Acheter à nouveau">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-                        {newProducts.map(p => (
-                            <div key={`new-${p.id}`} className="text-left cursor-pointer group" onClick={() => onSelectProduct(p)}>
-                                <img src={p.imageUrl} alt={p.name} className="w-full h-24 object-contain mb-1 rounded-md bg-gray-100 p-1 group-hover:shadow-md transition-shadow"/>
-                                <p className="text-xs text-cyan-700 group-hover:underline line-clamp-2 h-8">{p.name}</p>
-                                <p className="text-sm font-bold text-cyan-600">{formatCurrency(p.promoPrice ?? p.price)}</p>
-                            </div>
-                        ))}
-                    </div>
-                </InfoCard>
-            );
+        const topRatedProducts = products.filter(p => p.rating && p.reviewCount && p.reviewCount > 5).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0, 4);
+        if (topRatedProducts.length > 0) {
+          cards.push(
+              <InfoCard key="top-rated" title="Les mieux notés pour vous">
+                   <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      {topRatedProducts.map(p => (
+                          <div key={`top-${p.id}`} className="text-left cursor-pointer group" onClick={() => onSelectProduct(p)}>
+                              <img src={p.imageUrl} alt={p.name} className="w-full h-24 object-contain mb-1 rounded-md bg-gray-100 p-1 group-hover:shadow-md transition-shadow"/>
+                              <p className="text-xs text-cyan-700 group-hover:underline line-clamp-2 h-8">{p.name}</p>
+                          </div>
+                      ))}
+                  </div>
+              </InfoCard>
+          );
         }
         
-        // --- Card 3: Savings ---
         const economyCategories = [
-            { name: 'Informatique', filter: 'Matériel Électrique', image: 'https://images.unsplash.com/photo-1527814282787-6c7b03ddd598?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Entretien et réparation', filter: 'Réparation-étanchéité', image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Nettoyage et hygiène', filter: 'Nettoyage', image: 'https://images.unsplash.com/photo-1563453392212-9a3d1d534574?auto=format&fit=crop&w=400&q=80' },
-            { name: 'Services alimentaires', filter: 'Accessoires pour Spas', image: 'https://images.unsplash.com/photo-1606787366850-de6330128214?auto=format&fit=crop&w=400&q=80' }
+            { name: 'Entretien', filter: "Traitement de l'eau", image: 'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_9493.jpeg' },
+            { name: 'Nettoyage', filter: 'Nettoyage', image: 'https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique2.jpeg' },
+            { name: 'Spas', filter: 'Wellness', image: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/Inspiration%20jacuzzi4.jpeg' },
+            { name: 'Accessoires', filter: 'Accessoires', image: 'https://storage.googleapis.com/lolirinepoolstoreimage/Entretien%20piscine%202.jpg' }
         ];
 
         cards.push(
             <InfoCard
                 key="economize"
-                title="Économisez jusqu'à 20 %"
-                footerLink={{ text: 'Profitez du guide des économies', onClick: () => navigateTo('shop') }}
+                title="Découvrez nos essentiels"
+                footerLink={{ text: 'Voir toute la boutique', onClick: () => navigateTo('shop') }}
             >
                 <div className="grid grid-cols-2 gap-4">
                     {economyCategories.map(cat => (
-                        <div key={cat.name} onClick={() => navigateTo('shop', { categoryFilter: cat.filter })} className="cursor-pointer text-center group">
+                        <div key={cat.name} onClick={() => navigateTo(cat.filter === 'Wellness' ? 'wellness' : 'shop', { categoryFilter: cat.filter })} className="cursor-pointer text-center group">
                             <img src={cat.image} alt={cat.name} className="w-full h-24 object-cover mb-1 rounded-md transition-transform group-hover:scale-105"/>
                             <p className="text-xs font-semibold">{cat.name}</p>
                         </div>
@@ -362,44 +409,20 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
             </InfoCard>
         );
 
-        return cards;
+        return cards.slice(0, 3);
     }, [products, currentUser, orders, navigateTo, onSelectProduct]);
 
-
-    const newProducts = useMemo(() => {
-        return [...products]
-            .sort((a, b) => {
-                const idA = String(a.id);
-                const idB = String(b.id);
-                if (idA.startsWith('prod-') && idB.startsWith('prod-')) {
-                    const numA = parseInt(idA.split('-')[1], 10);
-                    const numB = parseInt(idB.split('-')[1], 10);
-                    if (!isNaN(numA) && !isNaN(numB)) {
-                        return numB - numA;
-                    }
-                }
-                return idB.localeCompare(idA);
-             })
-            .slice(0, 10);
-    }, [products]);
-    
-    const bestSellers = useMemo(() => {
-        return [...products].filter(p => p.reviewCount && p.reviewCount > 5).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0, 10);
-    }, [products]);
-
-    const promotions = useMemo(() => {
-        return products.filter(p => p.isOnSale);
-    }, [products]);
+    const newProducts = useMemo(() => [...products].sort((a, b) => String(b.id).localeCompare(String(a.id))).slice(0, 10), [products]);
+    const bestSellers = useMemo(() => [...products].filter(p => p.reviewCount && p.reviewCount > 5).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0, 10), [products]);
+    const promotions = useMemo(() => products.filter(p => p.isOnSale), [products]);
 
     return (
         <>
+            <FeatureBannerSection />
+            
             {infoCards.length > 0 &&
-                <section 
-                  className="py-16 bg-cover bg-center relative" 
-                  style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/IMAGES%20ARRIERES%20PLAN/Piscine%20arrie%CC%80re%20plan18.avif')" }}
-                >
-                    <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-                    <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+                <section className="py-16 bg-gradient-to-br from-sky-50 to-indigo-100">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {infoCards}
                         </div>
@@ -407,38 +430,29 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
                 </section>
             }
 
-            <ProductsCarousel
-                title="Nos Nouveautés"
-                products={newProducts}
-                bgColor="bg-cyan-100"
-                {...props}
-            />
+            <CategoryShowcase navigateTo={props.navigateTo} />
 
+            <TabbedProductsSection
+                {...props}
+                newProducts={newProducts}
+                bestSellers={bestSellers}
+                promotions={promotions}
+            />
+            
             <ServicesSection navigateTo={props.navigateTo} />
-
-            <ProductsCarousel
-                title="Nos Meilleures Ventes"
-                products={bestSellers}
-                bgColor="bg-gradient-to-br from-sky-100 to-blue-200"
-                {...props}
-            />
-
+            
             <TestimonialsSection />
-
-            <ProductsCarousel
-                title="Promotions"
-                products={promotions}
-                categoryFilter="Promotions"
-                viewAllLink
-                bgColor="bg-gradient-to-br from-red-600 to-red-800"
-                isPromoSection={true}
-                titleColor="text-white"
-                viewAllLinkColor="text-red-200"
-                {...props}
-            />
-
+            
             <PortfolioSection navigateTo={props.navigateTo} />
-            <FeatureBannerSection />
+            
+            {recentlyViewed && recentlyViewed.length > 0 && (
+                <ProductsCarousel
+                    {...props}
+                    title="Consultés Récemment"
+                    products={recentlyViewed}
+                    bgColor="bg-gray-100"
+                />
+            )}
         </>
     );
 };

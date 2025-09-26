@@ -1,9 +1,8 @@
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { WellnessPageProps } from '../types';
 import { WELLNESS_SUB_CATEGORIES } from '../constants';
 import GoBackButton from '../components/GoBackButton';
+import { ProductsCarousel } from '../components/ProductCard';
 
 const AnimatedWaveSeparator = () => (
     <div className="bg-transparent">
@@ -300,8 +299,8 @@ const LoopingVideoSection = () => {
     );
 };
 
-const WellnessPage: React.FC<WellnessPageProps> = ({ navigateTo, goBack, canGoBack }) => {
-
+const WellnessPage: React.FC<WellnessPageProps> = (props) => {
+    const { navigateTo, goBack, canGoBack, recentlyViewed } = props;
     return (
         <div className="bg-gray-100">
             <WellnessHero />
@@ -327,6 +326,20 @@ const WellnessPage: React.FC<WellnessPageProps> = ({ navigateTo, goBack, canGoBa
             <AnimatedWaveSeparator />
             
             <LoopingVideoSection />
+
+            {recentlyViewed && recentlyViewed.length > 0 && (
+                <ProductsCarousel
+                    products={recentlyViewed}
+                    title="Consultés Récemment"
+                    addToCart={props.addToCart}
+                    onBuyNow={props.onBuyNow}
+                    onSelectProduct={props.onSelectProduct}
+                    navigateTo={navigateTo}
+                    wishlist={props.wishlist}
+                    addToWishlist={props.addToWishlist}
+                    bgColor="bg-white"
+                />
+            )}
         </div>
     );
 };

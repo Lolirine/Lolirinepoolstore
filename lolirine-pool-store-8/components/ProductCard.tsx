@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ProductCardProps, Page, Product } from '../types';
-import { ShoppingCart, Star, Plus, Minus, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
+import { ShoppingCart, Star, Plus, Minus, ChevronLeft, ChevronRight, Heart, Zap } from 'lucide-react';
 import { formatCurrency } from '../utils/formatting';
 
 const StarRating: React.FC<{ rating: number; reviewCount: number }> = ({ rating, reviewCount }) => {
@@ -22,8 +22,7 @@ const StarRating: React.FC<{ rating: number; reviewCount: number }> = ({ rating,
     );
 };
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onSelectProduct, wishlist, addToWishlist }) => {
-    const [quantity, setQuantity] = useState(1);
+const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onBuyNow, onSelectProduct, wishlist, addToWishlist }) => {
     
     // Carousel state
     const images = [product.imageUrl, ...(product.galleryImages || [])].filter(img => img && typeof img === 'string');
@@ -43,13 +42,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onSelectP
         setCurrentIndex(prevIndex => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
     };
 
-    const isOutOfStock = product.stock !== undefined && product.stock <= 0;
+    const isOutOfStock = product.stock !== undefined && product.stock <= 0 && !product.isDropshipping;
     const isInWishlist = wishlist.some(item => item.id === product.id);
 
     const getRibbonColor = (ribbonText: string) => {
         const text = ribbonText.toLowerCase();
         if (text.includes('promo')) return 'bg-red-500';
         if (text.includes('nouveau')) return 'bg-blue-500';
+        if (text.includes('stock faible')) return 'bg-orange-500';
+        if (text.includes('rupture')) return 'bg-gray-700';
         return 'bg-green-500';
     };
 
@@ -77,11 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onSelectP
                         ))}
                     </div>
                     
-                    {isOutOfStock ? (
-                        <div className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1.5 rounded-full bg-gray-700 shadow-lg z-10">
-                            Rupture de stock
-                        </div>
-                    ) : product.ribbon && (
+                    {product.ribbon && (
                         <div className={`absolute top-3 left-3 text-white text-xs font-bold px-3 py-1.5 rounded-full ${getRibbonColor(product.ribbon)} shadow-lg z-10`}>
                             {product.ribbon}
                         </div>
@@ -141,40 +138,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, addToCart, onSelectP
                         )}
                      </div>
                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center border rounded-md">
-                           <button 
-                             onClick={() => setQuantity(q => Math.max(1, q - 1))} 
-                             className="px-2 py-2 text-gray-600 hover:bg-gray-100 transition-colors rounded-l-md disabled:opacity-50"
-                             aria-label="Diminuer la quantité"
-                             disabled={isOutOfStock}
-                           >
-                             <Minus size={14}/>
-                           </button>
-                           <input 
-                             type="number"
-                             value={quantity}
-                             onChange={e => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                             className="w-12 text-center border-l border-r h-full focus:outline-none disabled:bg-gray-100"
-                             aria-label="Quantité"
-                             min="1"
-                             disabled={isOutOfStock}
-                           />
-                           <button 
-                             onClick={() => setQuantity(q => q + 1)} 
-                             className="px-2 py-2 text-gray-600 hover:bg-gray-100 transition-colors rounded-r-md disabled:opacity-50"
-                             aria-label="Augmenter la quantité"
-                             disabled={isOutOfStock}
-                           >
-                             <Plus size={14}/>
-                           </button>
-                        </div>
                         <button 
-                          onClick={() => addToCart(product, quantity)} 
-                          className="flex-shrink-0 bg-cyan-500 text-white p-2.5 rounded-md hover:bg-cyan-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                          aria-label="Ajouter au panier"
-                          disabled={isOutOfStock}
+                            onClick={() => addToCart(product, 1)}
+                            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 border border-cyan-600 text-cyan-600 font-semibold rounded-md hover:bg-cyan-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={isOutOfStock}
                         >
-                            <ShoppingCart size={18} />
+                            <ShoppingCart size={16} />
+                            Ajouter
+                        </button>
+                        <button 
+                            onClick={() => onBuyNow(product, 1)}
+                            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            disabled={isOutOfStock}
+                        >
+                             <Zap size={16} />
+                            Achat Rapide
                         </button>
                      </div>
                 </div>
@@ -188,6 +166,7 @@ interface ProductsCarouselProps {
     subtitle?: string;
     products: Product[];
     addToCart: (product: Product, quantity: number) => void;
+    onBuyNow: (product: Product, quantity: number) => void;
     onSelectProduct: (product: Product) => void;
     navigateTo: (page: Page, options?: { categoryFilter?: string }) => void;
     categoryFilter?: string;
@@ -201,7 +180,7 @@ interface ProductsCarouselProps {
     viewAllLinkColor?: string;
 }
 
-export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subtitle, products, addToCart, onSelectProduct, navigateTo, categoryFilter, viewAllLink, bgColor = 'bg-cyan-50/70', headless = false, wishlist, addToWishlist, isPromoSection = false, titleColor = 'text-gray-800', viewAllLinkColor = 'text-cyan-600' }) => {
+export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subtitle, products, addToCart, onBuyNow, onSelectProduct, navigateTo, categoryFilter, viewAllLink, bgColor = 'bg-cyan-50/70', headless = false, wishlist, addToWishlist, isPromoSection = false, titleColor = 'text-gray-800', viewAllLinkColor = 'text-cyan-600' }) => {
     const scrollContainer = useRef<HTMLDivElement>(null);
     const [isHovering, setIsHovering] = useState(false);
     const intervalRef = useRef<number | null>(null);
@@ -264,7 +243,7 @@ export const ProductsCarousel: React.FC<ProductsCarouselProps> = ({ title, subti
             <div ref={scrollContainer} className="flex overflow-x-auto space-x-6 pb-4 -mx-4 px-4 items-stretch" style={scrollbarHideStyle}>
                 {products.map(product => (
                     <div key={product.id} className="flex-shrink-0 w-80">
-                        <ProductCard product={product} addToCart={addToCart} onSelectProduct={onSelectProduct} wishlist={wishlist} addToWishlist={addToWishlist} />
+                        <ProductCard product={product} addToCart={addToCart} onBuyNow={onBuyNow} onSelectProduct={onSelectProduct} wishlist={wishlist} addToWishlist={addToWishlist} />
                     </div>
                 ))}
             </div>
