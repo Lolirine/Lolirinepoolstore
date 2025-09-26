@@ -55,6 +55,31 @@ jobs:
           GEMINI_API_KEY=${GEMINI_API_KEY}
           EOT
 
+          # --- INSTALL/BUILD ---
+          # Détecte le gestionnaire et gère lockfile manquant/désync
+          if [ -f yarn.lock ]; then
+            corepack enable
+            yarn install --no-immutable || yarn install
+            yarn build
+          elif [ -f pnpm-lock.yaml ]; then
+            corepack enable
+            pnpm install --no-frozen-lockfile || pnpm install
+            pnpm build
+          elif [ -f package.json ]; then
+            npm ci || npm install
+            npm run build
+          else
+            echo "Aucun package.json: rien à builder"; 
+          fi
+
+          # Sélection de l'artefact (dist/out/build/.next/export)
+          ART=""
+          for d in dist out build ".next/export"; do
+            [ -d "$d" ] && ART="$d" && break
+          done
+          [ -z "$ART" ] && ART="dist"
+          # --- FIN INSTALL/BUILD ---
+
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
           npm run build
 
