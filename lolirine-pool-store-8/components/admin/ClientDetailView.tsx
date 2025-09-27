@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserAccount, Order, UserSegment, CommunicationEntry, Address } from '../../types';
-import { ArrowLeft, User, ShoppingCart, MessageSquare, BarChart2, Save, X, Plus } from 'lucide-react';
+import { ArrowLeft, User, ShoppingCart, MessageSquare, BarChart2, Save, X, Plus, Mail, Phone, Edit, Clock } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 
 interface ClientDetailViewProps {
@@ -19,35 +19,28 @@ const StatCard: React.FC<{ title: string; value: string | number; }> = ({ title,
 
 const ClientDetailView: React.FC<ClientDetailViewProps> = ({ user, orders, onUpdateUser, onBack }) => {
     const [activeTab, setActiveTab] = useState<'info' | 'orders' | 'comms'>('info');
-    const [editedUser, setEditedUser] = useState<UserAccount>(user);
-    const [newComm, setNewComm] = useState('');
+    const [editedUser, setEditedUser] = useState<UserAccount>(JSON.parse(JSON.stringify(user))); // Deep copy
+    const [newComm, setNewComm] = useState({ type: 'Note' as CommunicationEntry['type'], summary: ''});
 
-    const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setEditedUser(prev => ({ ...prev, [name]: value }));
     };
     
-    const handleAddressChange = (type: 'shippingAddress' | 'billingAddress', field: keyof Address, value: string) => {
-        setEditedUser(prev => ({
-            ...prev,
-            [type]: { ...prev[type], [field]: value }
-        }));
-    };
-    
     const handleAddCommunication = () => {
-        if (!newComm.trim()) return;
+        if (!newComm.summary.trim()) return;
         const newEntry: CommunicationEntry = {
             id: `comm-${Date.now()}`,
             date: new Date().toISOString(),
-            type: 'Note',
-            summary: newComm,
+            type: newComm.type,
+            summary: newComm.summary,
             author: 'Admin'
         };
         setEditedUser(prev => ({
             ...prev,
-            communicationHistory: [newEntry, ...prev.communicationHistory]
+            communicationHistory: [newEntry, ...(prev.communicationHistory || [])]
         }));
-        setNewComm('');
+        setNewComm({ type: 'Note', summary: '' });
     };
 
     const handleSave = () => {
@@ -55,6 +48,7 @@ const ClientDetailView: React.FC<ClientDetailViewProps> = ({ user, orders, onUpd
     };
     
     const totalSpent = orders.reduce((sum, order) => order.status === 'Complété' ? sum + order.total : sum, 0);
+    const lastOrderDate = orders.length > 0 ? new Date(Math.max(...orders.map(o => new Date(o.date).getTime()))).toLocaleDateString('fr-FR') : 'N/A';
 
     return (
         <div className="space-y-6">
@@ -74,7 +68,7 @@ const ClientDetailView: React.FC<ClientDetailViewProps> = ({ user, orders, onUpd
                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <StatCard title="Total Dépensé" value={formatCurrency(totalSpent)} />
                     <StatCard title="Commandes" value={orders.length} />
-                    <StatCard title="Segment" value={user.segment} />
+                    <StatCard title="Dernière commande" value={lastOrderDate} />
                     <StatCard title="Membre depuis" value={new Date(user.createdAt).toLocaleDateString('fr-FR')} />
                  </div>
             </div>
@@ -117,15 +111,28 @@ const ClientDetailView: React.FC<ClientDetailViewProps> = ({ user, orders, onUpd
                     )}
                     {activeTab === 'comms' && (
                          <div className="space-y-4">
-                             <div className="flex gap-2">
-                                 <input value={newComm} onChange={e => setNewComm(e.target.value)} placeholder="Ajouter une note..." className="flex-1 p-2 border rounded-md" />
-                                 <button onClick={handleAddCommunication} className="p-2 bg-cyan-500 text-white rounded-md"><Plus size={20}/></button>
+                             <div className="bg-gray-50 p-4 rounded-lg border">
+                                <h4 className="font-semibold mb-2">Ajouter une communication</h4>
+                                <div className="flex gap-2 mb-2">
+                                    <select value={newComm.type} onChange={e => setNewComm(prev => ({...prev, type: e.target.value as any}))} className="p-2 border rounded-md">
+                                        <option>Note</option>
+                                        <option>Email</option>
+                                        <option>Appel</option>
+                                    </select>
+                                    <textarea value={newComm.summary} onChange={e => setNewComm(prev => ({...prev, summary: e.target.value}))} placeholder="Ajouter une note..." rows={2} className="flex-1 p-2 border rounded-md" />
+                                </div>
+                                <div className="text-right">
+                                    <button onClick={handleAddCommunication} className="px-4 py-2 text-sm bg-cyan-500 text-white rounded-md hover:bg-cyan-600"><Plus size={16} className="inline mr-1"/> Ajouter</button>
+                                </div>
                              </div>
-                             <div className="space-y-3 max-h-60 overflow-y-auto pr-2">
+                             <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
                                  {editedUser.communicationHistory.map(c => (
-                                     <div key={c.id} className="bg-gray-50 p-3 rounded-md">
-                                         <p className="text-sm">{c.summary}</p>
-                                         <p className="text-xs text-gray-500 mt-1">{c.author} - {new Date(c.date).toLocaleString('fr-FR')}</p>
+                                     <div key={c.id} className="flex items-start gap-3">
+                                         <div className="mt-1.5 p-2 bg-gray-100 rounded-full">{c.type === 'Appel' ? <Phone size={14}/> : c.type === 'Email' ? <Mail size={14}/> : <MessageSquare size={14}/>}</div>
+                                         <div className="bg-gray-50 p-3 rounded-md flex-1">
+                                             <p className="text-sm">{c.summary}</p>
+                                             <p className="text-xs text-gray-500 mt-1 flex items-center gap-2"><Clock size={12}/> {c.author} - {new Date(c.date).toLocaleString('fr-FR')}</p>
+                                         </div>
                                      </div>
                                  ))}
                              </div>
@@ -134,7 +141,7 @@ const ClientDetailView: React.FC<ClientDetailViewProps> = ({ user, orders, onUpd
                 </div>
                  <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
                     <button onClick={onBack} className="px-4 py-2 text-sm font-medium bg-white border rounded-md hover:bg-gray-100">Annuler</button>
-                    <button onClick={handleSave} className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-md hover:bg-cyan-700 flex items-center gap-2"><Save size={16}/> Enregistrer</button>
+                    <button onClick={handleSave} className="px-4 py-2 text-sm font-medium text-white bg-cyan-600 rounded-md hover:bg-cyan-700 flex items-center gap-2"><Save size={16}/> Enregistrer les modifications</button>
                  </div>
             </div>
         </div>

@@ -103,9 +103,11 @@ const ShopPage: React.FC<ShopPageProps> = (props) => {
     }
     
     // 4. Attribute Filters
+    // FIX: Refactored to use Object.keys to fix type inference issues with `values`.
     if (Object.keys(activeFilters).length > 0) {
         filtered = filtered.filter(p => {
-            return Object.entries(activeFilters).every(([key, values]) => {
+            return Object.keys(activeFilters).every(key => {
+                const values = activeFilters[key];
                 // If a filter has no selected values, it shouldn't filter anything out.
                 if (!values || values.length === 0) return true;
                 
@@ -265,7 +267,7 @@ const ShopPage: React.FC<ShopPageProps> = (props) => {
         </div>
       </div>
 
-      <div className="py-6 bg-white border-b sticky top-[212px] z-20">
+      <div className="py-6 bg-white border-b sticky top-[164px] z-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap justify-center items-center gap-x-4 gap-y-3">
                 {categoryNavItems.map(cat => {
