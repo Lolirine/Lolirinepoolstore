@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { HeaderProps, NavLink as NavLinkType, Page, Service } from '../types';
+import { HeaderProps, NavLink as NavLinkType, Page, Service, Product } from '../types';
 import { Menu, X, User, ShoppingCart, Search, Heart, ChevronDown, List, ArrowRight } from 'lucide-react';
+import { formatCurrency } from '../utils/formatting';
 
 const InfoBanner: React.FC<{ config: HeaderProps['bannerConfig'] }> = ({ config }) => {
   if (!config.isVisible) return null;
@@ -13,60 +14,116 @@ const InfoBanner: React.FC<{ config: HeaderProps['bannerConfig'] }> = ({ config 
   );
 };
 
-const MegaMenu: React.FC<Pick<HeaderProps, 'navigateTo' | 'services' | 'shopCategories' | 'wellnessCategories'> & { closeMenu: () => void }> = 
-  ({ navigateTo, services, shopCategories, wellnessCategories, closeMenu }) => {
+// Define a specific props interface for MegaMenu to include mouse event handlers
+interface MegaMenuProps extends Pick<HeaderProps, 'navigateTo' | 'services' | 'shopCategories' | 'wellnessCategories' | 'promotions' | 'onSelectProduct'> {
+  closeMenu: () => void;
+}
+
+
+const MegaMenu = React.forwardRef<HTMLDivElement, MegaMenuProps>(
+  ({ navigateTo, services, shopCategories, wellnessCategories, promotions, onSelectProduct, closeMenu }, ref) => {
+
+  const promoProduct = promotions && promotions.length > 0 ? promotions[0] : null;
 
   const handleNavigate = (page: Page, options?: { categoryFilter?: string }) => {
     navigateTo(page, options);
     closeMenu();
   };
   
+  const handlePromoProductClick = (product: Product) => {
+    onSelectProduct(product);
+    closeMenu();
+  };
+  
   const MegaMenuColumn: React.FC<{title: string, items: NavLinkType[], page: Page}> = ({title, items, page}) => (
     <div className="flex-1">
-      <h3 className="font-bold text-gray-800 mb-4 px-4">{title}</h3>
-      <ul className="space-y-1">
+      <button onClick={() => handleNavigate(page)} className="block w-full text-left font-bold text-lg text-gray-800 mb-4 hover:text-cyan-600 transition-colors">
+        {title}
+      </button>
+      <ul className="space-y-3">
         {items.map(item => (
           <li key={item.id}>
-            <a href="#" onClick={(e) => { e.preventDefault(); handleNavigate(page, { categoryFilter: item.categoryFilter }); }}
-               className="block px-4 py-2 text-sm text-gray-600 hover:bg-cyan-50 rounded-md">
-              {item.label}
-            </a>
+            {item.children && item.children.length > 0 ? (
+              // Section with a clickable header
+              <div>
+                <button onClick={() => handleNavigate(item.page || page, { categoryFilter: item.categoryFilter })}
+                   className="block w-full text-left font-bold text-sm text-gray-900 mb-2 hover:text-cyan-600">
+                  {item.label}
+                </button>
+                <ul className="space-y-1.5 pl-4"> {/* Indentation for children */}
+                  {item.children.map(child => (
+                    <li key={child.id}>
+                      <button onClick={(e) => { e.stopPropagation(); handleNavigate(child.page || page, { categoryFilter: child.categoryFilter }); }}
+                         className="block w-full text-left text-sm text-gray-600 hover:text-cyan-600">
+                        {child.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              // Simple link item
+              <button onClick={() => handleNavigate(item.page || page, { categoryFilter: item.categoryFilter })}
+                 className="block w-full text-left text-sm text-gray-800 hover:text-cyan-600 font-medium">
+                {item.label}
+              </button>
+            )}
           </li>
         ))}
       </ul>
     </div>
   );
 
+  const servicesAsNavLinks: NavLinkType[] = services.map(service => ({
+      id: `service-${service.page}`,
+      label: service.title,
+      page: service.page,
+  }));
+
   return (
-    <div className="absolute top-full left-0 w-full bg-white shadow-lg z-40 animate-slide-in-top border-t">
+    <div 
+      ref={ref}
+      className="absolute top-full left-0 w-full bg-white shadow-lg z-40 animate-slide-in-top border-t"
+    >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 md:grid-cols-4 gap-8">
         <MegaMenuColumn title="Boutique" items={shopCategories} page="shop" />
         <MegaMenuColumn title="Espace Wellness" items={wellnessCategories} page="wellness" />
-        <div>
-           <h3 className="font-bold text-gray-800 mb-4 px-4">Nos Services</h3>
-           <ul className="space-y-1">
-            {services.map(service => (
-              <li key={service.page}>
-                 <a href="#" onClick={(e) => { e.preventDefault(); handleNavigate(service.page); }}
-                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-cyan-50 rounded-md">
-                    {service.title}
-                 </a>
-              </li>
-            ))}
-           </ul>
-        </div>
-        <div className="bg-cover bg-center rounded-lg p-6 flex flex-col justify-end text-white" 
-             style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/IMAGES%20ARRIERES%20PLAN/Piscine%20arrie%CC%80re%20plan2.jpg')" }}>
-          <h3 className="text-2xl font-bold" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>Promotions Exclusives</h3>
-          <p className="text-sm my-2" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>Découvrez nos meilleures offres du moment !</p>
-          <a href="#" onClick={(e) => { e.preventDefault(); handleNavigate('promotions'); }} className="mt-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md inline-flex items-center self-start">
-            J'en profite <ArrowRight size={16} className="ml-2"/>
-          </a>
-        </div>
+        <MegaMenuColumn title="Nos Services" items={servicesAsNavLinks} page="servicesOverview" />
+        {promoProduct ? (
+            <button
+              onClick={() => handlePromoProductClick(promoProduct)}
+              className="bg-cover bg-center rounded-lg p-6 flex flex-col justify-end text-white text-left cursor-pointer group relative" 
+              style={{ backgroundImage: `url('${promoProduct.imageUrl}')` }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent rounded-lg transition-all group-hover:from-black/80"></div>
+              <div className="relative z-10">
+                <span className="text-xs font-bold uppercase bg-red-500 px-2 py-1 rounded">Offre Spéciale</span>
+                <h3 className="text-2xl font-bold mt-2 leading-tight" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{promoProduct.name}</h3>
+                <div className="flex items-baseline gap-2 mt-2">
+                  <p className="text-2xl font-bold text-yellow-300" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{formatCurrency(promoProduct.promoPrice! * (1 + promoProduct.tvaRate))}</p>
+                  <p className="text-md line-through text-gray-300" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>{formatCurrency(promoProduct.price * (1 + promoProduct.tvaRate))}</p>
+                </div>
+                <div className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md inline-flex items-center self-start transition-transform group-hover:scale-105">
+                  J'en profite <ArrowRight size={16} className="ml-2"/>
+                </div>
+              </div>
+            </button>
+        ) : (
+             <div className="bg-cover bg-center rounded-lg p-6 flex flex-col justify-end text-white relative" 
+                 style={{ backgroundImage: "url('https://storage.googleapis.com/lolirinepoolstoreimage/IMAGES%20ARRIERES%20PLAN/Piscine%20arrie%CC%80re%20plan2.jpg')" }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent rounded-lg"></div>
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>Promotions Exclusives</h3>
+                <p className="text-sm my-2" style={{textShadow: '1px 1px 4px rgba(0,0,0,0.7)'}}>Découvrez nos meilleures offres du moment !</p>
+                <button onClick={() => handleNavigate('promotions')} className="mt-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md inline-flex items-center self-start">
+                  J'en profite <ArrowRight size={16} className="ml-2"/>
+                </button>
+              </div>
+            </div>
+        )}
       </div>
     </div>
   );
-};
+});
 
 const MobileMenu: React.FC<HeaderProps & { isOpen: boolean; closeMenu: () => void }> = (props) => {
     const { isOpen, closeMenu, navigateTo, menuConfig } = props;
@@ -137,7 +194,9 @@ export const Header: React.FC<HeaderProps> = (props) => {
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [scrolled, setScrolled] = useState(false);
-  const megaMenuTimeoutRef = useRef<number | null>(null);
+  
+  const megaMenuTriggerRef = useRef<HTMLDivElement>(null);
+  const megaMenuRef = useRef<HTMLDivElement>(null);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,18 +211,24 @@ export const Header: React.FC<HeaderProps> = (props) => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
-  const handleMegaMenuEnter = () => {
-    if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current);
-    setIsMegaMenuOpen(true);
-  };
-  
-  const handleMegaMenuLeave = () => {
-     megaMenuTimeoutRef.current = window.setTimeout(() => {
-        setIsMegaMenuOpen(false);
-     }, 300); // Delay to allow moving mouse to menu
-  };
 
+  // Effect to handle clicks outside of the mega menu to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+        if (
+            isMegaMenuOpen &&
+            megaMenuTriggerRef.current && !megaMenuTriggerRef.current.contains(event.target as Node) &&
+            megaMenuRef.current && !megaMenuRef.current.contains(event.target as Node)
+        ) {
+            setIsMegaMenuOpen(false);
+        }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMegaMenuOpen]);
+  
   const isTransparent = currentPage === 'home' && !scrolled;
 
   return (
@@ -182,8 +247,12 @@ export const Header: React.FC<HeaderProps> = (props) => {
                 </button>
                 
                 {/* Mega Menu Trigger */}
-                <div className="hidden lg:block ml-6" onMouseEnter={handleMegaMenuEnter} onMouseLeave={handleMegaMenuLeave}>
-                    <button className={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-colors ${isTransparent ? 'bg-black/20 text-white hover:bg-black/40' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}>
+                <div ref={megaMenuTriggerRef} className="hidden lg:block ml-6">
+                    <button 
+                        onClick={() => setIsMegaMenuOpen(prev => !prev)}
+                        className={`flex items-center gap-2 px-4 py-3 rounded-lg font-semibold transition-colors ${isTransparent ? 'bg-black/20 text-white hover:bg-black/40' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                        aria-expanded={isMegaMenuOpen}
+                    >
                         <List size={20} />
                         Toutes nos catégories
                     </button>
@@ -273,9 +342,11 @@ export const Header: React.FC<HeaderProps> = (props) => {
             </div>
         </div>
         {isMegaMenuOpen && (
-          <div onMouseEnter={handleMegaMenuEnter} onMouseLeave={handleMegaMenuLeave}>
-            <MegaMenu {...props} closeMenu={() => setIsMegaMenuOpen(false)}/>
-          </div>
+          <MegaMenu 
+            ref={megaMenuRef}
+            {...props} 
+            closeMenu={() => setIsMegaMenuOpen(false)}
+          />
         )}
       </div>
     </header>

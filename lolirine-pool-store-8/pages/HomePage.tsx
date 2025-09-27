@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { HomePageProps, Product, Order, CartItem } from '../types';
+import { HomePageProps, Product, Order, CartItem, Testimonial, HomeCategory } from '../types';
 import { ProductsCarousel } from '../components/ProductCard';
 import { InfoCard } from '../components/InfoCardsSection';
 import { formatCurrency } from '../utils/formatting';
 import { List, Percent, Package, Star, ArrowRight, ArrowDown, MousePointerClick, CreditCard, Headset, Truck } from 'lucide-react';
-import { SERVICES, TESTIMONIALS, PORTFOLIO_ITEMS, HOME_CATEGORIES } from '../constants';
+import { SERVICES } from '../constants';
 
 const useAnimateOnScroll = (options?: IntersectionObserverInit) => {
     const ref = useRef<HTMLElement>(null);
@@ -112,7 +112,7 @@ const ServicesSection: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = (
 )};
 
 
-const TestimonialsSection: React.FC = () => {
+const TestimonialsSection: React.FC<{ testimonials: Testimonial[] }> = ({ testimonials }) => {
     const [sectionRef, isVisible] = useAnimateOnScroll({ threshold: 0.1 });
     
     return (
@@ -127,8 +127,8 @@ const TestimonialsSection: React.FC = () => {
                 <h2 className="text-3xl font-bold text-white" style={{textShadow: '1px 1px 3px rgba(0,0,0,0.5)'}}>Ce que disent nos clients</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {TESTIMONIALS.map((testimonial, index) => (
-                    <div key={index} className={`bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-lg will-animate ${isVisible ? 'animate-slide-in-top' : ''}`}
+                {testimonials.map((testimonial, index) => (
+                    <div key={testimonial.id} className={`bg-white/80 backdrop-blur-sm p-6 rounded-lg shadow-lg will-animate ${isVisible ? 'animate-slide-in-top' : ''}`}
                          style={{ animationDelay: `${index * 100}ms` }}
                     >
                         <p className="text-gray-700 italic mb-4">"{testimonial.quote}"</p>
@@ -148,6 +148,7 @@ const TestimonialsSection: React.FC = () => {
 
 const PortfolioSection: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = ({ navigateTo }) => {
     const [sectionRef, isVisible] = useAnimateOnScroll({ threshold: 0.1 });
+    const PORTFOLIO_ITEMS = []; // This should be passed as props if it becomes dynamic
 
     return (
     <section 
@@ -247,7 +248,7 @@ const FeatureBannerSection = () => {
   );
 };
 
-const CategoryShowcase: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = ({ navigateTo }) => {
+const CategoryShowcase: React.FC<{ navigateTo: HomePageProps['navigateTo'], homeCategories: HomeCategory[] }> = ({ navigateTo, homeCategories }) => {
   const [sectionRef, isVisible] = useAnimateOnScroll({ threshold: 0.1 });
 
   return (
@@ -261,9 +262,9 @@ const CategoryShowcase: React.FC<{ navigateTo: HomePageProps['navigateTo'] }> = 
           <p className="mt-2 text-lg text-gray-600">Trouvez tout ce dont vous avez besoin, classé par catégorie.</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {HOME_CATEGORIES.map((category, index) => (
+          {homeCategories.map((category, index) => (
             <div
-              key={category.label}
+              key={category.id}
               onClick={() => navigateTo(category.page || 'home', { categoryFilter: category.categoryFilter })}
               className={`will-animate ${isVisible ? 'animate-slide-in-top' : ''} group relative rounded-lg overflow-hidden shadow-lg cursor-pointer h-80`}
               style={{ animationDelay: `${index * 100}ms` }}
@@ -317,7 +318,7 @@ const TabbedProductsSection: React.FC<HomePageProps & { newProducts: Product[]; 
                 <div>
                     <ProductsCarousel
                         {...props}
-                        key={activeTab} // Use key to force re-render/remount on tab change
+                        key={activeTab}
                         products={activeTabData.products}
                         bgColor="bg-transparent"
                         headless={true}
@@ -329,11 +330,11 @@ const TabbedProductsSection: React.FC<HomePageProps & { newProducts: Product[]; 
 }
 
 const HomeContent: React.FC<HomePageProps> = (props) => {
-    const { products, recentlyViewed, orders, currentUser, onSelectProduct, navigateTo } = props;
+    const { products, recentlyViewed, orders, currentUser, onSelectProduct, navigateTo, testimonials, homeCategories } = props;
 
     const infoCards = useMemo(() => {
         const cards: React.ReactNode[] = [];
-        if (!currentUser) return []; // Only show cards for logged-in users for now
+        if (!currentUser) return [];
 
         const userOrders = currentUser ? orders.filter(o => o.customer === currentUser.name && o.status === 'Complété') : [];
         const allUserItems = userOrders.flatMap(o => o.items);
@@ -341,16 +342,14 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
         let frequentItems: Product[] = [];
         if (allUserItems.length > 0) {
             const itemFrequencies = allUserItems.reduce((acc, item) => {
-                acc[item.id as string] = (acc[item.id as string] || 0) + 1;
+                const itemId = String(item.id);
+                acc[itemId] = (acc[itemId] || 0) + 1;
                 return acc;
             }, {} as {[key: string]: number});
             
-            // FIX: The original logic incorrectly passed an array of objects `CartItem[]` to the `new Map()` constructor,
-            // which expects an array of key-value pairs. The `new Map()` call was also redundant as the preceding
-            // logic already ensures unique products. This simplified version achieves the intended result correctly.
             frequentItems = Object.entries(itemFrequencies)
                 .sort(([, a], [, b]) => b - a)
-                .map(([id]) => allUserItems.find(item => item.id === id))
+                .map(([id]) => allUserItems.find(item => String(item.id) === id))
                 .filter((p): p is CartItem => p !== undefined);
         }
 
@@ -413,7 +412,8 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
     }, [products, currentUser, orders, navigateTo, onSelectProduct]);
 
     const newProducts = useMemo(() => [...products].sort((a, b) => String(b.id).localeCompare(String(a.id))).slice(0, 10), [products]);
-    const bestSellers = useMemo(() => [...products].filter(p => p.reviewCount && p.reviewCount > 5).sort((a,b) => (b.rating || 0) - (a.rating || 0)).slice(0, 10), [products]);
+    // FIX: Replaced `||` with `??` for safer nullish-coalescing on `rating`, which could be 0.
+    const bestSellers = useMemo(() => [...products].filter(p => p.reviewCount && p.reviewCount > 5).sort((a,b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 10), [products]);
     const promotions = useMemo(() => products.filter(p => p.isOnSale), [products]);
 
     return (
@@ -430,7 +430,7 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
                 </section>
             }
 
-            <CategoryShowcase navigateTo={props.navigateTo} />
+            <CategoryShowcase navigateTo={props.navigateTo} homeCategories={homeCategories} />
 
             <TabbedProductsSection
                 {...props}
@@ -441,7 +441,7 @@ const HomeContent: React.FC<HomePageProps> = (props) => {
             
             <ServicesSection navigateTo={props.navigateTo} />
             
-            <TestimonialsSection />
+            <TestimonialsSection testimonials={testimonials} />
             
             <PortfolioSection navigateTo={props.navigateTo} />
             

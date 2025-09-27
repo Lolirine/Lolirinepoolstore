@@ -71,6 +71,7 @@ const BillingView: React.FC<BillingViewProps> = ({ invoices, onCreate, onUpdate,
                             const total = subtotal * (1 + (invoice.items[0]?.taxRate || 0.21));
                             const discountAmount = invoice.discount ? (invoice.discount.type === 'percentage' ? total * (invoice.discount.value / 100) : invoice.discount.value) : 0;
                             const finalTotal = total - discountAmount;
+                            const isLocked = invoice.status === 'Paid' || invoice.status === 'Cancelled';
 
                             return (
                                 <tr key={invoice.id} className="bg-white border-b hover:bg-gray-50">
@@ -80,10 +81,10 @@ const BillingView: React.FC<BillingViewProps> = ({ invoices, onCreate, onUpdate,
                                     <td className="px-6 py-4 font-semibold text-cyan-600">{formatCurrency(finalTotal)}</td>
                                     <td className="px-6 py-4">{invoice.status}</td>
                                     <td className="px-6 py-4 text-center space-x-2">
-                                        <button onClick={() => handleEdit(invoice)} className="p-2 text-cyan-600 hover:text-cyan-800" title="Modifier">
+                                        <button onClick={() => handleEdit(invoice)} className="p-2 text-cyan-600 hover:text-cyan-800 disabled:opacity-50 disabled:cursor-not-allowed" title="Modifier" disabled={isLocked}>
                                             <Edit size={18} />
                                         </button>
-                                        <button onClick={() => handleDelete(invoice.id)} className="p-2 text-red-500 hover:text-red-700" title="Supprimer">
+                                        <button onClick={() => handleDelete(invoice.id)} className="p-2 text-red-500 hover:text-red-700 disabled:opacity-50 disabled:cursor-not-allowed" title="Supprimer" disabled={isLocked}>
                                             <Trash2 size={18} />
                                         </button>
                                     </td>

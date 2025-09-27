@@ -110,8 +110,8 @@ export const AiAssistantWidget: React.FC<AiAssistantWidgetProps> = ({ onClose, p
 
     } catch (error) {
       console.error("Error calling Gemini API:", error);
-      // FIX: Corrected the string literal syntax which was causing multiple parsing errors.
-      const errorMessage: ChatMessage = { role: 'model', text: 'Désolé, une erreur est survenue lors de la communication avec l\'assistant. Veuillez réessayer plus tard.' };
+      // FIX: Corrected the string literal syntax which was causing multiple parsing errors by using double quotes.
+      const errorMessage: ChatMessage = { role: 'model', text: "Désolé, une erreur est survenue lors de la communication avec l'assistant. Veuillez réessayer plus tard." };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);

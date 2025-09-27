@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
-import { Product, Supplier } from '../../types';
+import { Product, Supplier, ProductVariant } from '../../types';
 import AttributeEditor from './AttributeEditor';
-import { X, Plus, Trash2 } from 'lucide-react';
+import { X, Plus, Trash2, Layers } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatting';
 
 interface ProductEditModalProps {
     product: Product;
@@ -63,6 +65,37 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, onClose, o
         }
     };
 
+    // --- Variant Management ---
+    const handleVariantChange = (variantId: string | number, field: keyof ProductVariant, value: any) => {
+        setEditedProduct(prev => ({
+            ...prev,
+            variants: (prev.variants || []).map(v => 
+                v.id === variantId ? { ...v, [field]: value } : v
+            )
+        }));
+    };
+
+    const handleAddVariant = () => {
+        const newVariant: ProductVariant = {
+            id: `var-${Date.now()}`,
+            name: 'Nouvelle Variante',
+            attributes: {},
+            priceModifier: 0,
+            stock: 0
+        };
+        setEditedProduct(prev => ({
+            ...prev,
+            variants: [...(prev.variants || []), newVariant]
+        }));
+    };
+
+    const handleRemoveVariant = (variantId: string | number) => {
+        setEditedProduct(prev => ({
+            ...prev,
+            variants: (prev.variants || []).filter(v => v.id !== variantId)
+        }));
+    };
+
 
     const handleSave = () => {
         onSave(editedProduct);
@@ -86,7 +119,7 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, onClose, o
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Prix de vente (HT)</label>
+                            <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-1">Prix de base (HT)</label>
                             <input type="number" step="0.01" name="price" id="price" value={editedProduct.price} onChange={handleChange} className="w-full border-gray-300 rounded-md shadow-sm"/>
                         </div>
                         <div>
@@ -108,12 +141,12 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, onClose, o
                             <input type="text" name="imageUrl" id="imageUrl" value={editedProduct.imageUrl} onChange={handleChange} className="w-full border-gray-300 rounded-md shadow-sm"/>
                         </div>
                         <div>
-                            <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">Quantité en stock</label>
-                            <input type="number" name="stock" id="stock" value={editedProduct.stock || 0} onChange={handleChange} className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-200" disabled={editedProduct.isDropshipping} />
+                            <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-1">Stock (si pas de variantes)</label>
+                            <input type="number" name="stock" id="stock" value={editedProduct.stock || 0} onChange={handleChange} className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-200" disabled={editedProduct.isDropshipping || (editedProduct.variants && editedProduct.variants.length > 0)} />
                         </div>
                     </div>
                     
-                     {/* Gallery Images */}
+                    {/* Gallery Images */}
                     <div className="space-y-4">
                         <label className="block text-sm font-medium text-gray-700">Galerie d'images secondaires</label>
                         <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
@@ -156,10 +189,26 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, onClose, o
                         </div>
                     </div>
 
+                    {/* Variant Management */}
+                    <div className="border-t pt-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center"><Layers className="mr-2" /> Gestion des Variantes</h3>
+                        <div className="space-y-3">
+                            {(editedProduct.variants || []).map(variant => (
+                                <div key={variant.id} className="bg-gray-50 p-3 rounded-md border grid grid-cols-4 gap-3 items-center">
+                                    <input value={variant.name} onChange={e => handleVariantChange(variant.id, 'name', e.target.value)} placeholder="Nom (ex: 5kg)" className="col-span-1 p-1 border rounded-md" />
+                                    <input type="number" value={variant.priceModifier || 0} onChange={e => handleVariantChange(variant.id, 'priceModifier', parseFloat(e.target.value))} placeholder="+/- Prix" className="col-span-1 p-1 border rounded-md" />
+                                    <input type="number" value={variant.stock || 0} onChange={e => handleVariantChange(variant.id, 'stock', parseInt(e.target.value))} placeholder="Stock" className="col-span-1 p-1 border rounded-md" />
+                                    <button onClick={() => handleRemoveVariant(variant.id)} className="text-red-500 hover:bg-red-100 p-2 rounded-full justify-self-center"><Trash2 size={16}/></button>
+                                </div>
+                            ))}
+                        </div>
+                         <button onClick={handleAddVariant} className="mt-4 flex items-center gap-2 text-cyan-600 font-semibold text-sm hover:underline"><Plus size={16}/> Ajouter une variante</button>
+                    </div>
+
 
                     {/* Promotion Management */}
                     <div className="border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Gestion de la Promotion</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Gestion de la Promotion & Ruban</h3>
                         <div className="space-y-4">
                             <div className="relative flex items-start">
                                 <div className="flex items-center h-5">
@@ -192,6 +241,19 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, onClose, o
                                     />
                                 </div>
                             )}
+                             <div>
+                                <label htmlFor="ribbon-edit" className="block text-sm font-medium text-gray-700 mb-1">Texte du ruban</label>
+                                <input 
+                                    type="text" 
+                                    name="ribbon" 
+                                    id="ribbon-edit"
+                                    value={editedProduct.ribbon || ''} 
+                                    onChange={handleChange} 
+                                    className="w-full md:w-1/2 border-gray-300 rounded-md shadow-sm"
+                                    placeholder="Ex: PROMO, NOUVEAU, -20%"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Ce texte s'affichera en bannière sur l'image du produit.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -228,8 +290,8 @@ const ProductEditModal: React.FC<ProductEditModalProps> = ({ product, onClose, o
 
                     {/* Attributes */}
                     <div>
-                        <h3 className="text-lg font-semibold text-gray-800 border-t pt-6">Attributs du Produit</h3>
-                         <p className="text-sm text-gray-500 mb-4">Ces attributs seront utilisés pour les filtres sur la boutique.</p>
+                        <h3 className="text-lg font-semibold text-gray-800 border-t pt-6">Attributs (pour produit simple)</h3>
+                         <p className="text-sm text-gray-500 mb-4">Pour les produits avec variantes, les attributs se gèrent au niveau de chaque variante.</p>
                         <AttributeEditor
                             attributes={editedProduct.attributes || {}}
                             onAttributesChange={handleAttributesChange}

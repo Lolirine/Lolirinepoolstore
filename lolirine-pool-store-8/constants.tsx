@@ -14,6 +14,10 @@ import {
   NavLink,
   AdminView,
   HomeCategory,
+  MarketingCampaign,
+  SiteConfig,
+  PageContent,
+  Prospect,
 } from './types';
 import {
   Truck,
@@ -33,7 +37,10 @@ import {
   File as FileIcon,
   GitBranch,
   MessageSquare,
-  Contact
+  Contact,
+  Megaphone,
+  HeartHandshake,
+  Settings
 } from 'lucide-react';
 import MaestroIcon from './components/icons/MaestroIcon';
 import PaypalIcon from './components/icons/PaypalIcon';
@@ -206,20 +213,23 @@ export const BOUTIQUE_SUB_CATEGORIES: NavLink[] = [
     { id: 'shop-deshumidification', label: 'Déshumidification', page: 'shop', categoryFilter: 'Déshumidification' },
 ];
 
-export const TESTIMONIALS: Testimonial[] = [
+export const INITIAL_TESTIMONIALS: Testimonial[] = [
   {
+    id: 'test-1',
     quote: "Un service client impeccable et des produits de grande qualité. Ma piscine n'a jamais été aussi belle !",
     author: 'Jean Dupont',
     location: 'Bordeaux, France',
     imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
   },
   {
+    id: 'test-2',
     quote: "L'équipe a été très professionnelle lors de la rénovation de notre piscine. Le résultat est au-delà de nos espérances.",
     author: 'Marie Martin',
     location: 'Arcachon, France',
     imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704e',
   },
   {
+    id: 'test-3',
     quote: "Leur boutique en ligne est très complète et la livraison est rapide. Je recommande vivement !",
     author: 'Pierre Bernard',
     location: 'Namur, Belgique',
@@ -399,28 +409,298 @@ export const BLOG_POSTS: BlogPost[] = [
   },
 ];
 
-export const HOME_CATEGORIES: HomeCategory[] = [
+export const INITIAL_HOME_CATEGORIES: HomeCategory[] = [
   {
+    id: 'home-cat-1',
     label: "Traitement de l'eau",
     imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Analyse%20de%20l\'eau%203.jpeg',
     page: 'shop',
     categoryFilter: "Traitement de l'eau",
   },
   {
+    id: 'home-cat-2',
     label: 'Nettoyage & Robots',
     imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Image%20notre%20boutique3.jpeg',
     page: 'shop',
     categoryFilter: 'Nettoyage',
   },
   {
+    id: 'home-cat-3',
     label: 'Espace Wellness',
     imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/JACUZZI%20ASTRAPOOL/cq5dam.web.1280.1280.jpeg',
     page: 'wellness',
   },
   {
+    id: 'home-cat-4',
     label: 'Construction & Rénovation',
     imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Construction%20piscine.jpeg',
     page: 'construction',
+  },
+];
+
+export const INITIAL_SITE_CONFIG: SiteConfig = {
+    contact: {
+        address: "Rue Bois D'Esneux 110",
+        city: "5021 Boninne (Namur), Belgique",
+        phone: "+32 497 44 41 46",
+        email: "info@lolirinepoolstore.be"
+    },
+    socials: {
+        facebook: "#",
+        twitter: "#",
+        instagram: "#",
+        linkedin: "#"
+    }
+};
+
+const GENERIC_LEGAL_IMAGE = 'https://storage.googleapis.com/lolirinepoolstoreimage/IMAGES%20ARRIERES%20PLAN/Piscine%20arrie%CC%80re%20plan19.avif';
+
+export const INITIAL_PAGES_CONTENT: PageContent[] = [
+  {
+    pageId: 'about',
+    title: 'À Propos - Lolirine Pool Store',
+    hero: {
+      title: 'Notre Passion, Votre Piscine',
+      subtitle: 'Bien plus qu\'un métier, la conception et l\'entretien de piscines est pour nous une véritable passion que nous partageons avec vous depuis plus de 8 ans.',
+      imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/IMAGES%20ARRIERES%20PLAN/Piscine%20arrie%CC%80re%20plan19.avif',
+    },
+    sections: [
+      {
+        id: 'about-s1',
+        title: 'Notre Engagement',
+        content: 'Chez Lolirine Pool Store, nous croyons qu\'une piscine est un lieu de vie, de partage et de bien-être. C\'est pourquoi nous nous engageons à fournir non seulement des produits de qualité, mais aussi un service d\'expert, réactif et entièrement tourné vers votre satisfaction.',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_9491.jpeg',
+      },
+      {
+        id: 'about-s2',
+        title: 'Notre Histoire',
+        content: 'L\'aventure commence avec une ambition simple : offrir un service complet et irréprochable aux propriétaires de piscines de la région.\nGrâce à la confiance de nos clients, nous devenons un acteur incontournable, élargissant nos services à la construction et à la vente de matériel de pointe.\nAujourd\'hui, nous continuons d\'innover pour vous proposer les meilleures solutions, alliant technologie, esthétique et respect de l\'environnement.',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/PHOTOS%20REALISATIONS%20PISCINE%20LOLIRINE/IMG_3662.heic',
+      }
+    ]
+  },
+  {
+    pageId: 'servicesOverview',
+    title: 'Nos Services',
+    hero: {
+        title: 'Nos Services Piscine',
+        subtitle: 'Expertise et sérénité au quotidien. Nous mettons notre savoir-faire au service de votre piscine pour vous garantir confort, sécurité et tranquillité.',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Entretien%20piscine%202.jpg'
+    },
+    sections: [
+        {
+            id: 'services-intro',
+            title: 'Un service complet pour votre tranquillité',
+            content: "Que vous ayez besoin d'un entretien régulier, d'une réparation urgente, ou que vous rêviez d'une nouvelle piscine, notre équipe d'experts est à votre service. Nous mettons notre savoir-faire et notre passion à votre disposition pour garantir votre satisfaction et la longévité de votre installation.",
+            imageUrl: ''
+        }
+    ]
+  },
+  {
+    pageId: 'repairs',
+    title: 'Réparation & Dépannage',
+    hero: {
+        title: 'Réparation & Dépannage de piscine',
+        subtitle: 'Une panne, une fuite, un équipement défectueux ? Retrouvez la sérénité avec notre service de dépannage rapide et efficace.',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/re%CC%81paration%20de%CC%81pannage1.jpg'
+    },
+    sections: [{
+        id: 'repairs-main',
+        title: 'Une solution à chaque problème',
+        content: "Chez Lolirine Pool Store, nous savons qu’une piscine doit rester un lieu de plaisir. C’est pourquoi nous proposons un service complet de réparation et de dépannage, adapté à toutes les installations, pour une tranquillité d'esprit absolue.",
+        imageUrl: ''
+    }]
+  },
+  {
+    pageId: 'construction',
+    title: 'Construction & Rénovation',
+    hero: {
+        title: 'Construction & Rénovation de Piscine',
+        subtitle: 'Du design sur-mesure à la réalisation complète, nous vous accompagnons pas à pas pour bâtir l’espace de baignade qui vous ressemble.',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/GALERIE%20REALISATIONS/PHOTO-2022-04-13-16-20-01.jpg'
+    },
+    sections: [{
+        id: 'construction-main',
+        title: 'Votre projet, notre expertise',
+        content: "Que vous rêviez d'une nouvelle piscine ou souhaitiez moderniser votre bassin existant, notre équipe d'experts vous accompagne pour concrétiser votre vision. Nous combinons créativité, savoir-faire technique et matériaux de qualité pour un résultat à la hauteur de vos attentes.",
+        imageUrl: ''
+    }]
+  },
+  {
+    pageId: 'waterAnalysis',
+    title: 'Analyse de l\'eau',
+    hero: {
+        title: 'Analyse de l’Eau de Piscine',
+        subtitle: 'Une eau limpide et saine, c’est la clé d’une baignade agréable et sécurisée. Notre service vous garantit un diagnostic précis et un traitement adapté.',
+        imageUrl: 'https://storage.googleapis.com/lolirinepoolstoreimage/Analyse%20de%20l\'eau%204.jpeg'
+    },
+    sections: [{
+        id: 'water-analysis-main',
+        title: 'Pourquoi analyser l’eau de votre piscine ?',
+        content: "L’eau d’une piscine est un écosystème fragile. Sans contrôle régulier, elle peut rapidement devenir trouble, verte, irritante ou corrosive pour vos équipements. Une analyse professionnelle vous assure une eau équilibrée, douce et parfaitement désinfectée.",
+        imageUrl: ''
+    }]
+  },
+  {
+    pageId: 'winterization',
+    title: 'Hivernage & Estivage',
+    hero: {
+        title: 'Préparez votre piscine pour l\'hiver',
+        subtitle: 'Abordez l\'hiver l\'esprit tranquille, sans vous soucier de la protection de votre piscine. Nous transformons cette tâche complexe en une simple formalité.',
+        imageUrl: 'https://storage.googleapis.com/lolirine_pool_store_photos/Couverture%20hivernage.jpeg'
+    },
+    sections: [{
+        id: 'winterization-main',
+        title: 'Hivernage de piscine : des solutions sur mesure',
+        content: "Qu’il s’agisse de votre piscine privée, de celle d’un hôtel ou d’une résidence secondaire, nous adaptons nos formules pour protéger efficacement votre installation durant la saison froide.",
+        imageUrl: ''
+    }]
+  },
+  {
+    pageId: 'terms',
+    title: 'Conditions Générales de Vente',
+    hero: {
+      title: 'Conditions Générales de Vente',
+      subtitle: 'Veuillez lire attentivement nos conditions générales avant d\'utiliser nos services.',
+      imageUrl: GENERIC_LEGAL_IMAGE,
+    },
+    sections: [
+      {
+        id: 'terms-main',
+        title: '',
+        content: `<h2 class="text-xl font-bold mt-8">ARTICLE 1 - Préambule</h2>
+                    <p>Les présentes conditions générales de vente ont pour objet de définir les modalités de vente à distance entre l'entreprise Lolirine Pool Store, dont le siège social est situé à Rue Bois D'Esneux 110, 5021 Boninne (Namur), Belgique, immatriculée sous le numéro de TVA BE 0650891 279, et toute personne physique non commerçante effectuant un achat sur le site internet de l'entreprise (ci-après le "Client").</p>
+                    <p>Le présent site permet à Lolirine Pool Store de proposer à la vente du matériel et des accessoires pour piscine (ci-après les "Produits") à des internautes naviguant sur le Site (l'"Utilisateur"). L'Utilisateur ayant validé une commande sera dénommé "Client".</p>
+                    <p>Toute commande d'un Produit proposé sur le Site suppose la consultation préalable et l'acceptation expresse et sans réserve des présentes conditions générales de vente, manifestée par le fait de cocher la case "Je déclare avoir pris connaissance et accepter les conditions générales de vente".</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 2 - Commandes</h2>
+                    <p>La navigation sur le site est libre et n'engage en rien l'Utilisateur.</p>
+                    <p>Toute commande implique l'acceptation des prix et des descriptions des Produits disponibles à la vente. Lolirine Pool Store s'engage à honorer les commandes reçues dans la limite des stocks disponibles.</p>
+                    <p>La validation de la commande par le Client vaut acceptation sans réserve des présentes Conditions Générales de Vente.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 3 - Produits</h2>
+                    <p>Les Produits vendus par Lolirine Pool Store sont ceux figurant sur le site, dans la limite des stocks disponibles. Chaque Produit dispose d'une fiche descriptive précise comprenant une photographie, un libellé, les caractéristiques principales, le prix et les modalités d'utilisation.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 4 - Prix</h2>
+                    <p>Les prix des Produits sont indiqués en euros (€) toutes taxes comprises (TTC), hors frais de livraison. Lolirine Pool Store se réserve le droit de modifier ses prix à tout moment, mais les prix applicables sont ceux en vigueur au moment de la validation de la commande.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 5 - Modalités de paiement</h2>
+                    <p>Le paiement des commandes s'effectue exclusivement en euros (€) via les moyens suivants : Carte bancaire (Visa, Mastercard, American Express), Bancontact, Apple Pay, Google Pay, Virement bancaire, PayPal. Toutes les transactions sont sécurisées.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 6 - Livraison</h2>
+                    <p>Lolirine Pool Store livre en Belgique, en France, aux Pays-Bas, au Luxembourg et en Allemagne. Les frais de livraison sont de 6€ pour la Belgique et 11€ pour les autres pays. La livraison est gratuite pour toute commande supérieure à 59€. Les délais de livraison sont de 2 à 5 jours ouvrables.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 7 - Droit de rétractation</h2>
+                    <p>Le Client dispose de 14 jours pour exercer son droit de rétractation et retourner les Produits non utilisés et en parfait état. Les frais de retour sont à la charge du Client.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 8 - Garanties légales</h2>
+                    <p>Lolirine Pool Store applique la garantie légale de conformité et la garantie contre les vices cachés. En cas de produit défectueux, le Client peut demander un remboursement ou un remplacement dans un délai de 2 ans après la réception.</p>
+                    <h2 class="text-xl font-bold mt-8">ARTICLE 9 - Résolution des litiges</h2>
+                    <p>Les présentes Conditions Générales de Vente sont soumises au droit belge. En cas de litige, les parties s'efforceront de trouver une solution amiable avant de saisir les tribunaux belges compétents.</p>`,
+        imageUrl: ''
+      }
+    ]
+  },
+  {
+    pageId: 'privacy',
+    title: 'Politique de Confidentialité',
+    hero: {
+      title: 'Politique de Confidentialité',
+      subtitle: 'Votre confiance est notre priorité. Découvrez comment nous protégeons vos données.',
+      imageUrl: GENERIC_LEGAL_IMAGE,
+    },
+    sections: [
+      {
+        id: 'privacy-main',
+        title: '',
+        content: `<h2 class="text-xl font-bold mt-8">1. Collecte des Données Personnelles</h2>
+                    <p>Nous collectons certaines informations personnelles lorsque vous naviguez sur notre site ou effectuez un achat, notamment : informations d’identification, de paiement, de navigation, et liées aux commandes.</p>
+                    <h2 class="text-xl font-bold mt-8">2. Finalités de la Collecte des Données</h2>
+                    <p>Vos données sont utilisées pour traiter vos commandes, gérer votre compte, vous envoyer des offres (avec votre consentement), améliorer notre site, et sécuriser les paiements.</p>
+                    <h2 class="text-xl font-bold mt-8">3. Droits des Utilisateurs</h2>
+                    <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression, d'opposition et de portabilité de vos données. Pour exercer vos droits, contactez-nous à info@lolirinepoolstore.be.</p>
+                    <h2 class="text-xl font-bold mt-8">4. Politique de Sécurité des Paiements</h2>
+                    <p>Nous utilisons des protocoles de sécurité avancés (SSL, 3D Secure) pour protéger vos paiements en ligne. Toutes les transactions sont traitées via des prestataires certifiés.</p>`,
+        imageUrl: ''
+      }
+    ]
+  },
+   {
+    pageId: 'cookies',
+    title: 'Politique de Gestion des Cookies',
+    hero: {
+      title: 'Politique de Gestion des Cookies',
+      subtitle: 'Nous utilisons des cookies pour améliorer votre expérience sur notre site.',
+      imageUrl: GENERIC_LEGAL_IMAGE,
+    },
+    sections: [
+      {
+        id: 'cookies-main',
+        title: '',
+        content: `<h2 class="text-xl font-bold mt-8">1. Types de Cookies Utilisés</h2>
+                    <ul class="list-disc list-inside">
+                        <li><strong>Cookies essentiels :</strong> Nécessaires au bon fonctionnement du site (panier, connexion).</li>
+                        <li><strong>Cookies analytiques :</strong> Aident à comprendre l’utilisation du site pour améliorer nos services.</li>
+                        <li><strong>Cookies marketing :</strong> Utilisés pour vous proposer des publicités ciblées.</li>
+                    </ul>
+                    <h2 class="text-xl font-bold mt-8">2. Gestion des Cookies</h2>
+                    <p>Vous pouvez gérer vos préférences en matière de cookies à tout moment via notre bannière de consentement ou les paramètres de votre navigateur.</p>`,
+        imageUrl: ''
+      }
+    ]
+  },
+  {
+    pageId: 'legal',
+    title: 'Mentions Légales',
+    hero: {
+      title: 'Mentions Légales',
+      subtitle: 'Informations légales concernant Lolirine Pool Store.',
+      imageUrl: GENERIC_LEGAL_IMAGE,
+    },
+    sections: [
+      {
+        id: 'legal-main',
+        title: '',
+        content: `<h2 class="text-xl font-bold mt-8">Informations Éditeur</h2>
+                    <p>
+                        <strong>Nom de l’entreprise :</strong> Lolirine Pool Store<br/>
+                        <strong>Siège social :</strong> Rue Bois D'Esneux 110, 5021 Boninne (Namur), Belgique<br/>
+                        <strong>Numéro d'entreprise (TVA) :</strong> BE 0650891 279<br/>
+                        <strong>Email de contact :</strong> <a href="mailto:info@lolirinepoolstore.be" class="text-cyan-600 hover:underline">info@lolirinepoolstore.be</a><br/>
+                        <strong>Téléphone :</strong> <a href="tel:+32497444146" class="text-cyan-600 hover:underline">+32 497 44 41 46</a>
+                    </p>
+                    <h2 class="text-xl font-bold mt-8">Hébergement du site</h2>
+                     <p>
+                        <strong>Hébergeur :</strong> Google Cloud Platform<br/>
+                        <strong>Adresse :</strong> Gordon House, Barrow Street, Dublin 4, Irlande
+                    </p>
+                    <h2 class="text-xl font-bold mt-8">Propriété intellectuelle</h2>
+                    <p>L'ensemble de ce site relève de la législation belge et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés.</p>`,
+        imageUrl: ''
+      }
+    ]
+  },
+  {
+    pageId: 'shippingPolicy',
+    title: 'Politique de Livraison',
+    hero: {
+      title: 'Politique de Livraison',
+      subtitle: 'Tout savoir sur la livraison de vos commandes.',
+      imageUrl: GENERIC_LEGAL_IMAGE,
+    },
+    sections: [
+      {
+        id: 'shipping-main',
+        title: '',
+        content: `<h2 class="text-xl font-bold mt-8">1. Zones de livraison</h2>
+                    <p>Nous livrons en Belgique, France, Pays-Bas, Luxembourg et Allemagne.</p>
+                    <h2 class="text-xl font-bold mt-8">2. Modes et délais de livraison</h2>
+                    <p>Nos commandes sont expédiées via GLS ou France Express, avec un délai de 2 à 5 jours ouvrables.</p>
+                    <h2 class="text-xl font-bold mt-8">3. Frais de livraison</h2>
+                    <p>Les frais sont de 6,00 € pour la Belgique et 11,00 € pour les autres pays. La livraison est <strong>OFFERTE</strong> pour toute commande supérieure à 59,00 €.</p>
+                    <h2 class="text-xl font-bold mt-8">4. Suivi et Réception</h2>
+                    <p>Un lien de suivi vous est envoyé par email. Veuillez vérifier votre colis à la réception et nous contacter en cas d'anomalie.</p>`,
+        imageUrl: ''
+      }
+    ],
+    cta: {
+        text: 'Pour plus d\'informations sur les retours, veuillez consulter nos Conditions Générales de Vente.',
+        buttonText: 'Voir les CGV',
+        page: 'terms'
+    }
   },
 ];
 
@@ -440,7 +720,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 5,
     imageUrl: "https://www.le-spa-evolution.com/",
-    description: 'Le spa Évolution 70 est compatible avec les systèmes de contrôle Balboa et Gecko. Vous pouvez y ajouter l\'option Surround Bluetooth Audio, le système de désinfection par UV, la couverture, les escaliers, etc. [{"Dimensions en cm (+ ou - 2 cm)":"233x233x91"}]',
+    description: 'Le spa Évolution 70 est compatible avec les systèmes de contrôle Balboa et Gecko. Vous pouvez y ajouter l\'option Surround Bluetooth Audio, le système de désinfection par UV, la couverture, les escaliers, etc.',
     isDropshipping: true,
     supplierId: "sup-2",
   },
@@ -452,7 +732,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 3,
     imageUrl: "https://www.le-spa-evolution.com/",
-    description: 'Le spa Évolution 70 est compatible avec les systèmes de contrôle Balboa et Gecko. Vous pouvez y ajouter l\'option Surround Bluetooth Audio, le système de désinfection par UV, la couverture, les escaliers, etc. [{"Dimensions en cm (+ ou - 2 cm)":"233x233x91"}]',
+    description: 'Le spa Évolution 70 est compatible avec les systèmes de contrôle Balboa et Gecko. Vous pouvez y ajouter l\'option Surround Bluetooth Audio, le système de désinfection par UV, la couverture, les escaliers, etc.',
     isDropshipping: true,
     supplierId: "sup-2",
   },
@@ -464,7 +744,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 8,
     imageUrl: "https://www.atlantida.com/",
-    description: 'Le spa Atlantida 7 est un spa de 5 places (3 assises et 2 allongées) avec 70 jets. [{"Dimensions en cm (+ ou - 2 cm)":"216x216x91"}]',
+    description: 'Le spa Atlantida 7 est un spa de 5 places (3 assises et 2 allongées) avec 70 jets.',
     isDropshipping: true,
     supplierId: "sup-2",
   },
@@ -476,7 +756,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 4,
     imageUrl: "https://www.pacific-spa.com/",
-    description: 'Le spa Pacific 70 est un spa de 5 places (3 assises et 2 allongées) avec 70 jets. [{"Dimensions en cm (+ ou - 2 cm)":"216x216x91"}]',
+    description: 'Le spa Pacific 70 est un spa de 5 places (3 assises et 2 allongées) avec 70 jets.',
     isDropshipping: true,
     supplierId: "sup-2",
   },
@@ -488,7 +768,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 10,
     imageUrl: "https://www.compact-spa.com/",
-    description: 'Le spa Océan 7 est un spa de 5 places (3 assises et 2 allongées) avec 70 jets. [{"Dimensions en cm (+ ou - 2 cm)":"216x216x91"}]',
+    description: 'Le spa Océan 7 est un spa de 5 places (3 assises et 2 allongées) avec 70 jets.',
     isDropshipping: true,
     supplierId: "sup-2",
   },
@@ -502,7 +782,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 5,
     imageUrl: "https://picsum.photos/seed/prod-10255/400/400",
-    description: 'Le spa Alexandria est une merveille de technologie. [{"Marque":"Wellness"},{"Collection":"Origins"}]',
+    description: 'Le spa Alexandria est une merveille de technologie.',
   },
   {
     id: "prod-10255-2",
@@ -512,7 +792,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 3,
     imageUrl: "https://picsum.photos/seed/prod-10255-/400/400",
-    description: 'Le modèle Bali offre une expérience de massage unique. [{"Marque":"Wellness"},{"Collection":"Ocean Dreams"}]',
+    description: 'Le modèle Bali offre une expérience de massage unique.',
   },
   {
     id: "prod-10255-22",
@@ -522,7 +802,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 100,
     imageUrl: "https://picsum.photos/seed/prod-10255/400/400",
-    description: '[{"Type":"Bandelettes de test"}]',
+    description: '',
   },
   {
     id: "prod-10255-23",
@@ -532,7 +812,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 80,
     imageUrl: "https://picsum.photos/seed/prod-10255-/400/400",
-    description: '[{"Produit":"pH +"}]',
+    description: '',
   },
   {
     id: "prod-10255-24",
@@ -542,7 +822,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 80,
     imageUrl: "https://picsum.photos/seed/prod-10255--/400/400",
-    description: '[{"Produit":"pH -"}]',
+    description: '',
   },
   {
     id: "prod-10255-26",
@@ -552,19 +832,35 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 80,
     imageUrl: "https://picsum.photos/seed/prod-10255---/400/400",
-    description: '[{"Produit":"Chlore granulé"}]',
+    description: '',
   },
   {
     id: "chlore-001",
-    name: "Chlore multifonction en galets 5kg",
+    name: "Chlore multifonction en galets",
     category: "Traitement de l'eau - Désinfection",
-    price: 39.99,
+    price: 39.99, // Base price for the 5kg variant
     promoPrice: 34.99,
     isOnSale: true,
     tvaRate: 0.21,
-    stock: 50,
+    stock: 50, // Total stock, will be ignored if variants have stock
     imageUrl: "https://picsum.photos/seed/chlore-001/400/400",
-    description: "Galets de chlore 5 actions pour une désinfection complète de votre piscine.",
+    description: "Galets de chlore 5 actions pour une désinfection complète de votre piscine. Disponible en plusieurs formats.",
+    variants: [
+        {
+            id: "chlore-001-5kg",
+            name: "5 kg",
+            attributes: { "Poids": "5 kg" },
+            priceModifier: 0,
+            stock: 30,
+        },
+        {
+            id: "chlore-001-10kg",
+            name: "10 kg",
+            attributes: { "Poids": "10 kg" },
+            priceModifier: 30, // 39.99 + 30 = 69.99
+            stock: 20,
+        }
+    ]
   },
   {
     id: "robot-001",
@@ -586,7 +882,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 10,
     imageUrl: "https://picsum.photos/seed/liner-001/400/400",
-    description: '[{"Couleur":"Bleu Pâle"},{"Épaisseur":"75/100e"}]',
+    description: '',
   },
   {
     id: "SCPAQG-100-0003",
@@ -596,7 +892,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 8,
     imageUrl: "https://picsum.photos/seed/SCPAQG-100/400/400",
-    description: '[{"Type":"Pompe de filtration"},{"Interface":"Standard"}]',
+    description: '',
   },
   {
     id: "WR00030",
@@ -606,7 +902,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 4,
     imageUrl: "https://www.le-robot-de-piscine.com/",
-    description: '[{"Marque":"Zodiac"},{"Type de piscine":"Toutes"}]',
+    description: '',
   },
   {
     id: "elec-cof-001",
@@ -616,7 +912,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 15,
     imageUrl: "https://picsum.photos/seed/elec-cof-001/400/400",
-    description: '[{"Type":"Coffret de filtration"},{"Intensité":"10A"}]',
+    description: '',
   },
   {
     id: "elec-lamp-001",
@@ -626,7 +922,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 20,
     imageUrl: "https://picsum.photos/seed/elec-lamp-00/400/400",
-    description: '[{"Type":"Projecteur LED"},{"Couleur":"Multicolore"}]',
+    description: '',
   },
   {
     id: "elec-acc-002",
@@ -636,7 +932,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 50,
     imageUrl: "https://picsum.photos/seed/elec-acc-002/400/400",
-    description: '[{"Type":"Boîte de connexion"}]',
+    description: '',
   },
   {
     id: "prod-10055",
@@ -676,7 +972,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 50,
     imageUrl: "https://picsum.photos/seed/prod-10195-/400/400",
-    description: '[{"Marque":"SHARK"}]',
+    description: '',
   },
   {
     id: "prod-10330-3",
@@ -851,7 +1147,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     tvaRate: 0.21,
     stock: 8,
     imageUrl: "https://picsum.photos/seed/liner-002/400/400",
-    description: '[{"Couleur":"Gris Anthracite"},{"Épaisseur":"75/100e"}]',
+    description: '',
   },
   {
     id: "wellness-001",
@@ -876,44 +1172,44 @@ export const INITIAL_PRODUCTS: Product[] = [
     description: "Parfum pour spa à base d'huiles essentielles d'eucalyptus pour une relaxation intense.",
   },
   {
-    id: "Hivernage-001",
+    id: "hivernage-001",
     name: "Produit d'hivernage 5L",
     category: "Hivernage",
     price: 29.95,
     tvaRate: 0.21,
     stock: 90,
     imageUrl: "https://picsum.photos/seed/Hivernage-00/400/400",
-    description: "Traitement longue durée pour protéger l'eau de votre piscine pendant l'hiver.",
+    description: '',
   },
   {
-    id: "Hivernage-002",
+    id: "hivernage-002",
     name: "Gizzmo anti-gel pour skimmer",
     category: "Hivernage",
     price: 7.5,
     tvaRate: 0.21,
     stock: 300,
     imageUrl: "https://picsum.photos/seed/Hivernage-00-/400/400",
-    description: "Absorbe la pression de la glace dans le skimmer pour éviter qu'il ne se fissure.",
+    description: '',
   },
   {
-    id: "Hivernage-003",
+    id: "hivernage-003",
     name: "Flotteur d'hivernage lesté",
     category: "Hivernage",
     price: 9.9,
     tvaRate: 0.21,
     stock: 400,
     imageUrl: "https://picsum.photos/seed/Hivernage-00--/400/400",
-    description: "A placer en diagonale dans la piscine pour absorber la poussée de la glace.",
+    description: '',
   },
   {
-    id: "Hivernage-004",
+    id: "hivernage-004",
     name: "Bouchon d'hivernage 1\"1/2",
     category: "Hivernage",
     price: 4.5,
     tvaRate: 0.21,
     stock: 500,
     imageUrl: "https://picsum.photos/seed/Hivernage-00---/400/400",
-    description: "Bouchon conique pour boucher les buses de refoulement et prise balai.",
+    description: '',
   },
   // Add all other products from the new screenshot here, merging with old data...
   // This is a representative sample of the full list which would be too long to display.
@@ -958,6 +1254,33 @@ export const INITIAL_USERS: UserAccount[] = [
     },
 ];
 
+export const INITIAL_PROSPECTS: Prospect[] = [
+    {
+        id: 'prospect-1',
+        name: 'John Doe',
+        email: 'john.doe@construction.com',
+        phone: '0123456789',
+        status: 'Nouveau',
+        source: 'Formulaire de contact',
+        createdAt: new Date().toISOString(),
+        notes: [],
+        assignedTo: 'Admin'
+    },
+    {
+        id: 'prospect-2',
+        name: 'Jane Smith',
+        email: 'jane.smith@architecte.be',
+        phone: '0987654321',
+        status: 'Contacté',
+        source: 'Appel entrant',
+        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        notes: [
+            { id: 'note-1', date: new Date().toISOString(), type: 'Appel', summary: 'Appel initial, intéressée par un devis pour une piscine miroir.', author: 'Admin' }
+        ],
+        assignedTo: 'Admin'
+    }
+];
+
 export const INITIAL_ORDERS: Order[] = [
     {
         id: '#10521',
@@ -967,7 +1290,7 @@ export const INITIAL_ORDERS: Order[] = [
         total: 48.39,
         status: 'Complété',
         items: [
-            {...INITIAL_PRODUCTS.find(p => p.id === 'chlore-001')!, quantity: 1},
+            {...INITIAL_PRODUCTS.find(p => p.id === 'chlore-001')!, quantity: 1, variantId: 'chlore-001-5kg'},
         ],
         shippingAddress: '12 Rue de la Paix',
         shippingCity: 'Paris',
@@ -1255,19 +1578,56 @@ export const INITIAL_EMAIL_TEMPLATES: EmailTemplate[] = [
     },
 ];
 
-export const ADMIN_SIDEBAR_LINKS: { view: AdminView; label: string; icon: React.ReactElement }[] = [
+export const INITIAL_MARKETING_CAMPAIGNS: MarketingCampaign[] = [
+    {
+        id: 'camp-1',
+        name: 'Campagne de Bienvenue - Nouveaux Clients',
+        goal: 'Engager les nouveaux inscrits avec une offre de bienvenue.',
+        targetSegment: 'Nouveau',
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
+        status: 'Running',
+        linkedEmailTemplateId: 'registration_confirmation',
+        linkedPopupId: 'promo-popup-1',
+        performance: {
+            emailsSent: 152,
+            openRate: 45.5,
+            conversionRate: 12.1,
+            revenueGenerated: 1250.75,
+        }
+    },
+    {
+        id: 'camp-2',
+        name: 'Promotion Hivernage 2024',
+        goal: 'Promouvoir les services d\'hivernage avant la saison froide.',
+        targetSegment: 'All',
+        startDate: '2024-09-01',
+        endDate: '2024-10-31',
+        status: 'Draft',
+        linkedEmailTemplateId: 'winterization_quote',
+    }
+];
+
+export const ADMIN_SIDEBAR_LINKS: { view: AdminView; label: string; icon: React.ReactElement; isHeader?: boolean }[] = [
     { view: 'dashboard', label: 'Tableau de Bord', icon: <BarChart2 size={20} /> },
+    { view: 'dashboard', isHeader: true, label: 'Ventes', icon: <></> },
     { view: 'orders', label: 'Commandes', icon: <ShoppingCart size={20} /> },
-    { view: 'products', label: 'Produits', icon: <Package size={20} /> },
-    { view: 'inventory', label: 'Inventaire', icon: <FileText size={20} /> },
-    { view: 'clients', label: 'Clients', icon: <Users size={20} /> },
     { view: 'billing', label: 'Facturation', icon: <CreditCard size={20} /> },
+    { view: 'crm', label: 'CRM', icon: <HeartHandshake size={20} /> },
+    { view: 'dashboard', isHeader: true, label: 'Catalogue', icon: <></> },
+    { view: 'products', label: 'Produits', icon: <Package size={20} /> },
+    { view: 'dashboard', isHeader: true, label: 'Inventaire', icon: <></> },
+    { view: 'inventory', label: 'Gestion des stocks', icon: <FileText size={20} /> },
     { view: 'suppliers', label: 'Fournisseurs', icon: <Contact size={20} /> },
     { view: 'purchaseOrders', label: 'Bons de Commande', icon: <FileIcon size={20} /> },
     { view: 'dropshipping', label: 'Dropshipping', icon: <GitBranch size={20} /> },
+    { view: 'dashboard', isHeader: true, label: 'Marketing', icon: <></> },
+    { view: 'marketing', label: 'Campagnes', icon: <Megaphone size={20} /> },
+    { view: 'popups', label: 'Pop-ups', icon: <MessageSquare size={20} /> },
+    { view: 'dashboard', isHeader: true, label: 'Configuration', icon: <></> },
     { view: 'paymentMethods', label: 'Paiements', icon: <DollarSign size={20} /> },
     { view: 'emails', label: 'Emails & Notifs', icon: <MailIcon size={20} /> },
     { view: 'infoBanner', label: 'Bannière Info', icon: <Bell size={20} /> },
-    { view: 'popups', label: 'Pop-ups', icon: <MessageSquare size={20} /> },
     { view: 'menuManagement', label: 'Gestion du Menu', icon: <Menu size={20} /> },
+    { view: 'websiteCms', label: 'Contenu du site', icon: <Settings size={20} /> },
 ];

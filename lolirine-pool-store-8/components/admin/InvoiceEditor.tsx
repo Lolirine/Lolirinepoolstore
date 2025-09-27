@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Invoice, InvoiceItem, InvoiceDiscount } from '../../types';
-import { X, Plus, Trash2, Printer } from 'lucide-react';
+import { X, Plus, Trash2, Printer, AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import PaypalIcon from '../icons/PaypalIcon';
 import StripeIcon from './StripeIcon';
@@ -30,6 +30,8 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
             discount: undefined,
         }
     );
+    
+    const isLocked = 'id' in editedInvoice && (editedInvoice.status === 'Paid' || editedInvoice.status === 'Cancelled');
 
     const handleHeaderChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -96,6 +98,12 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
                 }
             `}</style>
             
+            {isLocked && (
+                <div className="no-print bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
+                    <p className="font-bold flex items-center"><AlertTriangle size={20} className="mr-2"/> Facture finalisée</p>
+                    <p>Cette facture est {editedInvoice.status.toLowerCase()}e et ne peut plus être modifiée.</p>
+                </div>
+            )}
             <div className="invoice-print-area">
                 {/* Header */}
                 <div className="flex justify-between items-start pb-4 border-b">
@@ -125,21 +133,22 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
                             rows={4}
                             className="w-full p-2 border rounded-md"
                             placeholder="Nom du client&#10;Adresse&#10;Ville, Code Postal&#10;Pays"
+                            disabled={isLocked}
                         />
                     </div>
                     <div className="bg-gray-100 p-4 rounded-lg">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-600">Date de facturation</label>
-                                <input type="date" name="invoiceDate" value={editedInvoice.invoiceDate} onChange={handleHeaderChange} className="mt-1 w-full p-2 border rounded-md" />
+                                <input type="date" name="invoiceDate" value={editedInvoice.invoiceDate} onChange={handleHeaderChange} className="mt-1 w-full p-2 border rounded-md" disabled={isLocked} />
                             </div>
                              <div>
                                 <label className="block text-sm font-semibold text-gray-600">Date d'échéance</label>
-                                <input type="date" name="dueDate" value={editedInvoice.dueDate} onChange={handleHeaderChange} className="mt-1 w-full p-2 border rounded-md" />
+                                <input type="date" name="dueDate" value={editedInvoice.dueDate} onChange={handleHeaderChange} className="mt-1 w-full p-2 border rounded-md" disabled={isLocked} />
                             </div>
                              <div className="col-span-2">
                                 <label className="block text-sm font-semibold text-gray-600">Source / Réf.</label>
-                                <input type="text" name="source" value={editedInvoice.source || ''} onChange={handleHeaderChange} className="mt-1 w-full p-2 border rounded-md" />
+                                <input type="text" name="source" value={editedInvoice.source || ''} onChange={handleHeaderChange} className="mt-1 w-full p-2 border rounded-md" disabled={isLocked} />
                             </div>
                         </div>
                     </div>
@@ -160,17 +169,17 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
                     <tbody>
                         {editedInvoice.items.map(item => (
                             <tr key={item.id} className="border-b">
-                                <td className="p-2"><textarea value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} rows={3} className="w-full p-1 border rounded-md"/></td>
-                                <td className="p-2 text-right"><input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)} className="w-20 text-right p-1 border rounded-md"/></td>
-                                <td className="p-2 text-right"><input type="number" step="0.01" value={item.unitPrice} onChange={e => handleItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)} className="w-24 text-right p-1 border rounded-md"/></td>
+                                <td className="p-2"><textarea value={item.description} onChange={e => handleItemChange(item.id, 'description', e.target.value)} rows={3} className="w-full p-1 border rounded-md" disabled={isLocked}/></td>
+                                <td className="p-2 text-right"><input type="number" value={item.quantity} onChange={e => handleItemChange(item.id, 'quantity', parseFloat(e.target.value) || 0)} className="w-20 text-right p-1 border rounded-md" disabled={isLocked}/></td>
+                                <td className="p-2 text-right"><input type="number" step="0.01" value={item.unitPrice} onChange={e => handleItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)} className="w-24 text-right p-1 border rounded-md" disabled={isLocked}/></td>
                                 <td className="p-2 text-right">21%</td>
                                 <td className="p-2 text-right font-semibold text-cyan-600">{formatCurrency(item.quantity * item.unitPrice)}</td>
-                                <td className="p-2 no-print"><button onClick={() => removeItem(item.id)} className="p-1 text-red-500"><Trash2 size={16}/></button></td>
+                                <td className="p-2 no-print"><button disabled={isLocked} onClick={() => removeItem(item.id)} className="p-1 text-red-500 disabled:opacity-50"><Trash2 size={16}/></button></td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                <button onClick={addItem} className="no-print mt-2 flex items-center gap-2 text-cyan-600 font-semibold text-sm hover:underline"><Plus size={16}/> Ajouter une ligne</button>
+                <button onClick={addItem} className="no-print mt-2 flex items-center gap-2 text-cyan-600 font-semibold text-sm hover:underline" disabled={isLocked}><Plus size={16}/> Ajouter une ligne</button>
                 
                 {/* Totals */}
                 <div className="flex justify-end mt-6">
@@ -187,20 +196,20 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
                         {editedInvoice.discount && (
                             <div className="flex justify-between items-center p-2 bg-gray-50 rounded-md">
                                 <div className="flex items-center gap-2">
-                                    <span className="no-print"><button onClick={removeDiscount} className="p-1 text-red-500"><Trash2 size={14}/></button></span>
+                                    <span className="no-print"><button disabled={isLocked} onClick={removeDiscount} className="p-1 text-red-500 disabled:opacity-50"><Trash2 size={14}/></button></span>
                                     <span>Remise</span>
-                                    <select value={editedInvoice.discount.type} onChange={e => handleDiscountChange('type', e.target.value)} className="no-print p-1 border rounded-md text-xs">
+                                    <select disabled={isLocked} value={editedInvoice.discount.type} onChange={e => handleDiscountChange('type', e.target.value)} className="no-print p-1 border rounded-md text-xs">
                                         <option value="percentage">%</option>
                                         <option value="fixed">€</option>
                                     </select>
-                                    <input type="number" step="0.01" value={editedInvoice.discount.value} onChange={e => handleDiscountChange('value', parseFloat(e.target.value) || 0)} className="no-print w-16 text-right p-1 border rounded-md text-xs"/>
+                                    <input disabled={isLocked} type="number" step="0.01" value={editedInvoice.discount.value} onChange={e => handleDiscountChange('value', parseFloat(e.target.value) || 0)} className="no-print w-16 text-right p-1 border rounded-md text-xs"/>
                                 </div>
                                 <span className="font-semibold text-cyan-600">-{formatCurrency(discountAmount)}</span>
                             </div>
                         )}
                          {!editedInvoice.discount && (
                             <div className="text-right">
-                                <button onClick={() => setEditedInvoice(prev => ({...prev, discount: { type: 'percentage', value: 0 }}))} className="no-print text-cyan-600 font-semibold text-xs hover:underline"><Plus size={12} className="inline"/> Ajouter une remise</button>
+                                <button disabled={isLocked} onClick={() => setEditedInvoice(prev => ({...prev, discount: { type: 'percentage', value: 0 }}))} className="no-print text-cyan-600 font-semibold text-xs hover:underline disabled:opacity-50"><Plus size={12} className="inline"/> Ajouter une remise</button>
                             </div>
                          )}
                         <div className="flex justify-between p-3 bg-cyan-600 text-white rounded-md font-bold text-lg">
@@ -266,9 +275,11 @@ const InvoiceEditor: React.FC<InvoiceEditorProps> = ({ invoice, onSave, onClose 
                     <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
                         Annuler
                     </button>
-                    <button onClick={() => onSave(editedInvoice)} className="ml-3 px-4 py-2 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-md shadow-sm hover:bg-cyan-700">
-                        Enregistrer la facture
-                    </button>
+                    {!isLocked && (
+                        <button onClick={() => onSave(editedInvoice)} className="ml-3 px-4 py-2 text-sm font-medium text-white bg-cyan-600 border border-transparent rounded-md shadow-sm hover:bg-cyan-700">
+                            Enregistrer la facture
+                        </button>
+                    )}
                 </div>
             </div>
         </div>

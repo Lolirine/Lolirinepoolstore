@@ -207,7 +207,7 @@ const ProductCreateModal: React.FC<ProductCreateModalProps> = ({ onClose, onCrea
                     
                     {/* Promotion Management */}
                     <div className="border-t pt-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Gestion de la Promotion</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Gestion de la Promotion & Ruban</h3>
                         <div className="space-y-4">
                             <div className="relative flex items-start">
                                 <div className="flex items-center h-5">
@@ -240,6 +240,20 @@ const ProductCreateModal: React.FC<ProductCreateModalProps> = ({ onClose, onCrea
                                     />
                                 </div>
                             )}
+
+                            <div>
+                                <label htmlFor="ribbon-create" className="block text-sm font-medium text-gray-700 mb-1">Texte du ruban</label>
+                                <input 
+                                    type="text" 
+                                    name="ribbon" 
+                                    id="ribbon-create"
+                                    value={newProduct.ribbon || ''} 
+                                    onChange={handleChange} 
+                                    className="w-full md:w-1/2 border-gray-300 rounded-md shadow-sm"
+                                    placeholder="Ex: PROMO, NOUVEAU, -20%"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Ce texte s'affichera en bannière sur l'image du produit.</p>
+                            </div>
                         </div>
                     </div>
 
