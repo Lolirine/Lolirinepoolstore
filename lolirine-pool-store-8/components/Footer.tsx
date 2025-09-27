@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FooterProps } from '../types';
 import { ShieldCheck, Truck, UserCheck, FileText, Facebook, Linkedin, Instagram, Twitter, ChevronUp } from 'lucide-react';
 import MaestroIcon from './icons/MaestroIcon';
@@ -6,13 +6,41 @@ import PaypalIcon from './icons/PaypalIcon';
 import MastercardIcon from './icons/MastercardIcon';
 
 
-const Footer: React.FC<FooterProps> = ({ navigateTo }) => {
+const Footer: React.FC<FooterProps> = ({ navigateTo, siteConfig }) => {
+  const [adminClickCount, setAdminClickCount] = useState(0);
+  const clickTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, []);
   
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     });
+  };
+
+  const handleAdminAccessClick = () => {
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+    }
+
+    const newClickCount = adminClickCount + 1;
+
+    if (newClickCount >= 5) {
+      navigateTo('admin');
+      setAdminClickCount(0);
+    } else {
+      setAdminClickCount(newClickCount);
+      clickTimeoutRef.current = window.setTimeout(() => {
+        setAdminClickCount(0);
+      }, 1000);
+    }
   };
 
   const reassuranceItems = [
@@ -23,10 +51,10 @@ const Footer: React.FC<FooterProps> = ({ navigateTo }) => {
   ];
 
   const socialLinks = [
-    { href: "#", icon: Facebook, label: "Facebook" },
-    { href: "#", icon: Twitter, label: "Twitter" },
-    { href: "#", icon: Instagram, label: "Instagram" },
-    { href: "#", icon: Linkedin, label: "LinkedIn" },
+    { href: siteConfig.socials.facebook, icon: Facebook, label: "Facebook" },
+    { href: siteConfig.socials.twitter, icon: Twitter, label: "Twitter" },
+    { href: siteConfig.socials.instagram, icon: Instagram, label: "Instagram" },
+    { href: siteConfig.socials.linkedin, icon: Linkedin, label: "LinkedIn" },
   ];
 
   return (
@@ -101,10 +129,10 @@ const Footer: React.FC<FooterProps> = ({ navigateTo }) => {
           <div>
             <h3 className="font-bold text-white mb-4">Contact & Communauté</h3>
             <ul className="space-y-2 text-gray-300">
-              <li>Rue Bois D'Esneux 110</li>
-              <li>5021 Boninne (Namur), Belgique</li>
-              <li className="pt-2"><a href="tel:+32497444146" className="hover:underline">+32 497 44 41 46</a></li>
-              <li><a href="mailto:info@lolirinepoolstore.be" className="hover:underline">info@lolirinepoolstore.be</a></li>
+              <li>{siteConfig.contact.address}</li>
+              <li>{siteConfig.contact.city}</li>
+              <li className="pt-2"><a href={`tel:${siteConfig.contact.phone.replace(/\s/g, '')}`} className="hover:underline">{siteConfig.contact.phone}</a></li>
+              <li><a href={`mailto:${siteConfig.contact.email}`} className="hover:underline">{siteConfig.contact.email}</a></li>
             </ul>
             <div className="flex space-x-4 mt-4">
               {socialLinks.map(link => (
@@ -148,7 +176,13 @@ const Footer: React.FC<FooterProps> = ({ navigateTo }) => {
              <span>|</span>
             <a href="#" className="font-bold text-white hover:underline">Français (BE)</a>
           </div>
-          <p className="text-xs">&copy; {new Date().getFullYear()}, Lolirine Pool Store. Tous droits réservés. Tous les prix sont affichés TVAC 21% incluse.</p>
+          <p 
+            className="text-xs cursor-pointer"
+            onClick={handleAdminAccessClick}
+            title="Accès Administrateur"
+          >
+            &copy; {new Date().getFullYear()}, Lolirine Pool Store. Tous droits réservés. Tous les prix sont affichés TVAC 21% incluse.
+          </p>
         </div>
       </div>
     </footer>

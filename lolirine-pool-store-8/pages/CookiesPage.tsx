@@ -2,25 +2,42 @@ import React from 'react';
 import { CookiesPageProps } from '../types';
 import GoBackButton from '../components/GoBackButton';
 
-const CookiesPage: React.FC<CookiesPageProps> = ({ goBack, canGoBack }) => {
-    return (
-        <div className="bg-white py-16">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-                 {canGoBack && <GoBackButton onClick={goBack} className="mb-8" />}
-                <h1 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-4">Politique de Gestion des Cookies</h1>
-                <div className="prose prose-lg text-gray-600 max-w-none">
-                    <p>Notre site utilise des cookies pour améliorer votre expérience de navigation.</p>
-                    
-                    <h2 className="text-xl font-bold mt-8">1. Types de Cookies Utilisés</h2>
-                    <ul className="list-disc list-inside">
-                        <li><strong>Cookies essentiels :</strong> Nécessaires au bon fonctionnement du site (par exemple, pour le panier d'achat et la connexion à votre compte).</li>
-                        <li><strong>Cookies analytiques :</strong> Aident à comprendre l’utilisation du site afin d'améliorer nos services (via des outils comme Google Analytics).</li>
-                        <li><strong>Cookies marketing :</strong> Utilisés pour vous proposer des publicités ciblées et des offres pertinentes.</li>
-                    </ul>
+const CookiesPage: React.FC<CookiesPageProps> = ({ pageContent, goBack, canGoBack }) => {
+     if (!pageContent) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p>Chargement du contenu de la page...</p>
+            </div>
+        );
+    }
+  
+    const { hero, sections } = pageContent;
 
-                    <h2 className="text-xl font-bold mt-8">2. Gestion des Cookies</h2>
-                    <p>Vous pouvez gérer vos préférences en matière de cookies à tout moment via notre bannière de consentement lors de votre première visite. Vous pouvez également modifier les paramètres de votre navigateur pour refuser les cookies. Veuillez noter que le blocage de certains cookies peut affecter la fonctionnalité de notre site.</p>
+    return (
+        <div className="bg-white">
+            <section 
+                className="relative bg-cover bg-center py-20 text-white flex items-center justify-center" 
+                style={{ backgroundImage: `url('${hero.imageUrl}')` }}
+            >
+                <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+                <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h1 className="text-4xl md:text-5xl font-extrabold" style={{ textShadow: '2px 2px 8px rgba(0,0,0,0.7)' }}>
+                        {hero.title}
+                    </h1>
+                    <p className="mt-4 text-lg text-gray-200 max-w-3xl mx-auto" style={{ textShadow: '1px 1px 4px rgba(0,0,0,0.7)' }}>
+                        {hero.subtitle}
+                    </p>
                 </div>
+            </section>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl py-16">
+                 {canGoBack && <GoBackButton onClick={goBack} className="mb-8" />}
+                 {sections.map(section => (
+                    <div 
+                        key={section.id} 
+                        className="prose prose-lg text-gray-600 max-w-none"
+                        dangerouslySetInnerHTML={{ __html: section.content }}
+                    />
+                ))}
             </div>
         </div>
     );

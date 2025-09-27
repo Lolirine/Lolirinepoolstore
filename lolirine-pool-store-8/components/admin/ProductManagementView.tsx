@@ -1,6 +1,8 @@
+
+
 import React, { useState, useMemo, useRef } from 'react';
-import { Product, Supplier } from '../../types';
-import { Edit, PlusCircle, Trash2, Copy, ChevronDown, ChevronRight, Upload, Download, Zap } from 'lucide-react';
+import { Product, Supplier, ProductVariant } from '../../types';
+import { Edit, PlusCircle, Trash2, Copy, ChevronDown, ChevronRight, Upload, Download, Zap, Layers } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import ProductEditModal from './ProductEditModal';
 import ProductCreateModal from './ProductCreateModal';
@@ -28,6 +30,15 @@ interface CategoryNode {
     productCount: number;
 }
 
+const getRibbonColor = (ribbonText: string = "") => {
+    const text = ribbonText.toLowerCase();
+    if (text.includes('promo')) return 'bg-red-500';
+    if (text.includes('nouveau')) return 'bg-blue-500';
+    if (text.includes('stock faible')) return 'bg-orange-500';
+    if (text.includes('rupture')) return 'bg-gray-700';
+    return 'bg-green-500';
+};
+
 
 const ProductManagementView: React.FC<ProductManagementViewProps> = ({ 
     products, onUpdateProduct, onCreateProduct, onDeleteProduct, onBulkUpdateProducts, suppliers,
@@ -38,6 +49,7 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [duplicatingProduct, setDuplicatingProduct] = useState<Product | null>(null);
     const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['All']));
+    const [expandedVariants, setExpandedVariants] = useState<Set<string|number>>(new Set());
     const [categoryAction, setCategoryAction] = useState<{ action: 'add' | 'rename' | 'duplicate', path: string } | null>(null);
     const categoryFileInputRef = useRef<HTMLInputElement>(null);
     const productFileInputRef = useRef<HTMLInputElement>(null);
@@ -52,6 +64,10 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
         const root: CategoryNode = { name: 'Tous les produits', fullName: 'All', children: new Map(), productCount: visibleProducts.length };
         
         products.forEach(product => {
+            // FIX: Add type guard to ensure product.category is a string before calling .split()
+            if (typeof product.category !== 'string' || !product.category) {
+                return; // Skip products with malformed categories
+            }
             const parts = product.category.split(' - ');
             let currentNode = root;
             let currentPath = '';
@@ -275,6 +291,18 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
         reader.readAsBinaryString(file);
         if (e.target) e.target.value = '';
     };
+
+    const toggleVariantExpansion = (productId: string | number) => {
+        setExpandedVariants(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(productId)) {
+                newSet.delete(productId);
+            } else {
+                newSet.add(productId);
+            }
+            return newSet;
+        });
+    };
     
     const renderCategoryTree = (node: CategoryNode, level = 0) => {
         const isExpanded = expandedCategories.has(node.fullName);
@@ -358,6 +386,74 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
         { label: 'Rupture', value: 'outOfStock' },
     ];
 
+    const renderProductRow = (product: Product, isVariant = false) => {
+        const hasVariants = !isVariant && product.variants && product.variants.length > 0;
+        const isExpanded = hasVariants && expandedVariants.has(product.id);
+        
+        return (
+            <React.Fragment key={product.id}>
+                <tr className={`border-b hover:bg-gray-50 align-top ${isVariant ? 'bg-gray-50' : 'bg-white'}`}>
+                    <td className={`p-2 ${isVariant ? 'pl-10' : ''}`}>
+                        <img src={product.imageUrl} alt={product.name} className="h-12 w-12 object-cover rounded-md"/>
+                    </td>
+                    <th scope="row" className="px-4 py-4 font-medium text-gray-900 whitespace-normal">
+                        <div className="flex items-center gap-2">
+                           {hasVariants && (
+                                <button onClick={() => toggleVariantExpansion(product.id)} className="p-1 hover:bg-gray-200 rounded-full">
+                                    {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                </button>
+                            )}
+                            <div className={hasVariants ? '' : 'pl-7'}>
+                                <div className="font-bold">{product.name}</div>
+                                {product.ribbon && <span className={`text-xs font-bold text-white ${getRibbonColor(product.ribbon)} px-2 py-0.5 rounded-full mt-1 inline-block`}>{product.ribbon}</span>}
+                                {!isVariant && <p className="text-xs text-gray-500 font-normal mt-1 line-clamp-2">{product.description}</p>}
+                                {hasVariants && <p className="text-xs text-blue-600 font-semibold mt-1">{product.variants?.length} variante(s)</p>}
+                            </div>
+                        </div>
+                    </th>
+                    <td className="px-4 py-4">
+                        {product.isOnSale && product.promoPrice != null ? (
+                            <div className="flex flex-col">
+                                <span className="font-bold text-red-600">{formatCurrency(product.promoPrice * (1 + product.tvaRate))}</span>
+                                <span className="text-xs text-gray-500 line-through">{formatCurrency(product.price * (1 + product.tvaRate))}</span>
+                            </div>
+                        ) : (
+                            <span className="font-semibold text-gray-800">{formatCurrency(product.price * (1 + product.tvaRate))}</span>
+                        )}
+                    </td>
+                    <td className="px-4 py-4 text-center space-x-1">
+                       <button onClick={() => setEditingProduct(product)} className="p-2 text-cyan-600 hover:text-cyan-800 hover:bg-cyan-50 rounded-full" title="Modifier">
+                            <Edit size={16} />
+                        </button>
+                         <button onClick={() => handleDuplicateProduct(product)} className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full" title="Dupliquer">
+                            <Copy size={16} />
+                        </button>
+                         <button onClick={() => onDeleteProduct(product.id)} className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full" title="Supprimer">
+                            <Trash2 size={16} />
+                        </button>
+                    </td>
+                </tr>
+                {isExpanded && product.variants?.map(variant => (
+                     <tr key={variant.id} className="border-b hover:bg-gray-100 align-top bg-gray-50">
+                        <td className="p-2 pl-10">
+                            <img src={variant.imageUrl || product.imageUrl} alt={variant.name} className="h-10 w-10 object-cover rounded-md"/>
+                        </td>
+                        <th scope="row" className="px-4 py-4 font-medium text-gray-700">
+                             <div className="pl-7">{variant.name}</div>
+                        </th>
+                        <td className="px-4 py-4">
+                            <span className="font-semibold text-gray-600">{formatCurrency((product.price + (variant.priceModifier || 0)) * (1 + product.tvaRate))}</span>
+                        </td>
+                        <td className="px-4 py-4 text-center">
+                            <span className="text-sm font-semibold">{variant.stock} en stock</span>
+                        </td>
+                    </tr>
+                ))}
+            </React.Fragment>
+        );
+    };
+
+
     return (
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
         {/* Sidebar */}
@@ -433,38 +529,7 @@ const ProductManagementView: React.FC<ProductManagementViewProps> = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {displayedProducts.map(product => (
-                            <tr key={product.id} className="bg-white border-b hover:bg-gray-50 align-top">
-                                <td className="p-2">
-                                    <img src={product.imageUrl} alt={product.name} className="h-12 w-12 object-cover rounded-md"/>
-                                </td>
-                                <th scope="row" className="px-4 py-4 font-medium text-gray-900 whitespace-normal">
-                                    <div className="font-bold">{product.name}</div>
-                                    <p className="text-xs text-gray-500 font-normal mt-1 line-clamp-2">{product.description}</p>
-                                </th>
-                                <td className="px-4 py-4">
-                                    {product.isOnSale && product.promoPrice != null ? (
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-cyan-600">{formatCurrency(product.promoPrice * (1 + product.tvaRate))}</span>
-                                            <span className="text-xs text-gray-500 line-through">{formatCurrency(product.price * (1 + product.tvaRate))}</span>
-                                        </div>
-                                    ) : (
-                                        <span className="font-semibold text-cyan-600">{formatCurrency(product.price * (1 + product.tvaRate))}</span>
-                                    )}
-                                </td>
-                                <td className="px-4 py-4 text-center space-x-1">
-                                   <button onClick={() => setEditingProduct(product)} className="p-2 text-cyan-600 hover:text-cyan-800 hover:bg-cyan-50 rounded-full" title="Modifier">
-                                        <Edit size={16} />
-                                    </button>
-                                     <button onClick={() => handleDuplicateProduct(product)} className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-full" title="Dupliquer">
-                                        <Copy size={16} />
-                                    </button>
-                                     <button onClick={() => onDeleteProduct(product.id)} className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full" title="Supprimer">
-                                        <Trash2 size={16} />
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {displayedProducts.map(product => renderProductRow(product))}
                     </tbody>
                 </table>
             </div>

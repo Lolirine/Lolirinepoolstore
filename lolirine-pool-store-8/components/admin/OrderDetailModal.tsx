@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Order, Supplier, CartItem, OrderDetailModalProps, PurchaseOrder } from '../../types';
-import { X, User, MapPin, Package, DollarSign, Truck, CheckCircle } from 'lucide-react';
+import { X, User, MapPin, Package, DollarSign, Truck, CheckCircle, AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatting';
 import { EmailService } from '../../utils/emailService';
 import SupplierInvoiceModal from './SupplierInvoiceModal';
@@ -8,16 +8,19 @@ import SupplierInvoiceModal from './SupplierInvoiceModal';
 const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, onClose, onUpdateOrder, emailService, purchaseOrders, onCreatePurchaseOrder, onUpdatePurchaseOrder }) => {
     const [generatingInvoiceFor, setGeneratingInvoiceFor] = useState<PurchaseOrder | null>(null);
 
+    const isLocked = order.status === 'Complété' || order.status === 'Annulé';
+
+    // FIX: Typed the accumulator `acc` to resolve the generic type argument error on `.reduce`.
     const itemsBySupplier = order.items
         .filter(item => item.supplierId)
-        .reduce((acc, item) => {
+        .reduce((acc: Record<string, CartItem[]>, item) => {
             const supplierId = item.supplierId!;
             if (!acc[supplierId]) {
                 acc[supplierId] = [];
             }
             acc[supplierId].push(item);
             return acc;
-        }, {} as Record<string, CartItem[]>);
+        }, {});
     
     const handleGeneratePO = (supplierId: string, items: CartItem[]) => {
         let po = purchaseOrders.find(p => p.orderId === order.id && p.supplierId === supplierId);
@@ -56,6 +59,12 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, o
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                        {isLocked && (
+                            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
+                                <p className="font-bold flex items-center"><AlertTriangle size={20} className="mr-2"/> Commande finalisée</p>
+                                <p>Cette commande est {order.status.toLowerCase()} et ne peut plus être modifiée.</p>
+                            </div>
+                        )}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Customer Info */}
                             <div className="bg-gray-50 p-4 rounded-lg">
@@ -122,9 +131,11 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, o
                         <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
                             Fermer
                         </button>
-                        {Object.keys(itemsBySupplier).length > 0 && (
+                        {!isLocked && Object.keys(itemsBySupplier).length > 0 && (
                             <div className="flex items-center gap-2">
-                                {Object.entries(itemsBySupplier).map(([supplierId, items]) => {
+                                {/* FIX: Replaced `Object.entries` with `Object.keys` to fix type inference issue on `items`. */}
+                                {Object.keys(itemsBySupplier).map((supplierId) => {
+                                    const items = itemsBySupplier[supplierId];
                                     const supplier = suppliers.find(s => s.id === supplierId);
                                     if (!supplier) return null;
 
@@ -143,6 +154,7 @@ const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, suppliers, o
                                             key={supplierId}
                                             onClick={() => handleGeneratePO(supplierId, items)}
                                             className="px-3 py-2 text-sm font-medium text-white bg-cyan-600 rounded-md shadow-sm hover:bg-cyan-700 flex items-center gap-2"
+                                            disabled={isLocked}
                                         >
                                            <Truck size={16}/> Générer la commande pour {supplier.name}
                                         </button>

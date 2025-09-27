@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdminView, AdminPageProps, UserAccount, EmailManagementViewProps } from '../../types';
+import { AdminView, AdminPageProps, UserAccount } from '../../types';
 import AdminLayout from '../components/admin/AdminLayout';
 import Sidebar from '../components/admin/Sidebar';
 import DashboardView from '../components/admin/DashboardView';
@@ -17,6 +17,9 @@ import InfoBannerView from '../components/admin/InfoBannerView';
 import PopupManagementView from '../components/admin/PopupManagementView';
 import MenuManagementView from '../components/admin/MenuManagementView';
 import OrderManagementView from '../components/admin/OrderManagementView';
+import CrmView from '../components/admin/CrmView';
+import MarketingView from '../components/admin/MarketingView';
+import WebsiteCmsView from '../components/admin/WebsiteCmsView';
 
 
 const AdminPage: React.FC<AdminPageProps> = (props) => {
@@ -33,19 +36,25 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
       menuConfig, onUpdateMenuConfig,
       onAddCategory, onDeleteCategoryAndProducts, onRenameCategory, onDuplicateCategory,
       emailService,
-      onUpdateStockRibbons
+      onUpdateStockRibbons,
+      marketingCampaigns, onCreateMarketingCampaign, onUpdateMarketingCampaign, onDeleteMarketingCampaign,
+      testimonials, onCreateTestimonial, onUpdateTestimonial, onDeleteTestimonial,
+      homeCategories, onUpdateHomeCategories,
+      siteConfig, onUpdateSiteConfig,
+      pagesContent, onUpdatePageContent,
+      prospects, onCreateProspect, onUpdateProspect, onDeleteProspect
   } = props;
   const [view, setView] = useState<AdminView>('dashboard');
   const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
 
   const handleSetView = (newView: AdminView) => {
-    setSelectedUser(null); // Reset selected user when changing main view
+    setSelectedUser(null);
     setView(newView);
   }
 
   const handleUpdateUserAndReturn = (updatedUser: UserAccount) => {
     onUpdateUser(updatedUser);
-    setSelectedUser(null); // Go back to list view after update
+    setSelectedUser(null);
   };
 
 
@@ -91,25 +100,39 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
           products={products}
           onBulkUpdateProducts={onBulkUpdateProducts}
         />;
-      case 'clients':
-        return selectedUser ? (
+      case 'crm':
+         return selectedUser ? (
             <ClientDetailView 
                 user={selectedUser}
                 orders={orders.filter(o => o.customerEmail === selectedUser.email)}
                 onUpdateUser={handleUpdateUserAndReturn}
-                onBack={() => setSelectedUser(null)}
+                onBack={() => {setSelectedUser(null); setView('crm');}}
             />
         ) : (
-            <ClientManagementView 
+            <CrmView 
                 users={users} 
                 orders={orders} 
                 onSelectUser={setSelectedUser} 
+                prospects={prospects}
+                onCreateProspect={onCreateProspect}
+                onUpdateProspect={onUpdateProspect}
+                onDeleteProspect={onDeleteProspect}
             />
         );
       case 'billing':
         return <BillingView invoices={invoices} onCreate={onCreateInvoice} onUpdate={onUpdateInvoice} onDelete={onDeleteInvoice} />;
       case 'paymentMethods':
         return <PaymentMethodsView paymentMethods={paymentMethods} onUpdatePaymentMethod={onUpdatePaymentMethod} />;
+      case 'marketing':
+        return <MarketingView
+                    campaigns={marketingCampaigns}
+                    onCreate={onCreateMarketingCampaign}
+                    onUpdate={onUpdateMarketingCampaign}
+                    onDelete={onDeleteMarketingCampaign}
+                    emailTemplates={emailTemplates}
+                    popups={popups}
+                    users={users}
+                />;
       case 'emails':
         return <EmailManagementView 
                     emailTemplates={emailTemplates} 
@@ -123,6 +146,19 @@ const AdminPage: React.FC<AdminPageProps> = (props) => {
         return <PopupManagementView popups={popups} onCreate={onCreatePopup} onUpdate={onUpdatePopup} onDelete={onDeletePopup} />;
       case 'menuManagement':
         return <MenuManagementView menuConfig={menuConfig} onUpdateMenuConfig={onUpdateMenuConfig} />;
+      case 'websiteCms':
+        return <WebsiteCmsView 
+                    testimonials={testimonials}
+                    onCreateTestimonial={onCreateTestimonial}
+                    onUpdateTestimonial={onUpdateTestimonial}
+                    onDeleteTestimonial={onDeleteTestimonial}
+                    homeCategories={homeCategories}
+                    onUpdateHomeCategories={onUpdateHomeCategories}
+                    siteConfig={siteConfig}
+                    onUpdateSiteConfig={onUpdateSiteConfig}
+                    pagesContent={pagesContent}
+                    onUpdatePageContent={onUpdatePageContent}
+                />;
       default:
         return (
           <div className="p-8 bg-white rounded-lg shadow-md">

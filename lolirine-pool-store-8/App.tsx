@@ -1,3 +1,5 @@
+
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Header';
 import Footer from './components/Footer';
@@ -32,8 +34,8 @@ import WinterizationPage from './pages/WinterizationPage';
 import CookieConsent, { CookiePreferences } from './components/CookieConsent';
 import EmailNotificationManager from './components/EmailNotificationManager';
 import PromotionalPopup from './components/PromotionalPopup';
-import { Page, UserAccount, Product, CartItem, Order, Review, Supplier, Invoice, PaymentMethod, EmailTemplate, Notification, PurchaseOrder, InfoBannerConfig, PopupConfig, MenuConfig, NavLink, Toast } from './types';
-import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_SUPPLIERS, INITIAL_INVOICES, INITIAL_PAYMENT_METHODS, INITIAL_EMAIL_TEMPLATES, INITIAL_USERS, SERVICES, WELLNESS_SUB_CATEGORIES, PORTFOLIO_ITEMS, BLOG_POSTS, BOUTIQUE_SUB_CATEGORIES } from './constants';
+import { Page, UserAccount, Product, CartItem, Order, Review, Supplier, Invoice, PaymentMethod, EmailTemplate, Notification, PurchaseOrder, InfoBannerConfig, PopupConfig, MenuConfig, NavLink, Toast, MarketingCampaign, Testimonial, HomeCategory, SiteConfig, PageContent, Prospect } from './types';
+import { INITIAL_PRODUCTS, INITIAL_ORDERS, INITIAL_SUPPLIERS, INITIAL_INVOICES, INITIAL_PAYMENT_METHODS, INITIAL_EMAIL_TEMPLATES, INITIAL_USERS, SERVICES, WELLNESS_SUB_CATEGORIES, PORTFOLIO_ITEMS, BLOG_POSTS, BOUTIQUE_SUB_CATEGORIES, INITIAL_MARKETING_CAMPAIGNS, INITIAL_TESTIMONIALS, INITIAL_HOME_CATEGORIES, INITIAL_SITE_CONFIG, INITIAL_PAGES_CONTENT, INITIAL_PROSPECTS } from './constants';
 import { EmailService } from './utils/emailService';
 import ServicesOverviewPage from './pages/ServicesOverviewPage';
 import WhatsAppButton from './components/WhatsAppButton';
@@ -56,7 +58,6 @@ const getInitialState = <T,>(key: string, initialValue: T): T => {
   }
 };
 
-// NOTE: Initial data for these configurations was not provided. Sensible defaults have been created.
 const INITIAL_INFO_BANNER_CONFIG: InfoBannerConfig = {
     isVisible: true,
     text: '<b>Livraison offerte</b> en Belgique et en France à partir de 59€ d\'achat !',
@@ -82,6 +83,8 @@ const INITIAL_MENU_CONFIG: MenuConfig = {
     style: 'default',
     links: [
         { id: 'home', page: 'home', label: 'Accueil' },
+        { id: 'shop', page: 'shop', label: 'Boutique' },
+        { id: 'services', page: 'servicesOverview', label: 'Nos Services' },
         { id: 'promotions', page: 'promotions', label: 'Promotions', customStyle: 'promo' },
         { id: 'portfolio', page: 'portfolio', label: 'Nos réalisations' },
         { id: 'blog', page: 'blog', label: 'Blog' },
@@ -109,6 +112,8 @@ const App: React.FC = () => {
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(getInitialState('paymentMethods', INITIAL_PAYMENT_METHODS));
     const [emailTemplates, setEmailTemplates] = useState<EmailTemplate[]>(getInitialState('emailTemplates', INITIAL_EMAIL_TEMPLATES));
     const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>(getInitialState('purchaseOrders', []));
+    const [marketingCampaigns, setMarketingCampaigns] = useState<MarketingCampaign[]>(getInitialState('marketingCampaigns', INITIAL_MARKETING_CAMPAIGNS));
+    const [prospects, setProspects] = useState<Prospect[]>(getInitialState('prospects', INITIAL_PROSPECTS));
     
     // UI states
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -128,6 +133,10 @@ const App: React.FC = () => {
     const [infoBannerConfig, setInfoBannerConfig] = useState<InfoBannerConfig>(getInitialState('infoBannerConfig', INITIAL_INFO_BANNER_CONFIG));
     const [popupConfigs, setPopupConfigs] = useState<PopupConfig[]>(getInitialState('popupConfigs', INITIAL_POPUP_CONFIG));
     const [menuConfig, setMenuConfig] = useState<MenuConfig>(getInitialState('menuConfig', INITIAL_MENU_CONFIG));
+    const [testimonials, setTestimonials] = useState<Testimonial[]>(getInitialState('testimonials', INITIAL_TESTIMONIALS));
+    const [homeCategories, setHomeCategories] = useState<HomeCategory[]>(getInitialState('homeCategories', INITIAL_HOME_CATEGORIES));
+    const [siteConfig, setSiteConfig] = useState<SiteConfig>(getInitialState('siteConfig', INITIAL_SITE_CONFIG));
+    const [pagesContent, setPagesContent] = useState<PageContent[]>(getInitialState('pagesContent', INITIAL_PAGES_CONTENT));
 
     // NEW: state for granular cookie preferences
     const [cookiePreferences, setCookiePreferences] = useState<CookiePreferences | null>(getInitialState('cookiePreferences', null));
@@ -163,9 +172,32 @@ const App: React.FC = () => {
     useEffect(() => { window.localStorage.setItem('infoBannerConfig', JSON.stringify(infoBannerConfig)); }, [infoBannerConfig]);
     useEffect(() => { window.localStorage.setItem('popupConfigs', JSON.stringify(popupConfigs)); }, [popupConfigs]);
     useEffect(() => { window.localStorage.setItem('menuConfig', JSON.stringify(menuConfig)); }, [menuConfig]);
+    useEffect(() => { window.localStorage.setItem('marketingCampaigns', JSON.stringify(marketingCampaigns)); }, [marketingCampaigns]);
+    useEffect(() => { window.localStorage.setItem('prospects', JSON.stringify(prospects)); }, [prospects]);
+    useEffect(() => { window.localStorage.setItem('testimonials', JSON.stringify(testimonials)); }, [testimonials]);
+    useEffect(() => { window.localStorage.setItem('homeCategories', JSON.stringify(homeCategories)); }, [homeCategories]);
+    useEffect(() => { window.localStorage.setItem('siteConfig', JSON.stringify(siteConfig)); }, [siteConfig]);
+    useEffect(() => { window.localStorage.setItem('pagesContent', JSON.stringify(pagesContent)); }, [pagesContent]);
 
+    // Load Google Maps script dynamically
+    useEffect(() => {
+        if (document.getElementById('google-maps-script')) {
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.id = 'google-maps-script';
+        const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+        
+        if (googleMapsApiKey) {
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&libraries=places`;
+            script.async = true;
+            document.head.appendChild(script);
+        } else {
+            console.warn("Google Maps API Key is not configured. Address autocomplete will be disabled.");
+        }
+    }, []);
     
-    // Select product and navigate to its detail page
     const handleSelectProduct = useCallback((product: Product) => {
         setSelectedProduct(product);
         setRecentlyViewed(prev => {
@@ -179,13 +211,11 @@ const App: React.FC = () => {
     
     // --- NAVIGATION ---
     const navigateTo = useCallback((page: Page, options?: { categoryFilter?: string, searchQuery?: string }) => {
-        // Special case for admin login
         if (page === 'admin' && !isAdmin) {
             setIsAdminLoginOpen(true);
             return;
         }
 
-        // Reset product selection when leaving detail page
         if (page !== 'productDetail') {
             setSelectedProduct(null);
         }
@@ -204,7 +234,6 @@ const App: React.FC = () => {
 
     // --- HANDLERS ---
     
-    // Toast notification handlers
     const addToast = useCallback((message: string, type: 'success' | 'info' | 'error' = 'info') => {
         const id = `toast-${Date.now()}`;
         setToasts(prevToasts => [...prevToasts, { id, message, type }]);
@@ -214,7 +243,6 @@ const App: React.FC = () => {
         setToasts(prevToasts => prevToasts.filter(toast => toast.id !== id));
     }, []);
     
-    // NEW: handler for saving granular preferences
     const handleSaveCookiePreferences = useCallback((preferences: CookiePreferences) => {
         setCookiePreferences(preferences);
         window.localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
@@ -249,7 +277,6 @@ const App: React.FC = () => {
 
     const clearCart = useCallback(() => setCart([]), []);
 
-    // Wishlist management
     const addToWishlist = useCallback((product: Product) => {
         setWishlist(prev => {
             if (prev.some(item => item.id === product.id)) {
@@ -261,7 +288,6 @@ const App: React.FC = () => {
         });
     }, [addToast]);
 
-    // Order placement
     const placeOrder = useCallback((shippingAddressData: { shippingAddress: string; shippingCity: string; shippingZip: string }) => {
         if (!currentUser) {
             addToast("Veuillez vous connecter pour passer une commande.", "error");
@@ -291,7 +317,7 @@ const App: React.FC = () => {
     const handleAdminLoginSuccess = useCallback(() => {
         setIsAdmin(true);
         setIsAdminLoginOpen(false);
-        setHistory(['admin']); // Directly navigate to admin dashboard
+        setHistory(['admin']);
     }, []);
 
     const handleClientLoginSuccess = useCallback((user: UserAccount) => {
@@ -313,7 +339,7 @@ const App: React.FC = () => {
             }
         };
         setUsers(prev => [...prev, newUser]);
-        setCurrentUser(newUser); // Auto-login after registration
+        setCurrentUser(newUser);
         setIsClientRegisterOpen(false);
         emailService.send('registration_confirmation', { customerName: newUser.name, customerEmail: newUser.email });
     }, [emailService]);
@@ -347,7 +373,6 @@ const App: React.FC = () => {
             const newProducts = prevProducts.map(p => updatedMap.get(p.id) || p);
             const newProductsToAdd = updatedProducts.filter(p => !prevProducts.some(existing => existing.id === p.id));
             
-            // Auto-add new categories from import
             const existingCategories = new Set(newProducts.map(p => p.category));
             newProductsToAdd.forEach(p => {
                 if (!existingCategories.has(p.category)) {
@@ -367,7 +392,6 @@ const App: React.FC = () => {
                 if (p.stock <= 0) return { ...p, ribbon: 'Rupture de stock' };
                 if (p.stock <= 5) return { ...p, ribbon: 'Stock faible' };
             }
-            // If stock is high or undefined (and not dropshipping), remove stock-related ribbons
             if (p.ribbon === 'Rupture de stock' || p.ribbon === 'Stock faible') {
                 return { ...p, ribbon: undefined };
             }
@@ -380,6 +404,7 @@ const App: React.FC = () => {
     }, []);
     
     const handleUpdateUser = useCallback((updatedUser: UserAccount) => {
+        // FIX: Replaced `p` with `u` to correctly reference the item in the map function.
         setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
         if (currentUser && currentUser.id === updatedUser.id) {
             setCurrentUser(updatedUser);
@@ -457,8 +482,6 @@ const App: React.FC = () => {
     }, []);
 
      const handleAddCategory = useCallback((categoryPath: string) => {
-        // This is a simplified "add". In a real app, this would update a separate category state.
-        // Here, we ensure a placeholder product exists to make the category appear in lists.
         const categoryExists = products.some(p => p.category.startsWith(categoryPath));
         if (!categoryExists) {
             handleCreateProduct({
@@ -468,7 +491,7 @@ const App: React.FC = () => {
                 tvaRate: 0,
                 imageUrl: '',
                 stock: 0,
-                isHidden: true, // Mark as hidden so it doesn't show in the shop
+                isHidden: true,
             });
             alert(`Catégorie "${categoryPath}" ajoutée.`);
         } else {
@@ -509,30 +532,94 @@ const App: React.FC = () => {
         setProducts(prev => [...prev, ...newProducts]);
     }, [products]);
 
+    const handleCreateMarketingCampaign = useCallback((campaignData: Omit<MarketingCampaign, 'id'>) => {
+        const newCampaign: MarketingCampaign = { ...campaignData, id: `camp-${Date.now()}` };
+        setMarketingCampaigns(prev => [newCampaign, ...prev]);
+    }, []);
+
+    const handleUpdateMarketingCampaign = useCallback((updatedCampaign: MarketingCampaign) => {
+        setMarketingCampaigns(prev => prev.map(c => c.id === updatedCampaign.id ? updatedCampaign : c));
+    }, []);
+
+    const handleDeleteMarketingCampaign = useCallback((campaignId: string) => {
+        if(window.confirm("Êtes-vous sûr de vouloir supprimer cette campagne ?")) {
+            setMarketingCampaigns(prev => prev.filter(c => c.id !== campaignId));
+        }
+    }, []);
+
+    const handleCreateTestimonial = useCallback((testimonialData: Omit<Testimonial, 'id'>) => {
+        const newTestimonial: Testimonial = { ...testimonialData, id: `test-${Date.now()}` };
+        setTestimonials(prev => [newTestimonial, ...prev]);
+    }, []);
+
+    const handleUpdateTestimonial = useCallback((updatedTestimonial: Testimonial) => {
+        setTestimonials(prev => prev.map(t => t.id === updatedTestimonial.id ? updatedTestimonial : t));
+    }, []);
+
+    const handleDeleteTestimonial = useCallback((testimonialId: string) => {
+        if(window.confirm("Êtes-vous sûr de vouloir supprimer ce témoignage ?")) {
+            setTestimonials(prev => prev.filter(t => t.id !== testimonialId));
+        }
+    }, []);
+
+    const handleUpdateHomeCategories = useCallback((categories: HomeCategory[]) => {
+        setHomeCategories(categories);
+    }, []);
+
+    const handleUpdateSiteConfig = useCallback((config: SiteConfig) => {
+        setSiteConfig(config);
+    }, []);
+
+    const handleUpdatePageContent = useCallback((updatedPage: PageContent) => {
+        setPagesContent(prev => prev.map(p => p.pageId === updatedPage.pageId ? updatedPage : p));
+    }, []);
+
+    const handleCreateProspect = useCallback((prospectData: Omit<Prospect, 'id'>) => {
+        const newProspect: Prospect = {
+            ...prospectData,
+            id: `prospect-${Date.now()}`,
+            createdAt: new Date().toISOString(),
+            notes: [],
+        };
+        setProspects(prev => [newProspect, ...prev]);
+    }, []);
+
+    const handleUpdateProspect = useCallback((updatedProspect: Prospect) => {
+        setProspects(prev => prev.map(p => p.id === updatedProspect.id ? updatedProspect : p));
+    }, []);
+
+    const handleDeleteProspect = useCallback((prospectId: string) => {
+        if (window.confirm("Êtes-vous sûr de vouloir supprimer ce prospect ?")) {
+            setProspects(prev => prev.filter(p => p.id !== prospectId));
+        }
+    }, []);
+
 
     // --- PAGE RENDERING LOGIC ---
     
     const renderPage = () => {
+        const findPageContent = (pageId: Page | string) => pagesContent.find(p => p.pageId === pageId);
+
         switch(currentPage) {
-            case 'home': return <HomePage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} recentlyViewed={recentlyViewed} onSelectProduct={handleSelectProduct} orders={orders} currentUser={currentUser} cart={cart} wishlist={wishlist} addToWishlist={addToWishlist} />;
+            case 'home': return <HomePage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} recentlyViewed={recentlyViewed} onSelectProduct={handleSelectProduct} orders={orders} currentUser={currentUser} cart={cart} wishlist={wishlist} addToWishlist={addToWishlist} testimonials={testimonials} homeCategories={homeCategories} />;
             case 'services': return <ServicesPage navigateTo={navigateTo} goBack={goBack} canGoBack={canGoBack}/>;
-            case 'servicesOverview': return <ServicesOverviewPage navigateTo={navigateTo} goBack={goBack} canGoBack={canGoBack} />;
+            case 'servicesOverview': return <ServicesOverviewPage navigateTo={navigateTo} goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('servicesOverview')} />;
             case 'shop': return <ShopPage products={products.filter(p => !p.isHidden)} addToCart={addToCart} onBuyNow={onBuyNow} onSelectProduct={handleSelectProduct} initialCategoryFilter={pageOptions.categoryFilter} initialSearchTerm={pageOptions.searchQuery} wishlist={wishlist} addToWishlist={addToWishlist} recentlyViewed={recentlyViewed} navigateTo={navigateTo} />;
             case 'promotions': return <PromotionsPage products={products} addToCart={addToCart} onBuyNow={onBuyNow} onSelectProduct={handleSelectProduct} wishlist={wishlist} addToWishlist={addToWishlist} goBack={goBack} canGoBack={canGoBack} recentlyViewed={recentlyViewed} navigateTo={navigateTo} />;
             case 'portfolio': return <PortfolioPage goBack={goBack} canGoBack={canGoBack} />;
             case 'blog': return <BlogPage goBack={goBack} canGoBack={canGoBack} />;
-            case 'about': return <AboutPage goBack={goBack} canGoBack={canGoBack} />;
+            case 'about': return <AboutPage goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('about')} />;
             case 'contact': return <ContactPage goBack={goBack} canGoBack={canGoBack} />;
-            case 'admin': return <AdminPage onLogout={handleLogout} products={products} onUpdateProduct={handleUpdateProduct} onCreateProduct={handleCreateProduct} onDeleteProduct={handleDeleteProduct} onBulkUpdateProducts={handleBulkUpdateProducts} orders={orders} onUpdateOrder={handleUpdateOrder} suppliers={suppliers} onCreateSupplier={handleCreateSupplier} onUpdateSupplier={handleUpdateSupplier} onDeleteSupplier={handleDeleteSupplier} invoices={invoices} onCreateInvoice={handleCreateInvoice} onUpdateInvoice={handleUpdateInvoice} onDeleteInvoice={handleDeleteInvoice} paymentMethods={paymentMethods} onUpdatePaymentMethod={handleUpdatePaymentMethod} emailTemplates={emailTemplates} onUpdateEmailTemplate={handleUpdateEmailTemplate} users={users} onUpdateUser={handleUpdateUser} cart={cart} purchaseOrders={purchaseOrders} onUpdatePurchaseOrder={handleUpdatePurchaseOrder} onCreatePurchaseOrder={handleCreatePurchaseOrder} infoBanner={infoBannerConfig} onUpdateInfoBanner={handleUpdateInfoBanner} popups={popupConfigs} onCreatePopup={handleCreatePopup} onUpdatePopup={handleUpdatePopup} onDeletePopup={handleDeletePopup} menuConfig={menuConfig} onUpdateMenuConfig={handleUpdateMenuConfig} onAddCategory={handleAddCategory} onDeleteCategoryAndProducts={handleDeleteCategoryAndProducts} onRenameCategory={handleRenameCategory} onDuplicateCategory={handleDuplicateCategory} emailService={emailService} onUpdateStockRibbons={handleUpdateStockRibbons}/>;
-            case 'client': return currentUser ? <ClientAreaPage onLogout={handleLogout} user={currentUser} orders={orders} onUpdateUser={handleUpdateUser} goBack={goBack} canGoBack={canGoBack} /> : <HomePage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} recentlyViewed={recentlyViewed} onSelectProduct={handleSelectProduct} orders={orders} currentUser={currentUser} cart={cart} wishlist={wishlist} addToWishlist={addToWishlist} />;
+            case 'admin': return <AdminPage onLogout={handleLogout} products={products} onUpdateProduct={handleUpdateProduct} onCreateProduct={handleCreateProduct} onDeleteProduct={handleDeleteProduct} onBulkUpdateProducts={handleBulkUpdateProducts} orders={orders} onUpdateOrder={handleUpdateOrder} suppliers={suppliers} onCreateSupplier={handleCreateSupplier} onUpdateSupplier={handleUpdateSupplier} onDeleteSupplier={handleDeleteSupplier} invoices={invoices} onCreateInvoice={handleCreateInvoice} onUpdateInvoice={handleUpdateInvoice} onDeleteInvoice={handleDeleteInvoice} paymentMethods={paymentMethods} onUpdatePaymentMethod={handleUpdatePaymentMethod} emailTemplates={emailTemplates} onUpdateEmailTemplate={handleUpdateEmailTemplate} users={users} onUpdateUser={handleUpdateUser} cart={cart} purchaseOrders={purchaseOrders} onUpdatePurchaseOrder={handleUpdatePurchaseOrder} onCreatePurchaseOrder={handleCreatePurchaseOrder} infoBanner={infoBannerConfig} onUpdateInfoBanner={handleUpdateInfoBanner} popups={popupConfigs} onCreatePopup={handleCreatePopup} onUpdatePopup={handleUpdatePopup} onDeletePopup={handleDeletePopup} menuConfig={menuConfig} onUpdateMenuConfig={handleUpdateMenuConfig} onAddCategory={handleAddCategory} onDeleteCategoryAndProducts={handleDeleteCategoryAndProducts} onRenameCategory={handleRenameCategory} onDuplicateCategory={handleDuplicateCategory} emailService={emailService} onUpdateStockRibbons={handleUpdateStockRibbons} marketingCampaigns={marketingCampaigns} onCreateMarketingCampaign={handleCreateMarketingCampaign} onUpdateMarketingCampaign={handleUpdateMarketingCampaign} onDeleteMarketingCampaign={handleDeleteMarketingCampaign} testimonials={testimonials} onCreateTestimonial={handleCreateTestimonial} onUpdateTestimonial={handleUpdateTestimonial} onDeleteTestimonial={handleDeleteTestimonial} homeCategories={homeCategories} onUpdateHomeCategories={handleUpdateHomeCategories} siteConfig={siteConfig} onUpdateSiteConfig={handleUpdateSiteConfig} pagesContent={pagesContent} onUpdatePageContent={handleUpdatePageContent} prospects={prospects} onCreateProspect={handleCreateProspect} onUpdateProspect={handleUpdateProspect} onDeleteProspect={handleDeleteProspect} />;
+            case 'client': return currentUser ? <ClientAreaPage onLogout={handleLogout} user={currentUser} orders={orders} onUpdateUser={handleUpdateUser} goBack={goBack} canGoBack={canGoBack} /> : <HomePage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} recentlyViewed={recentlyViewed} onSelectProduct={handleSelectProduct} orders={orders} currentUser={currentUser} cart={cart} wishlist={wishlist} addToWishlist={addToWishlist} testimonials={testimonials} homeCategories={homeCategories} />;
             case 'faq': return <FaqPage goBack={goBack} canGoBack={canGoBack}/>;
             case 'checkout': return <CheckoutPage cart={cart} onPlaceOrder={placeOrder} currentUser={currentUser} paymentMethods={paymentMethods.filter(p => p.enabled)} goBack={goBack} canGoBack={canGoBack} />;
-            case 'orderConfirmation': return lastOrder ? <OrderConfirmationPage order={lastOrder} /> : <HomePage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} recentlyViewed={recentlyViewed} onSelectProduct={handleSelectProduct} orders={orders} currentUser={currentUser} cart={cart} wishlist={wishlist} addToWishlist={addToWishlist} />;
-            case 'terms': return <TermsPage goBack={goBack} canGoBack={canGoBack}/>;
-            case 'privacy': return <PrivacyPolicyPage goBack={goBack} canGoBack={canGoBack}/>;
-            case 'cookies': return <CookiesPage goBack={goBack} canGoBack={canGoBack}/>;
-            case 'legal': return <LegalNoticePage goBack={goBack} canGoBack={canGoBack}/>;
-            case 'shippingPolicy': return <ShippingPolicyPage navigateTo={navigateTo} goBack={goBack} canGoBack={canGoBack} />;
+            case 'orderConfirmation': return lastOrder ? <OrderConfirmationPage order={lastOrder} /> : <HomePage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} recentlyViewed={recentlyViewed} onSelectProduct={handleSelectProduct} orders={orders} currentUser={currentUser} cart={cart} wishlist={wishlist} addToWishlist={addToWishlist} testimonials={testimonials} homeCategories={homeCategories} />;
+            case 'terms': return <TermsPage goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('terms')} />;
+            case 'privacy': return <PrivacyPolicyPage goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('privacy')} />;
+            case 'cookies': return <CookiesPage goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('cookies')} />;
+            case 'legal': return <LegalNoticePage goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('legal')} />;
+            case 'shippingPolicy': return <ShippingPolicyPage navigateTo={navigateTo} goBack={goBack} canGoBack={canGoBack} pageContent={findPageContent('shippingPolicy')} />;
             case 'wellness': return <WellnessPage navigateTo={navigateTo} products={products} addToCart={addToCart} onBuyNow={onBuyNow} onSelectProduct={handleSelectProduct} wishlist={wishlist} addToWishlist={addToWishlist} goBack={goBack} canGoBack={canGoBack} recentlyViewed={recentlyViewed} />;
             case 'productDetail': return selectedProduct ? <ProductDetailPage product={selectedProduct} navigateTo={navigateTo} addToCart={addToCart} onBuyNow={onBuyNow} addToWishlist={addToWishlist} wishlist={wishlist} products={products.filter(p => !p.isHidden)} onSelectProduct={handleSelectProduct} goBack={goBack} canGoBack={canGoBack} recentlyViewed={recentlyViewed} /> : <ShopPage products={products.filter(p => !p.isHidden)} addToCart={addToCart} onBuyNow={onBuyNow} onSelectProduct={handleSelectProduct} wishlist={wishlist} addToWishlist={addToWishlist} recentlyViewed={recentlyViewed} navigateTo={navigateTo} />;
             case 'wishlist': return <WishlistPage wishlist={wishlist} navigateTo={navigateTo} onSelectProduct={handleSelectProduct} addToCart={addToCart} onBuyNow={onBuyNow} addToWishlist={addToWishlist} goBack={goBack} canGoBack={canGoBack} />;
@@ -544,19 +631,17 @@ const App: React.FC = () => {
         }
     };
     
-    // Determine which popup to show
     const activePopup = popupConfigs.find(p => 
         p.isEnabled &&
         !displayedPopups.has(p.id) &&
         (p.displayOn.includes('all') || p.displayOn.includes(currentPage))
     );
 
-    // Effect to display popup after a delay
     useEffect(() => {
         if (activePopup) {
             const timer = setTimeout(() => {
                 setDisplayedPopups(prev => new Set(prev).add(activePopup.id));
-            }, 2000); // Display popup after 2 seconds
+            }, 2000);
             return () => clearTimeout(timer);
         }
     }, [activePopup]);
@@ -578,11 +663,12 @@ const App: React.FC = () => {
                 services={SERVICES}
                 shopCategories={BOUTIQUE_SUB_CATEGORIES}
                 wellnessCategories={WELLNESS_SUB_CATEGORIES}
+                onSelectProduct={handleSelectProduct}
             />
             <main className="flex-grow pt-[200px]">
                 {renderPage()}
             </main>
-            <Footer navigateTo={navigateTo} onOpenRegisterModal={() => setIsClientRegisterOpen(true)} />
+            <Footer navigateTo={navigateTo} onOpenRegisterModal={() => setIsClientRegisterOpen(true)} siteConfig={siteConfig} />
 
             {/* Modals & Overlays */}
             {isCartOpen && <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} cartItems={cart} onUpdateQuantity={updateCartQuantity} onRemoveItem={removeFromCart} onClearCart={clearCart} navigateTo={navigateTo} />}
