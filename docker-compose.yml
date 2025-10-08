@@ -1,12 +1,35 @@
 services:
   backend:
     build: ./backend
+    env_file:
+      - ./backend/.env
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3010/api/hello >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
+
   frontend:
     build: ./frontend
+    depends_on: [backend]
+    expose:
+      - "80"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 3s
+      start_period: 20s
+      retries: 3
+
+  caddy:
+    image: caddy:2
     ports:
       - "80:80"
-    depends_on:
-      - backend
+      - "443:443"
+    volumes:
+      - ./caddy:/etc/caddy
+    depends_on: [frontend]
     restart: unless-stopped
-
