@@ -1,92 +1,50 @@
+import "dotenv/config";
 import express, { Request, Response } from "express";
 import cors from "cors";
-import {
-  dbPing,
-  ensureSchema,
-  listProducts,
-  insertProduct,
-  updateProduct,
-  deleteProduct,
-} from "./db";
+import { dbPing, ensureSchema, listProducts, insertProduct, updateProduct, deleteProduct } from "./db.js";
 
-const PORT = Number(process.env.PORT) || 3010;
+const PORT = Number(process.env.PORT || 3010);
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: process.env.CORS_ORIGIN || true }));
 app.use(express.json());
 
-// Ping simple
-app.get("/api/hello", (_req: Request, res: Response) => {
-  res.json({ message: "Hello from the backend!" });
+app.get("/api/hello", (_req, res) => res.json({ message: "Hello from the backend!" }));
+app.get("/api/db/ping", async (_req, res) => {
+  try { res.json({ ok: true, now: await dbPing() }); }
+  catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
-// Santé DB
-app.get("/api/db/ping", async (_req: Request, res: Response) => {
-  try {
-    const now = await dbPing();
-    res.json({ ok: true, now });
-  } catch (e) {
-    res.status(500).json({ ok: false, error: (e as Error).message });
-  }
+app.get("/api/products", async (_req, res) => {
+  try { res.json(await listProducts()); }
+  catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
-// Créer un produit
-app.post("/api/products", async (req: Request, res: Response) => {
-  try {
-    const { name, price_cents } = req.body;
-    if (!name || typeof price_cents !== "number") {
-      return res.status(400).json({ error: "bad input" });
-    }
-    const id = await insertProduct(name, price_cents);
-    res.status(201).json({ id });
-  } catch (e) {
-    res.status(500).json({ error: (e as Error).message });
-  }
+app.post("/api/products", async (req, res) => {
+  const { name, price_cents } = req.body;
+  if (!name || typeof price_cents !== "number") return res.status(400).json({ error: "bad input" });
+  try { const id = await insertProduct(name, price_cents); res.status(201).json({ id }); }
+  catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
-// Lister les produits
-app.get("/api/products", async (_req: Request, res: Response) => {
-  try {
-    res.json(await listProducts());
-  } catch (e) {
-    res.status(500).json({ error: (e as Error).message });
-  }
+app.put("/api/products/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { name, price_cents } = req.body;
+  if (!id || !name || typeof price_cents !== "number") return res.status(400).json({ error: "bad input" });
+  try { await updateProduct(id, name, price_cents); res.json({ ok: true }); }
+  catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
-// Mettre à jour un produit
-app.put("/api/products/:id", async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const { name, price_cents } = req.body;
-    if (!Number.isInteger(id) || !name || typeof price_cents !== "number") {
-      return res.status(400).json({ error: "bad input" });
-    }
-    const ok = await updateProduct(id, name, price_cents);
-    if (!ok) return res.status(404).json({ error: "not found" });
-    res.json({ ok: true });
-  } catch (e) {
-    res.status(500).json({ error: (e as Error).message });
-  }
+app.delete("/api/products/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!id) return res.status(400).json({ error: "bad input" });
+  try { await deleteProduct(id); res.json({ ok: true }); }
+  catch (e:any) { res.status(500).json({ error: e.message }); }
 });
 
-// Supprimer un produit
-app.delete("/api/products/:id", async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    if (!Number.isInteger(id)) return res.status(400).json({ error: "bad input" });
-    const ok = await deleteProduct(id);
-    if (!ok) return res.status(404).json({ error: "not found" });
-    res.status(204).end();
-  } catch (e) {
-    res.status(500).json({ error: (e as Error).message });
-  }
-});
-
-// Init schéma (on log l'erreur sans arrêter le serveur)
 ensureSchema()
   .then(() => console.log("DB ready"))
-  .catch((err) => console.error("DB init failed:", err));
+  .catch((err) => { console.error("DB init failed:", err); process.exit(1); });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`backend running on http://localhost:${PORT}`);
-});
+app.listen(PORT, "0.0.0.0", () => console.log(`backend running on http://localhost:${PORT}`));
+
